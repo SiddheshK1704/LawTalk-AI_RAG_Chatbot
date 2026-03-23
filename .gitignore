@@ -1,5 +1,14 @@
-/venv
+# Python
+venv/
+__pycache__/
+*.pyc
 
-/frontend/node_modules
+# Node
+node_modules/
+frontend/node_modules/
 
-/frontend/dist
+# Build output
+frontend/dist/
+
+# Env
+.env
