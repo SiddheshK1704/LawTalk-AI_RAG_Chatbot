@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+
+# RAG (coming next)
+langchain
+faiss-cpu
+pypdf
+sentence-transformers
+
+# LLM (Groq)
+groq
+
+# Database (Supabase)
+supabase
