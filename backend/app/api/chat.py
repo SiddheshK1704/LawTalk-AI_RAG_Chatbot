@@ -1,4 +1,9 @@
+from fastapi import APIRouter
+from app.models.schemas import Query
+from app.services.router import is_legal_query
 from app.services.groq_client import get_llm_response
+
+router = APIRouter()
 
 @router.post("/ask")
 def ask(q: Query):
