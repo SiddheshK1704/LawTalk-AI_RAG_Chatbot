@@ -1,0 +1,13 @@
+# Env files
+backend/.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+venv/
+
+# RAG data
+faiss_index/
+data/legal_docs/
