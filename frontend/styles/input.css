@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        background: radial-gradient(circle at 10% 20%, rgba(10, 20, 30, 1) 0%, rgba(5, 12, 22, 1) 100%);
+        overflow-x: hidden;
+        color: #f0f3fa;
+    }
+    
+    .bg-abstract-glass {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+        background: radial-gradient(ellipse at 30% 40%, rgba(30, 70, 120, 0.25) 0%, rgba(10, 20, 45, 0.6) 70%);
+    }
+    
+    .bg-abstract-glass::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(45deg, rgba(80, 140, 210, 0.08) 0px, rgba(80, 140, 210, 0.08) 2px, transparent 2px, transparent 8px);
+        pointer-events: none;
+    }
+    
+    .bg-abstract-glass::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 70% 80%, rgba(100, 160, 240, 0.15), transparent 70%);
+    }
+}

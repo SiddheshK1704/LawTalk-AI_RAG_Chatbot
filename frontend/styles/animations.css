@@ -1,0 +1,59 @@
+.glass {
+    background: rgba(15, 25, 45, 0.45);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(110, 170, 250, 0.2);
+    border-radius: 2rem;
+}
+
+.glass-card {
+    background: rgba(12, 22, 40, 0.55);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(80, 150, 255, 0.25);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(80, 150, 255, 0.1);
+}
+
+.chat-bubble-user {
+    background: linear-gradient(135deg, #2b6ef0, #1a4bc4);
+    border-radius: 1.8rem 1.2rem 1.8rem 1.2rem;
+    box-shadow: 0 4px 12px rgba(0, 100, 255, 0.2);
+}
+
+.chat-bubble-bot {
+    background: rgba(25, 35, 55, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(90, 160, 255, 0.3);
+    border-radius: 1.2rem 1.8rem 1.2rem 1.8rem;
+}
+
+.btn-glow {
+    transition: all 0.25s ease;
+}
+
+.btn-glow:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 18px rgba(59, 130, 246, 0.6);
+}
+
+.floating-img {
+    animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0a1424;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2f6ef0;
+    border-radius: 10px;
+}

@@ -1,8 +1,18 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-    content: ["./dist/**/*.html"], // This will correctly match all HTML files in the dist folder and its subdirectories
+  module.exports = {
+    content: [
+      "./dist/**/*.html",
+        "./index.html",
+        "./pages/**/*.js",
+        "./components/**/*.js",
+        "./main.js"
+    ],
     theme: {
-      extend: {},
+        extend: {
+            animation: {
+                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            }
+        },
     },
     plugins: [],
-  };
+}

@@ -1,18 +1,28 @@
 {
-  "name": "lawtalk",
-  "version": "1.0.0",
-  "description": "",
-  "license": "ISC",
-  "author": "",
-  "type": "commonjs",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev":"npx @tailwindcss/cli -i ./src/input.css -o ./dist/style.css --watch",
-    "build": "npx @tailwindcss/cli -i ./src/input.css -o ./dist/style.css --minify"
-  },
-  "dependencies": {
-    "@tailwindcss/cli": "^4.2.2",
-    "tailwindcss": "^4.2.2"
-  }
+    "name": "lawtalk-frontend",
+    "version": "1.0.0",
+    "description": "AI Legal Assistant Frontend",
+    "scripts": {
+        "build:css": "tailwindcss -i ./styles/input.css -o ./dist/style.css --minify",
+        "watch:css": "tailwindcss -i ./styles/input.css -o ./dist/style.css --watch",
+        "dev": "npm run watch:css & live-server"
+    },
+    "devDependencies": {
+        "tailwindcss": "^3.4.0",
+        "live-server": "^1.2.2"
+    }
 }
+// {
+//     "name": "lawtalk-frontend",
+//     "version": "1.0.0",
+//     "description": "AI Legal Assistant Frontend",
+//     "scripts": {
+//         "build:css": "tailwindcss -i ./styles/input.css -o ./dist/style.css --minify",
+//         "watch:css": "tailwindcss -i ./styles/input.css -o ./dist/style.css --watch",
+//         "dev": "npm run watch:css & live-server"
+//     },
+//     "devDependencies": {
+//         "tailwindcss": "^3.4.0",
+//         "live-server": "^1.2.2"
+//     }
+// }

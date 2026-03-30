@@ -1,20 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>LawTalk</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>LawTalk | AI-Powered Legal Intelligence</title>
+    <link rel="stylesheet" href="styles/animations.css">
+    <link rel="stylesheet" href="dist/style.css">
     <link href="./dist/style.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </head>
-<body class="p-10">
-
-    <h1 class="text-2xl font-bold mb-4">LawTalk ⚖️</h1>
-
-    <input id="query" class="border p-2 w-96" placeholder="Ask something..." />
-    <button onclick="ask()" class="bg-blue-500 text-white px-4 py-2 ml-2">
-        Ask
-    </button>
-
-    <div id="response" class="mt-4"></div>
-
-    <script src="./js/app.js"></script>
+<body>
+    <div id="app"></div>
+    <script type="module" src="main.js"></script>
 </body>
 </html>
