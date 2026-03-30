@@ -1,22 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tailwind CLI Test</title>
-  <link href="./dist/style.css" rel="stylesheet">
+    <title>LawTalk</title>
+    <link href="./dist/style.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="p-10">
 
-  <div class="bg-white shadow-lg rounded-2xl p-8 max-w-sm text-center">
-    <h1 class="text-2xl font-bold text-gray-800 mb-4">
-      Tailwind Test
-    </h1>
+    <h1 class="text-2xl font-bold mb-4">LawTalk ⚖️</h1>
 
-    <p class="text-gray-600 mb-6">
-      If you see styling, Tailwind CLI is working 🎉
-    </p>
-  </div>
+    <input id="query" class="border p-2 w-96" placeholder="Ask something..." />
+    <button onclick="ask()" class="bg-blue-500 text-white px-4 py-2 ml-2">
+        Ask
+    </button>
 
+    <div id="response" class="mt-4"></div>
+
+    <script src="./js/app.js"></script>
 </body>
 </html>
