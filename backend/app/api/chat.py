@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from app.models.schemas import Query
 from app.services.router import is_legal_query
 from app.services.groq_client import get_llm_response
+from app.services.rag import retrieve_context
 
 router = APIRouter()
 
@@ -10,7 +11,24 @@ def ask(q: Query):
     query = q.query
 
     if is_legal_query(query):
-        prompt = f"You are a legal assistant. Answer this: {query}"
+        context = retrieve_context(query)
+
+        prompt = f"""
+You are a LawTalk. A highly accurate Indian legal assistant.
+
+STRICT RULES:
+- Answer ONLY using the context below
+- Do NOT use prior knowledge
+- If answer is not in context, say "I don't know"
+
+Context:
+{context}
+
+Question:
+{query}
+
+Answer:
+"""
     else:
         prompt = query
 
