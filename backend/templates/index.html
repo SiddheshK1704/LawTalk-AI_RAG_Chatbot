@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LawTalk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+    <div class="relative isolate min-h-screen overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),_transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(14,165,233,0.15),_transparent_28%),linear-gradient(135deg,_#020617,_#111827_55%,_#0f172a)]"></div>
+        <div class="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6 lg:px-8">
+            <header class="mb-6 rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+                <p class="text-sm font-medium uppercase tracking-[0.35em] text-sky-300">Indian Legal Assistant</p>
+                <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <h1 class="text-3xl font-semibold tracking-tight text-white sm:text-4xl">LawTalk Chat</h1>
+                        <p class="mt-2 max-w-2xl text-sm text-slate-300 sm:text-base">
+                            Ask a legal question and the existing FastAPI backend will answer through the Flask frontend.
+                        </p>
+                    </div>
+                    <div class="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
+                        <span class="font-semibold">Status:</span>
+                        <span id="status-text">Ready</span>
+                    </div>
+                </div>
+                <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Response Mode</p>
+                        <p class="mt-1 text-sm text-slate-300">Choose whether answers come from RAG context or directly from Groq LLM.</p>
+                    </div>
+                    <div class="inline-flex rounded-full border border-white/10 bg-slate-950/70 p-1">
+                        <button
+                            type="button"
+                            class="mode-toggle rounded-full px-4 py-2 text-sm font-semibold transition"
+                            data-mode="rag"
+                            aria-pressed="true"
+                        >
+                            Use RAG
+                        </button>
+                        <button
+                            type="button"
+                            class="mode-toggle rounded-full px-4 py-2 text-sm font-semibold transition"
+                            data-mode="groq"
+                            aria-pressed="false"
+                        >
+                            Use GROQ LLM
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex flex-1 flex-col rounded-3xl border border-white/10 bg-slate-900/70 shadow-2xl shadow-slate-950/40 backdrop-blur">
+                <section id="chat-messages" class="flex-1 space-y-4 overflow-y-auto p-4 sm:p-6">
+                    <article class="max-w-3xl rounded-3xl border border-sky-400/20 bg-sky-400/10 p-4 text-sm leading-7 text-slate-100">
+                        <p class="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">LawTalk</p>
+                        <p>Hello. Ask your legal question here.</p>
+                    </article>
+                </section>
+
+                <section class="border-t border-white/10 p-4 sm:p-6">
+                    <form id="chat-form" class="flex flex-col gap-3">
+                        <label for="message-input" class="text-sm font-medium text-slate-300">Your message</label>
+                        <textarea
+                            id="message-input"
+                            name="message"
+                            rows="3"
+                            placeholder="Type your legal question..."
+                            class="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/40"
+                        ></textarea>
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <p class="text-xs text-slate-400">Shift + Enter adds a new line. Enter sends.</p>
+                            <button
+                                type="submit"
+                                id="send-button"
+                                class="inline-flex items-center justify-center rounded-2xl bg-sky-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+                            >
+                                Send Message
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ url_for('template_asset', filename='chat.js') }}"></script>
+</body>
+</html>

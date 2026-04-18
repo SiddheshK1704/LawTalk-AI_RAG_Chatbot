@@ -2,9 +2,12 @@ fastapi
 uvicorn
 pydantic
 python-dotenv
+flask
+requests
 
 # RAG (coming next)
 langchain
+langchain-huggingface
 faiss-cpu
 pypdf
 sentence-transformers
