@@ -17,7 +17,15 @@ def load_db():
     return db
 
 
-def retrieve_context(query: str, k: int = 3) -> str:
+def retrieve_context(query: str, k: int = 5) -> str:
     database = load_db()
     docs = database.similarity_search(query, k=k)
+
+    print("\n🔍 QUERY:", query)
+    print("📄 DOCS RETRIEVED:", len(docs))
+
+    for i, doc in enumerate(docs):
+        print(f"\n--- DOC {i+1} ---")
+        print(doc.page_content[:300])
+
     return "\n\n".join([doc.page_content for doc in docs])
