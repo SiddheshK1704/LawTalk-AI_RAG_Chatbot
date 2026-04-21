@@ -1,8 +1,9 @@
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import CharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
+
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -32,14 +33,35 @@ def create_vector_db():
                 text = f.read()
                 documents.append(Document(page_content=text))
 
-    splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=100
+    )
+
     docs = splitter.split_documents(documents)
 
     embeddings = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
-)
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
 
-    db = FAISS.from_documents(docs, embeddings)
+    clean_docs = []
+    for doc in docs:
+        text = doc.page_content.strip()
+
+        if len(text) < 50:
+            continue
+
+        if text.isdigit():
+            continue
+
+        if "EP-IL&GL" in text:
+            continue
+
+        clean_docs.append(doc)
+
+    print(f"🧹 Clean docs: {len(clean_docs)} / {len(docs)}")
+
+    db = FAISS.from_documents(clean_docs, embeddings)
     db.save_local(DB_PATH)
 
     print("🔥 FAISS index created!")
