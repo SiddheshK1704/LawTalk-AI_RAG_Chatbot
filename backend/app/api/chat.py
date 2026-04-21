@@ -10,16 +10,27 @@ router = APIRouter()
 def ask(q: Query):
     query = q.query
 
-    if is_legal_query(query):
+    use_rag = is_legal_query(query)
+    print("Mode:", "RAG" if use_rag else "LLM")
+
+    context = ""
+    if use_rag:
         context = retrieve_context(query)
 
-        prompt = f"""
-You are a LawTalk. A highly accurate Indian legal assistant.
+        # 🔥 fallback if context is weak
+        if not context or len(context.strip()) < 100:
+            use_rag = False
 
-STRICT RULES:
-- Answer ONLY using the context below
-- Do NOT use prior knowledge
-- If answer is not in context, say "I don't know"
+    if use_rag:
+        prompt = f"""
+You are LawTalk, an Indian legal assistant.
+
+INSTRUCTIONS:
+- Use the context to answer the question
+- If context is limited, still give a helpful answer using general knowledge
+- Format response in clean HTML
+- Use only these tags: <h2>, <p>, <ul>, <li>, <strong>
+- Do NOT use markdown or code blocks
 
 Context:
 {context}
@@ -30,8 +41,27 @@ Question:
 Answer:
 """
     else:
-        prompt = query
+        prompt = f"""
+You are a helpful assistant.
+
+INSTRUCTIONS:
+- Respond naturally and helpfully
+- Format response in clean HTML
+- Use only these tags: <h2>, <p>, <ul>, <li>, <strong>
+- Do NOT use markdown or code blocks
+
+Question:
+{query}
+
+Answer:
+"""
 
     answer = get_llm_response(prompt)
 
-    return {"answer": answer}
+    # basic cleanup
+    answer = answer.replace("```html", "").replace("```", "")
+
+    return {
+        "answer": answer,
+        "mode": "RAG" if use_rag else "LLM"
+    }
