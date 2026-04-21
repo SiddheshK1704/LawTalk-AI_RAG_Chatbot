@@ -1,18 +1,26 @@
 /** @type {import('tailwindcss').Config} */
-  module.exports = {
-    content: [
-      "./dist/**/*.html",
-        "./index.html",
-        "./pages/**/*.js",
-        "./components/**/*.js",
-        "./main.js"
-    ],
-    theme: {
-        extend: {
-            animation: {
-                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            }
-        },
+module.exports = {
+  content: [
+    "./index.html",
+    "./chat.html",
+    "./js/**/*.js",
+    "./src/**/*.css",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        ink: "#08111f",
+        "ink-soft": "#0f1b30",
+        paper: "#f5efe2",
+        gold: "#f6bb42",
+        "gold-soft": "#ffd06b",
+        mint: "#6ae3b9",
+      },
+      fontFamily: {
+        sans: ["Manrope", "sans-serif"],
+        display: ["Space Grotesk", "sans-serif"],
+      },
     },
-    plugins: [],
-}
+  },
+  plugins: [],
+};

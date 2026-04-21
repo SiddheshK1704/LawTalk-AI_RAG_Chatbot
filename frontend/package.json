@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "description": "AI Legal Assistant Frontend",
     "scripts": {
-        "watch:css": "npx @tailwindcss/cli -i ./src/input.css -o ./dist/style.css --watch",
+        "build:css": "npx tailwindcss -i ./src/input.css -o ./dist/style.css --minify",
+        "watch:css": "npx tailwindcss -i ./src/input.css -o ./dist/style.css --watch",
         "dev": "npm run watch:css"
     },
     "devDependencies": {
