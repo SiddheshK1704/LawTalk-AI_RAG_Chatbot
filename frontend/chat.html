@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LawTalk AI — Chat</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gravitas+One&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body class="bg-black text-white h-screen overflow-hidden">
+
+<div class="fixed inset-0 -z-10 overflow-hidden">
+  <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover opacity-60">
+    <source src="assets/bg.mp4" type="video/mp4" />
+  </video>
+  <div class="iridescent-fallback absolute inset-0 opacity-70"></div>
+  <div class="absolute inset-0 bg-black/70"></div>
+</div>
+
+<div class="h-screen flex">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="chat-sidebar w-72 shrink-0 h-full p-4 flex flex-col gap-4 -translate-x-full md:translate-x-0 fixed md:static z-40 transition-transform">
+    <div class="flex items-center justify-between">
+      <a href="index.html" class="font-heading text-xl">LawTalk <span class="text-gradient">AI</span></a>
+      <button id="closeSidebar" class="md:hidden text-white/70">✕</button>
+    </div>
+    <button id="newChatBtn" class="btn-primary w-full">+ New Chat</button>
+    <div class="text-xs uppercase tracking-widest text-white/40 px-1">History</div>
+    <div id="chatList" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+    <div class="glass-card !p-3 flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 flex items-center justify-center font-heading text-black" id="userAvatar">U</div>
+      <div class="flex-1 min-w-0">
+        <div id="userEmail" class="text-sm truncate text-white/80">Loading…</div>
+        <button id="logoutBtn" class="text-xs text-white/50 hover:text-white">Logout</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 flex flex-col h-full">
+    <header class="flex items-center justify-between px-5 py-4 border-b border-white/10 backdrop-blur-md bg-white/5">
+      <div class="flex items-center gap-3">
+        <button id="openSidebar" class="md:hidden text-white/80">☰</button>
+        <div>
+          <div class="font-heading text-lg" id="chatTitle">New Conversation</div>
+          <div class="text-xs text-white/50">Powered by LawTalk AI</div>
+        </div>
+      </div>
+      <a href="index.html" class="text-white/60 hover:text-white text-sm">← Home</a>
+    </header>
+
+    <div id="messages" class="flex-1 overflow-y-auto px-4 md:px-10 py-6 space-y-4">
+      <div class="text-center text-white/50 mt-20" id="emptyState">
+        <div class="font-heading text-3xl mb-2 text-gradient">Ask LawTalk AI</div>
+        <div class="font-body">Begin by asking a legal question below.</div>
+      </div>
+    </div>
+
+    <form id="chatForm" class="p-4 md:p-6">
+      <div class="glass-input flex items-end gap-2 max-w-4xl mx-auto">
+        <textarea id="chatInput" rows="1" placeholder="Ask a legal question…" class="flex-1 bg-transparent outline-none resize-none font-body text-white placeholder-white/40 max-h-40"></textarea>
+        <button type="submit" id="sendBtn" class="btn-primary !px-5 !py-2.5">Send</button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script type="module" src="js/supabase.js"></script>
+<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/api.js"></script>
+<script type="module" src="js/chat.js"></script>
+</body>
+</html>
