@@ -7,18 +7,18 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gravitas+One&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 </head>
-<body class="bg-black text-white h-screen overflow-hidden">
+<body class="h-screen overflow-hidden">
 
-<div class="fixed inset-0 -z-10 overflow-hidden">
-  <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover opacity-60">
+<div class="fixed inset-0 -z-10 overflow-hidden site-bg">
+  <div class="iridescent-fallback"></div>
+  <video autoplay muted loop playsinline class="bg-video">
     <source src="assets/bg.mp4" type="video/mp4" />
   </video>
-  <div class="iridescent-fallback absolute inset-0 opacity-70"></div>
-  <div class="absolute inset-0 bg-black/70"></div>
+  <div class="bg-overlay"></div>
 </div>
 
 <div class="h-screen flex">
@@ -32,7 +32,7 @@
     <div class="text-xs uppercase tracking-widest text-white/40 px-1">History</div>
     <div id="chatList" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
     <div class="glass-card !p-3 flex items-center gap-3">
-      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 flex items-center justify-center font-heading text-black" id="userAvatar">U</div>
+      <div class="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center font-semibold text-white" id="userAvatar">U</div>
       <div class="flex-1 min-w-0">
         <div id="userEmail" class="text-sm truncate text-white/80">Loading…</div>
         <button id="logoutBtn" class="text-xs text-white/50 hover:text-white">Logout</button>
