@@ -84,11 +84,45 @@ function renderChatList(chats) {
   chats.forEach(c => {
     const div = document.createElement('div');
     div.className = 'chat-item' + (c.id === currentChatId ? ' active' : '');
-    div.textContent = c.title || 'Untitled';
-    div.title = c.title;
-    div.addEventListener('click', () => openChat(c));
+    div.dataset.id = c.id;
+
+    const title = document.createElement('span');
+    title.className = 'chat-item-title';
+    title.textContent = c.title || 'Untitled';
+    title.title = c.title || '';
+    title.addEventListener('click', () => openChat(c));
+
+    const del = document.createElement('button');
+    del.className = 'chat-delete';
+    del.title = 'Delete chat';
+    del.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>';
+    del.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteChat(c);
+    });
+
+    div.appendChild(title);
+    div.appendChild(del);
     chatListEl.appendChild(div);
   });
+}
+
+async function deleteChat(chat) {
+  if (!confirm(`Delete "${chat.title || 'this chat'}"? This cannot be undone.`)) return;
+  // Delete messages first (in case no FK cascade), then chat
+  await supabase.from('messages').delete().eq('chat_id', chat.id);
+  const { error } = await supabase
+    .from('chats')
+    .delete()
+    .eq('id', chat.id)
+    .eq('user_id', session.user.id);
+  if (error) {
+    console.error(error);
+    alert('Failed to delete chat: ' + error.message);
+    return;
+  }
+  if (currentChatId === chat.id) startNewChat();
+  await loadChats();
 }
 
 async function openChat(chat) {
@@ -97,7 +131,7 @@ async function openChat(chat) {
   emptyState.style.display = 'none';
   messagesEl.innerHTML = '';
   document.querySelectorAll('.chat-item').forEach(el => {
-    el.classList.toggle('active', el.textContent === chat.title);
+    el.classList.toggle('active', el.dataset.id === chat.id);
   });
   const { data } = await supabase
     .from('messages')
