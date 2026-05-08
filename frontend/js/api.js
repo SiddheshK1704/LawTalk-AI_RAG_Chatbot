@@ -9,5 +9,6 @@ export async function askAI(query) {
   });
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   const data = await res.json();
-  return data.response;
+  // Backend returns { answer, mode } — fall back to other common keys just in case
+  return data.answer ?? data.response ?? data.message ?? '';
 }
