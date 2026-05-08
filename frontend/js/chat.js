@@ -109,18 +109,35 @@ function renderChatList(chats) {
 
 async function deleteChat(chat) {
   if (!confirm(`Delete "${chat.title || 'this chat'}"? This cannot be undone.`)) return;
-  // Delete messages first (in case no FK cascade), then chat
-  await supabase.from('messages').delete().eq('chat_id', chat.id);
-  const { error } = await supabase
-    .from('chats')
-    .delete()
-    .eq('id', chat.id)
-    .eq('user_id', session.user.id);
-  if (error) {
-    console.error(error);
-    alert('Failed to delete chat: ' + error.message);
+
+  // 1) Delete messages first (in case the FK has no ON DELETE CASCADE)
+  const { error: msgErr, count: msgCount } = await supabase
+    .from('messages')
+    .delete({ count: 'exact' })
+    .eq('chat_id', chat.id);
+  console.log('[deleteChat] messages deleted:', msgCount, 'error:', msgErr);
+  if (msgErr) {
+    alert('Failed to delete messages: ' + msgErr.message +
+      '\n\nLikely an RLS policy on the messages table. See console.');
     return;
   }
+
+  // 2) Delete the chat row
+  const { error: chatErr, count: chatCount } = await supabase
+    .from('chats')
+    .delete({ count: 'exact' })
+    .eq('id', chat.id)
+    .eq('user_id', session.user.id);
+  console.log('[deleteChat] chats deleted:', chatCount, 'error:', chatErr);
+  if (chatErr) {
+    alert('Failed to delete chat: ' + chatErr.message);
+    return;
+  }
+  if (chatCount === 0) {
+    alert('Chat was not deleted (0 rows affected). Likely an RLS policy on the chats table is blocking DELETE for this user.');
+    return;
+  }
+
   if (currentChatId === chat.id) startNewChat();
   await loadChats();
 }
@@ -195,11 +212,46 @@ function addBubble(role, content, animate = true) {
   wrapper.className = 'flex';
   const bubble = document.createElement('div');
   bubble.className = 'bubble ' + (role === 'user' ? 'bubble-user' : 'bubble-ai');
-  bubble.textContent = content;
+  if (role === 'assistant') {
+    // Backend returns HTML-formatted answer (h2/p/ul/li/strong). Render it.
+    bubble.innerHTML = sanitizeHtml(content ?? '');
+  } else {
+    bubble.textContent = content ?? '';
+  }
   wrapper.appendChild(bubble);
   if (!animate) bubble.style.animation = 'none';
   messagesEl.appendChild(wrapper);
   return wrapper;
+}
+
+// Minimal sanitizer: allow a small set of formatting tags, strip everything else.
+function sanitizeHtml(html) {
+  const allowed = new Set(['H1','H2','H3','H4','P','UL','OL','LI','STRONG','B','EM','I','BR','CODE','PRE','BLOCKQUOTE','A','SPAN','DIV']);
+  const tpl = document.createElement('template');
+  tpl.innerHTML = String(html);
+  const walk = (node) => {
+    [...node.childNodes].forEach(child => {
+      if (child.nodeType === 1) {
+        if (!allowed.has(child.tagName)) {
+          // unwrap disallowed tag
+          while (child.firstChild) node.insertBefore(child.firstChild, child);
+          node.removeChild(child);
+          return;
+        }
+        // strip all attributes except href on <a>
+        [...child.attributes].forEach(a => {
+          if (!(child.tagName === 'A' && a.name === 'href')) child.removeAttribute(a.name);
+        });
+        if (child.tagName === 'A') {
+          child.setAttribute('target', '_blank');
+          child.setAttribute('rel', 'noopener noreferrer');
+        }
+        walk(child);
+      }
+    });
+  };
+  walk(tpl.content);
+  return tpl.innerHTML;
 }
 
 function addTyping() {
