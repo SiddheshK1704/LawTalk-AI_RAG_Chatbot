@@ -166,11 +166,11 @@ LawTalk-AI/
 
 | Landing Page | Chat Interface |
 |:---:|:---:|
-| ![Landing Page](assets/screenshots/landing.png) | ![Chat Interface](assets/screenshots/chat.png) |
+| ![Landing Page](frontend/assets/screenshots/landing.png) | ![Chat Interface](frontend/assets/screenshots/chat.png) |
 
 | Login / Signup | Chat History Sidebar |
 |:---:|:---:|
-| ![Auth](assets/screenshots/auth.png) | ![Sidebar](assets/screenshots/sidebar.png) |
+| ![Auth](frontend/assets/screenshots/auth.png) | ![Sidebar](frontend/assets/screenshots/sidebar.png) |
 
 ---
 
