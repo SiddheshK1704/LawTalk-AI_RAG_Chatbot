@@ -1,0 +1,1159 @@
+[
+  {
+    "variant": "original index, dense",
+    "index": "faiss_index",
+    "settings": {
+      "RETRIEVAL_HYBRID": "0",
+      "RETRIEVAL_SECTION_LOOKUP": "0"
+    },
+    "chunks": 11267,
+    "recall@5": 0.3,
+    "hit@5": 0.4,
+    "mrr@5": 0.285,
+    "avg_relevant_chunks": 1.95,
+    "retrieve_ms_p50": 14.4,
+    "misses": [
+      "t01",
+      "t03",
+      "t04",
+      "t05",
+      "t06",
+      "t08",
+      "t09",
+      "t11",
+      "t12",
+      "t13",
+      "t17",
+      "t18"
+    ],
+    "per_item": [
+      {
+        "id": "t01",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t02",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t03",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t04",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t05",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t06",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t07",
+        "recall": 0.5,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t08",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 7
+      },
+      {
+        "id": "t09",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t10",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 1
+      },
+      {
+        "id": "t11",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t12",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 3
+      },
+      {
+        "id": "t13",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 3
+      },
+      {
+        "id": "t14",
+        "recall": 0.5,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 4
+      },
+      {
+        "id": "t15",
+        "recall": 0.6666666666666666,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 3
+      },
+      {
+        "id": "t16",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t17",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t18",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t19",
+        "recall": 0.3333333333333333,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 3
+      },
+      {
+        "id": "t20",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.2,
+        "n_relevant": 1
+      }
+    ]
+  },
+  {
+    "variant": "original index, dense + BM25",
+    "index": "faiss_index",
+    "settings": {
+      "RETRIEVAL_HYBRID": "1",
+      "RETRIEVAL_SECTION_LOOKUP": "0"
+    },
+    "chunks": 11267,
+    "recall@5": 0.342,
+    "hit@5": 0.45,
+    "mrr@5": 0.312,
+    "avg_relevant_chunks": 1.95,
+    "retrieve_ms_p50": 11.3,
+    "misses": [
+      "t01",
+      "t03",
+      "t04",
+      "t06",
+      "t08",
+      "t09",
+      "t11",
+      "t13",
+      "t17",
+      "t18",
+      "t20"
+    ],
+    "per_item": [
+      {
+        "id": "t01",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t02",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t03",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t04",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t05",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 1
+      },
+      {
+        "id": "t06",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t07",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t08",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 7
+      },
+      {
+        "id": "t09",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t10",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 1
+      },
+      {
+        "id": "t11",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t12",
+        "recall": 0.3333333333333333,
+        "hit": 1.0,
+        "mrr": 0.25,
+        "n_relevant": 3
+      },
+      {
+        "id": "t13",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 3
+      },
+      {
+        "id": "t14",
+        "recall": 0.5,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 4
+      },
+      {
+        "id": "t15",
+        "recall": 0.6666666666666666,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 3
+      },
+      {
+        "id": "t16",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 1
+      },
+      {
+        "id": "t17",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t18",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t19",
+        "recall": 0.3333333333333333,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 3
+      },
+      {
+        "id": "t20",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      }
+    ]
+  },
+  {
+    "variant": "new chunks (no header), dense",
+    "index": "faiss_index_v2_noheader",
+    "settings": {
+      "RETRIEVAL_HYBRID": "0",
+      "RETRIEVAL_SECTION_LOOKUP": "0"
+    },
+    "chunks": 7190,
+    "recall@5": 0.493,
+    "hit@5": 0.55,
+    "mrr@5": 0.485,
+    "avg_relevant_chunks": 1.6,
+    "retrieve_ms_p50": 9.9,
+    "misses": [
+      "t01",
+      "t03",
+      "t04",
+      "t05",
+      "t06",
+      "t11",
+      "t12",
+      "t13",
+      "t17"
+    ],
+    "per_item": [
+      {
+        "id": "t01",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t02",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t03",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t04",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t05",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t06",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t07",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t08",
+        "recall": 0.2,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 5
+      },
+      {
+        "id": "t09",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t10",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 1
+      },
+      {
+        "id": "t11",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t12",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 3
+      },
+      {
+        "id": "t13",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t14",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t15",
+        "recall": 0.6666666666666666,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 3
+      },
+      {
+        "id": "t16",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t17",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t18",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t19",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t20",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.2,
+        "n_relevant": 1
+      }
+    ]
+  },
+  {
+    "variant": "new chunks + context header, dense",
+    "index": "faiss_index_v2",
+    "settings": {
+      "RETRIEVAL_HYBRID": "0",
+      "RETRIEVAL_SECTION_LOOKUP": "0"
+    },
+    "chunks": 7190,
+    "recall@5": 0.56,
+    "hit@5": 0.7,
+    "mrr@5": 0.567,
+    "avg_relevant_chunks": 1.6,
+    "retrieve_ms_p50": 10.1,
+    "misses": [
+      "t03",
+      "t04",
+      "t06",
+      "t11",
+      "t13",
+      "t17"
+    ],
+    "per_item": [
+      {
+        "id": "t01",
+        "recall": 0.5,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t02",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t03",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t04",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t05",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.3333333333333333,
+        "n_relevant": 1
+      },
+      {
+        "id": "t06",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t07",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t08",
+        "recall": 0.2,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 5
+      },
+      {
+        "id": "t09",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t10",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 1
+      },
+      {
+        "id": "t11",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t12",
+        "recall": 0.3333333333333333,
+        "hit": 1.0,
+        "mrr": 0.25,
+        "n_relevant": 3
+      },
+      {
+        "id": "t13",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t14",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t15",
+        "recall": 0.6666666666666666,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 3
+      },
+      {
+        "id": "t16",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t17",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t18",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t19",
+        "recall": 0.5,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t20",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.25,
+        "n_relevant": 1
+      }
+    ]
+  },
+  {
+    "variant": "new chunks + header, dense + BM25",
+    "index": "faiss_index_v2",
+    "settings": {
+      "RETRIEVAL_HYBRID": "1",
+      "RETRIEVAL_SECTION_LOOKUP": "0"
+    },
+    "chunks": 7190,
+    "recall@5": 0.61,
+    "hit@5": 0.75,
+    "mrr@5": 0.534,
+    "avg_relevant_chunks": 1.6,
+    "retrieve_ms_p50": 11.3,
+    "misses": [
+      "t03",
+      "t06",
+      "t13",
+      "t17",
+      "t20"
+    ],
+    "per_item": [
+      {
+        "id": "t01",
+        "recall": 0.5,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t02",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t03",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t04",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.3333333333333333,
+        "n_relevant": 1
+      },
+      {
+        "id": "t05",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.2,
+        "n_relevant": 1
+      },
+      {
+        "id": "t06",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t07",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 1
+      },
+      {
+        "id": "t08",
+        "recall": 0.2,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 5
+      },
+      {
+        "id": "t09",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t10",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t11",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.2,
+        "n_relevant": 1
+      },
+      {
+        "id": "t12",
+        "recall": 0.3333333333333333,
+        "hit": 1.0,
+        "mrr": 0.25,
+        "n_relevant": 3
+      },
+      {
+        "id": "t13",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t14",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t15",
+        "recall": 0.6666666666666666,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 3
+      },
+      {
+        "id": "t16",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t17",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t18",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t19",
+        "recall": 0.5,
+        "hit": 1.0,
+        "mrr": 0.2,
+        "n_relevant": 2
+      },
+      {
+        "id": "t20",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      }
+    ]
+  },
+  {
+    "variant": "new chunks + header, dense + BM25 + section lookup",
+    "index": "faiss_index_v2",
+    "settings": {
+      "RETRIEVAL_HYBRID": "1",
+      "RETRIEVAL_SECTION_LOOKUP": "1"
+    },
+    "chunks": 7190,
+    "recall@5": 0.71,
+    "hit@5": 0.85,
+    "mrr@5": 0.634,
+    "avg_relevant_chunks": 1.6,
+    "retrieve_ms_p50": 11.0,
+    "misses": [
+      "t13",
+      "t17",
+      "t20"
+    ],
+    "per_item": [
+      {
+        "id": "t01",
+        "recall": 0.5,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t02",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t03",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t04",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.3333333333333333,
+        "n_relevant": 1
+      },
+      {
+        "id": "t05",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.2,
+        "n_relevant": 1
+      },
+      {
+        "id": "t06",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t07",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 1
+      },
+      {
+        "id": "t08",
+        "recall": 0.2,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 5
+      },
+      {
+        "id": "t09",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t10",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t11",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.2,
+        "n_relevant": 1
+      },
+      {
+        "id": "t12",
+        "recall": 0.3333333333333333,
+        "hit": 1.0,
+        "mrr": 0.25,
+        "n_relevant": 3
+      },
+      {
+        "id": "t13",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t14",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t15",
+        "recall": 0.6666666666666666,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 3
+      },
+      {
+        "id": "t16",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t17",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t18",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t19",
+        "recall": 0.5,
+        "hit": 1.0,
+        "mrr": 0.2,
+        "n_relevant": 2
+      },
+      {
+        "id": "t20",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      }
+    ]
+  },
+  {
+    "variant": "... + cross-encoder rerank",
+    "index": "faiss_index_v2",
+    "settings": {
+      "RETRIEVAL_HYBRID": "1",
+      "RETRIEVAL_SECTION_LOOKUP": "1",
+      "RETRIEVAL_RERANK": "1"
+    },
+    "chunks": 7190,
+    "recall@5": 0.677,
+    "hit@5": 0.8,
+    "mrr@5": 0.652,
+    "avg_relevant_chunks": 1.6,
+    "retrieve_ms_p50": 637.6,
+    "misses": [
+      "t04",
+      "t05",
+      "t13",
+      "t17"
+    ],
+    "per_item": [
+      {
+        "id": "t01",
+        "recall": 0.5,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t02",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t03",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t04",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t05",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t06",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t07",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t08",
+        "recall": 0.2,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 5
+      },
+      {
+        "id": "t09",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t10",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 1
+      },
+      {
+        "id": "t11",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t12",
+        "recall": 0.6666666666666666,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 3
+      },
+      {
+        "id": "t13",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t14",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 2
+      },
+      {
+        "id": "t15",
+        "recall": 0.6666666666666666,
+        "hit": 1.0,
+        "mrr": 0.5,
+        "n_relevant": 3
+      },
+      {
+        "id": "t16",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t17",
+        "recall": 0.0,
+        "hit": 0.0,
+        "mrr": 0.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t18",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 1.0,
+        "n_relevant": 1
+      },
+      {
+        "id": "t19",
+        "recall": 0.5,
+        "hit": 1.0,
+        "mrr": 0.2,
+        "n_relevant": 2
+      },
+      {
+        "id": "t20",
+        "recall": 1.0,
+        "hit": 1.0,
+        "mrr": 0.3333333333333333,
+        "n_relevant": 1
+      }
+    ]
+  }
+]

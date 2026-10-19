@@ -1,469 +1,251 @@
-<div align="center">
+# LAW/TALK
 
-# ⚖️ LawTalk AI
+**A legal research assistant for Indian law that answers from the statutes themselves and shows the passage behind every claim.**
 
-### *Your Intelligent Legal Assistant, Powered by RAG*
+LawTalk is a retrieval-augmented generation (RAG) application with two modes. **Legal questions** are answered
+from an indexed corpus of Indian legal documents: LawTalk retrieves the relevant passages, an LLM writes an
+answer grounded only in them with numbered citations, and the evidence panel shows the exact retrieved text.
+**Other questions** go to a normal assistant mode with no document search and no evidence panel, so it is
+always clear which answers are grounded in sources. When the documents don't cover a legal question, LawTalk
+says so instead of guessing.
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![Groq](https://img.shields.io/badge/Groq-LLM-F55036?style=for-the-badge&logo=groq&logoColor=white)](https://groq.com/)
-[![Supabase](https://img.shields.io/badge/Supabase-Auth%20%2B%20DB-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
-[![FAISS](https://img.shields.io/badge/FAISS-Vector%20Search-0057E7?style=for-the-badge&logo=meta&logoColor=white)](https://faiss.ai/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+## Screenshots
 
-<br/>
+![Landing Page](assets/screenshots/landing.png)
+*Landing page: editorial hero with the Lady Justice artwork, product preview, how it works and features.*
 
-> **LawTalk AI** is an AI-powered legal assistant chatbot built on a Retrieval-Augmented Generation (RAG) pipeline. It retrieves semantically relevant context from embedded legal documents and generates grounded, citation-aware responses using state-of-the-art LLMs — significantly reducing hallucinations.
+![Sign in / Sign up Modal](assets/screenshots/auth-modal.png)
+*The Justice Orb: sign-in travels from the navbar into a circle that flips to reveal sign-up.*
 
-<br/>
+![Chat Interface](assets/screenshots/chat.png)
+*Research workspace: conversation history, streamed answer and composer.*
 
-</div>
+![Evidence Panel with Citations](assets/screenshots/evidence-panel.png)
+*Clicking a citation opens the matching retrieved passage, with its Act, section and page.*
 
+![Light/Dark Theme](assets/screenshots/theme.png)
+*Light and dark themes, switched with a circular reveal transition.*
 
----
+![Terminal Metrics](assets/screenshots/terminal-metrics.png)
+*Per-request latency lines and the rolling summary block in the uvicorn terminal.*
 
-## 📋 Table of Contents
+![Evaluation Results](assets/screenshots/eval-results.png)
+*Output of `eval/run_eval.py`: RAGAS, retrieval, citation and latency metrics.*
 
-- [Features](#-features)
-- [Architecture Overview](#-architecture-overview)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Screenshots](#-screenshots)
-- [Installation Guide](#-installation-guide)
-- [Environment Variables](#-environment-variables)
-- [API Documentation](#-api-documentation)
-- [How RAG Works](#-how-rag-works)
-- [Future Improvements](#-future-improvements)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Contact](#-contact)
+## Features
 
----
+- **Two chat modes.** A router sends legal questions to RAG and everything else to a normal LLM answer, using legal vocabulary plus similarity to the indexed corpus, so legal questions without obvious keywords, such as "What is a dying declaration?", still use the sources.
+- **Hybrid retrieval.** FAISS dense search (MiniLM) fused with BM25 lexical search, plus exact lookup of named provisions ("Article 21", "Section 438 CrPC") and statutory definitions ("who is a child under POCSO").
+- **Cited, grounded answers.** Every legal statement ends with a citation like `[1]`; citations to non-existent sources are removed server-side, and source notes (e.g. "replaced by the BNS from 1 July 2024") come from the index, not the model.
+- **Evidence panel.** Opens only for legal answers and only ever shows the passages retrieved for that answer, with document, section and page when the source records them.
+- **Streaming** over Server-Sent Events, with stop, retry and copy.
+- **Accounts and history** via Supabase Auth and Postgres; the API verifies each request's Supabase session.
+- **Reliability.** Client-side tokens-per-minute pacing for the Groq free tier, bounded retries, clean 503/504 errors, and terminal metrics that separate provider rate limits from application errors.
+- **Evaluation and tests.** RAGAS, Recall@5/Hit@5/MRR, an LLM citation judge and a latency benchmark; 37 automated tests (19 backend, 18 browser).
+- **Editorial interface.** A Concrete × Cobalt palette, Instrument Serif with Geist, light/dark themes, restrained GSAP motion, keyboard-accessible throughout, with `prefers-reduced-motion` support.
 
-## ✨ Features
+**Indexed documents:** Constitution of India, Indian Penal Code, Code of Criminal Procedure, Indian Evidence Act,
+Information Technology Act, Motor Vehicles Act, Consumer Protection Act 2019, POCSO Act, and ICSI labour-law study
+material. The IPC, CrPC and Evidence Act were replaced by the BNS, BNSS and BSA on 1 July 2024; their passages carry that note.
 
-| Feature | Description |
-|--------|-------------|
-| 🤖 **AI Legal Chatbot** | Conversational assistant trained on legal documents and powered by Groq LLMs |
-| 🔍 **RAG Pipeline** | Retrieval-Augmented Generation ensures responses are grounded in real legal context |
-| ⚡ **FAISS Vector Search** | Ultra-fast semantic similarity search over embedded legal document chunks |
-| 🧠 **Groq-Powered Responses** | Leverages Groq's blazing-fast inference API for real-time response generation |
-| 🔐 **Supabase Authentication** | Secure user sign-up, login, and session management via Supabase Auth |
-| 💾 **Persistent Chat History** | All conversations are stored and retrievable via Supabase Database |
-| 🎨 **Glassmorphism UI** | Modern, frosted-glass aesthetic with smooth GSAP animations |
-| 📜 **History Sidebar** | Browse and continue previous conversations with ease |
-| 🛡️ **Reduced Hallucinations** | Contextual retrieval anchors LLM responses to real legal documents |
-| 🌐 **REST API Backend** | Clean, documented FastAPI endpoints for easy integration or extension |
+## Tech stack
 
----
+| Layer | Technology |
+|---|---|
+| Backend | Python, FastAPI, Uvicorn (async endpoints, SSE streaming) |
+| Retrieval | FAISS (flat inner-product index), `sentence-transformers/all-MiniLM-L6-v2`, BM25 (SciPy), LangChain loaders/splitters |
+| Generation | Groq API, `openai/gpt-oss-120b` (configurable) |
+| Auth and data | Supabase Auth and Postgres (`chats`, `messages`), row-level security; bearer-token check on the API |
+| Frontend | HTML, Tailwind CSS (CDN), vanilla JavaScript ES modules, GSAP, `marked` + `DOMPurify`; Instrument Serif, Geist, Geist Mono |
+| Evaluation | RAGAS 0.4 with Groq-hosted judges (`qwen/qwen3.8-27b`, `openai/gpt-oss-20b`), httpx benchmark |
+| Tests | pytest, Playwright (Chromium) |
 
-## 🏗️ Architecture Overview
+## Architecture
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                           USER BROWSER                               │
-│                                                                      │
-│   ┌─────────────────┐          ┌──────────────────────────────────┐  │
-│   │  Landing Page   │          │         Chat Interface           │  │
-│   │  (index.html)   │ ──────▶  │         (chat.html)              │  │
-│   │  GSAP Animations│          │  History Sidebar + Chat Window   │  │
-│   └─────────────────┘          └────────────┬─────────────────────┘  │
-│                                             │                        │
-│                              ┌──────────────▼──────────────┐        │
-│                              │      Supabase Auth          │        │
-│                              │  (Login / Signup / Session) │        │
-│                              └──────────────┬──────────────┘        │
-└─────────────────────────────────────────────┼────────────────────────┘
-                                              │ POST /ask
-                                              ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                        FASTAPI BACKEND                               │
-│                                                                      │
-│   ┌────────────────┐     ┌─────────────────┐    ┌────────────────┐  │
-│   │  chat.py (API) │────▶│   rag.py        │───▶│ groq_client.py │  │
-│   │  /ask endpoint │     │   RAG Pipeline  │    │  LLM Inference │  │
-│   └────────────────┘     └────────┬────────┘    └────────────────┘  │
-│                                   │                                  │
-│                         ┌─────────▼──────────┐                      │
-│                         │   embedder.py       │                      │
-│                         │  Sentence Transform │                      │
-│                         └─────────┬──────────┘                      │
-│                                   │                                  │
-│                         ┌─────────▼──────────┐                      │
-│                         │   FAISS Index       │                      │
-│                         │  (faiss_index/)     │                      │
-│                         └────────────────────┘                      │
-└──────────────────────────────────────────────────────────────────────┘
-                                              │
-                              ┌───────────────▼──────────────┐
-                              │       Supabase DB            │
-                              │  chats table + messages table│
-                              └──────────────────────────────┘
+```mermaid
+flowchart LR
+    U[Browser<br/>chat.html] -- Supabase JS --> S[(Supabase<br/>Auth + Postgres)]
+    U -- POST /ask/stream --> A[FastAPI<br/>auth check]
+    subgraph Backend [FastAPI backend, loaded once at startup]
+        A --> M{Router}
+        M -- legal --> E[Embed query<br/>MiniLM, cached]
+        E --> R[Dense + BM25 fusion<br/>+ section / definition lookup<br/>top 5]
+        R --> P[Grounded prompt<br/>numbered sources]
+        M -- general --> N[Plain prompt<br/>no retrieval]
+        P --> G[Groq LLM<br/>TPM pacing, streaming]
+        N --> G
+        G --> C[Citation check]
+    end
+    C -- SSE: sources+mode, tokens, done --> U
+    A -. "[REQ] timings" .-> T[Terminal log]
 ```
 
----
+**Request pipeline**
 
-## 🛠️ Tech Stack
+1. **Route:** small talk and non-legal questions go to normal mode; questions with legal terms, or that closely match the corpus, go to RAG.
+2. **Retrieve (RAG):** the question, with common terms mapped to statutory wording (e.g. "anticipatory bail" → "bail to person apprehending arrest"), is searched densely and lexically; results are fused, and named provisions or definitions are pinned first.
+3. **Generate:** Groq streams an answer from the numbered sources only; requests are paced to stay under the provider's tokens-per-minute limit.
+4. **Stream:** the client receives `sources` with the mode first (the evidence panel opens only for `RAG`), then tokens, then `done` with the validated answer and citations.
 
-### Frontend
-
-| Technology | Purpose |
-|-----------|---------|
-| HTML5 | Page structure and markup |
-| Tailwind CSS (CDN) | Utility-first responsive styling |
-| Vanilla JavaScript | Frontend logic and API communication |
-| GSAP | Smooth animations and transitions |
-| Supabase JS SDK | Authentication and database client |
-
-### Backend
-
-| Technology | Purpose |
-|-----------|---------|
-| FastAPI | High-performance Python web framework |
-| FAISS | Efficient vector similarity search |
-| Sentence Transformers | Text embedding generation |
-| Groq API | Ultra-fast LLM inference |
-| Supabase | Auth provider and persistent chat storage |
-| Python-dotenv | Environment variable management |
-
----
-
-## 📁 Project Structure
+## Project structure
 
 ```
-LawTalk-AI/
-│
-├── backend/
-│   └── app/
-│       ├── api/
-│       │   └── chat.py              # /ask endpoint — receives query, returns AI response
-│       ├── core/
-│       │   └── config.py            # Loads and validates environment variables
-│       ├── models/
-│       │   └── schemas.py           # Pydantic request/response schemas
-│       ├── services/
-│       │   ├── rag.py               # RAG pipeline: retrieve → prompt → generate
-│       │   ├── embedder.py          # Sentence Transformer embedding logic
-│       │   └── groq_client.py       # Groq API wrapper for LLM calls
-│       └── main.py                  # FastAPI app entry point, CORS config
-│
-├── frontend/
-│   ├── index.html                   # Landing page with GSAP animations
-│   ├── chat.html                    # Main chat interface with history sidebar
-│   ├── css/                         # Custom stylesheets
-│   ├── js/                          # Frontend JavaScript modules
-│   └── assets/                      # Images, icons, and static resources
-│
-├── faiss_index/                     # Pre-built FAISS vector index files
-├── requirements.txt                 # Python dependencies
-└── README.md
+backend/
+  app/
+    api/chat.py             /ask, /ask/stream, /auth/check; prompts, routing, citation validation
+    core/                   config, auth (Supabase session check), metrics (terminal)
+    services/router.py      legal (RAG) vs general (LLM) mode
+    services/ingest.py      PDF extraction (cached), cleaning, section-aware chunking, index build
+    services/rag.py         dense + BM25 retrieval, section and definition lookup, caches
+    services/groq_client.py async Groq client, TPM pacing, streaming, error mapping
+frontend/
+  index.html  chat.html     landing page and research workspace
+  css/app.css               design system (tokens for both themes, components)
+  css/landing.css           landing page and Justice Orb
+  js/                       chat, api (SSE client), markdown (sanitised), theme, auth, ui (landing)
+eval/                       test set, run_eval.py, benchmark.py, retrieval_experiments.py, results
+tests/                      pytest backend tests; tests/e2e Playwright browser tests
 ```
 
----
+## Setup and running
 
-## 📸 Screenshots
-
-
-| Landing Page | Chat Interface |
-|:---:|:---:|
-| ![Landing Page](frontend/assets/screenshots/landing.png) | ![Chat Interface](frontend/assets/screenshots/chat.png) |
-
-| Login / Signup | Chat History Sidebar |
-|:---:|:---:|
-| ![Auth](frontend/assets/screenshots/auth.png) | ![Sidebar](frontend/assets/screenshots/sidebar.png) |
-
----
-
-## 🚀 Installation Guide
-
-### Prerequisites
-
-Ensure you have the following installed:
-
-- Python 3.10+
-- pip
-- A modern browser (Chrome / Firefox / Edge)
-- [Groq API Key](https://console.groq.com/)
-- [Supabase Project](https://supabase.com/) with Auth enabled
-
----
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/SiddheshK1704/LawTalk-AI_RAG_Chatbot.git
-cd LawTalk-AI_RAG_Chatbot
-```
-
-### 2. Create a Virtual Environment
+**Prerequisites:** Python 3.10+, a [Groq API key](https://console.groq.com/), and a Supabase project with `chats` and `messages` tables.
 
 ```bash
 python -m venv venv
-
-# On macOS/Linux
-source venv/bin/activate
-
-# On Windows
-venv\Scripts\activate
+venv\Scripts\activate            # Windows  (macOS/Linux: source venv/bin/activate)
+pip install -r backend/requirements.txt
 ```
 
-### 3. Install Dependencies
+Create `backend/.env`:
 
-```bash
-pip install -r requirements.txt
-```
+| Variable | Required | Default | Purpose |
+|---|---|---|---|
+| `GROQ_API_KEY` | yes | | Groq API key |
+| `SUPABASE_URL` | yes | | your Supabase project URL (used to verify sessions) |
+| `SUPABASE_KEY` | yes | | the project's public **anon** key (the same one the frontend uses) |
+| `GROQ_MODEL` | no | `openai/gpt-oss-120b` | answer model |
+| `GROQ_REASONING_EFFORT` | no | `low` | reasoning effort for gpt-oss models |
+| `GROQ_MAX_TOKENS` | no | `1024` | answer length cap |
+| `GROQ_TPM_BUDGET` / `GROQ_MAX_QUEUE_S` | no | `7000` / `20` | tokens-per-minute pacing, and the longest a request waits before a clean "busy" error |
+| `GROQ_TIMEOUT_S` / `GROQ_MAX_RETRIES` | no | `30` / `2` | upstream timeout and retries |
+| `RETRIEVAL_TOP_K` | no | `5` | passages per answer |
+| `RETRIEVAL_HYBRID` / `RETRIEVAL_SECTION_LOOKUP` / `RETRIEVAL_RERANK` | no | `1` / `1` / `0` | retrieval stages (for experiments) |
+| `METRICS_SUMMARY_EVERY` | no | `20` | print a metrics summary every N requests |
 
-### 4. Configure Environment Variables
-
-Create a `.env` file in the `backend/` directory:
-
-```bash
-cp .env.example .env  # if example exists, or create manually
-```
-
-Populate it with your credentials (see [Environment Variables](#-environment-variables)).
-
-### 5. Start the FastAPI Backend
+Build the index once (writes `backend/faiss_index_v2/`; page text is cached, so rebuilds take ~3 minutes).
+Put the PDFs and text files in `backend/data/legal_docs/`, then:
 
 ```bash
 cd backend
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+python -m app.services.ingest
 ```
 
-The API will be live at: `http://localhost:8000`
-
-Interactive docs available at: `http://localhost:8000/docs`
-
-### 6. Open the Frontend
-
-Navigate to the `frontend/` directory and open `index.html` directly in your browser:
+Start the backend and serve the frontend:
 
 ```bash
-# macOS
-open frontend/index.html
+cd backend
+uvicorn app.main:app --port 8000
 
-# Linux
-xdg-open frontend/index.html
-
-# Windows
-start frontend/index.html
-```
-
-Or serve it with a simple local server:
-
-```bash
+# in another terminal
 cd frontend
-python -m http.server 3000
-# Then visit http://localhost:3000
+python -m http.server 5500       # open http://127.0.0.1:5500
 ```
 
----
+The Supabase project URL and public anon key are configured in `frontend/js/supabase.js`; keep row-level security
+enabled on `chats` and `messages`. To keep each answer's sources with the saved conversation, add a column once:
 
-## 🔐 Environment Variables
-
-Create a `.env` file in the `backend/` directory with the following keys:
-
-```env
-# ─── Groq LLM API ───────────────────────────────────────────
-GROQ_API_KEY=your_groq_api_key_here
-
-# ─── Supabase ────────────────────────────────────────────────
-SUPABASE_URL=https://your-project-id.supabase.co
-SUPABASE_ANON_KEY=your_supabase_anon_key_here
+```sql
+alter table public.messages add column if not exists sources jsonb;
 ```
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `GROQ_API_KEY` | ✅ Yes | API key from [console.groq.com](https://console.groq.com/) for LLM inference |
-| `SUPABASE_URL` | ✅ Yes | Your Supabase project URL |
-| `SUPABASE_ANON_KEY` | ✅ Yes | Supabase anonymous/public key for client-side access |
+**API** (all endpoints except `/health` require `Authorization: Bearer <Supabase access token>`)
 
-> ⚠️ **Never commit your `.env` file.** It is listed in `.gitignore` by default.
+- `POST /ask` with `{"query": "..."}` returns `{answer, mode: "RAG" | "LLM", sources, citations}`.
+- `POST /ask/stream` returns SSE: `sources` `{mode, sources}`, then `token` events, then `done` (or `error`).
+- `GET /auth/check` verifies a token without calling the LLM.
 
----
+### Tests
 
-## 📡 API Documentation
-
-### `POST /ask`
-
-Submit a legal query and receive a RAG-generated response.
-
-**Request**
-
-```http
-POST /ask
-Content-Type: application/json
+```bash
+pip install -r requirements-dev.txt
+python -m playwright install chromium
+python -m pytest tests                   # 19 backend + 18 browser tests; no network or credentials needed
 ```
 
-```json
-{
-  "query": "What are the rights of a tenant under Indian rental law?"
-}
+## Performance and evaluation
+
+### Retrieval (measured, same 20 labelled questions before and after)
+
+From `python eval/retrieval_experiments.py` (no LLM calls; labels resolved by the same rule for every index).
+
+| Variant | Recall@5 | Hit@5 | MRR | Retrieval p50 |
+|---|---:|---:|---:|---:|
+| Original index (500-char chunks per page), dense — *baseline* | 0.317 | 0.450 | 0.310 | ~10 ms |
+| New chunking (section-aware, no TOC pages, word repair) | 0.493 | 0.550 | 0.485 | ~10 ms |
+| + context header on each chunk | 0.560 | 0.700 | 0.567 | ~10 ms |
+| + BM25 fusion, statutory-wording glossary | 0.610 | 0.750 | 0.534 | ~11 ms |
+| **+ section and definition lookup (shipped)** | **0.710** | **0.850** | **0.634** | ~11 ms |
+| + cross-encoder rerank (not shipped: worse and ~65× slower) | 0.677 | 0.800 | 0.652 | ~640 ms |
+
+The glossary and definition lookup were added after inspecting failures on this test set, so these scores are
+somewhat optimistic; a held-out question set is the next step.
+
+### Answer quality and latency
+
+<!-- EVAL:START -->
+_Last run: 2026-10-19 14:05:51 — generated by `eval/run_eval.py` from `eval/results.json`._
+
+> **Note:** This run measured the **previous version** (before the retrieval, routing and pacing changes above). It also hit provider rate/daily limits: 3 answer requests failed, 28 RAGAS metric calls and 18 citation checks could not be judged, and 12 benchmark requests returned errors.
+
+| Metric | Result | Measured on |
+|---|---|---|
+| Faithfulness | 0.594 | RAGAS, scored 13/20 answers |
+| Answer relevancy | 0.532 | RAGAS, scored 13/20 answers |
+| Context precision | 0.268 | RAGAS, scored 13/20 answers |
+| Context recall | 0.346 | RAGAS, scored 13/20 answers |
+| Retrieval Recall@5 | 0.317 | labelled chunk IDs, n=20 |
+| Citation correctness | 0.500 | LLM judge, 2 citations in 10 answers |
+| p95 latency (s) | 10.793 | 50 requests |
+| Request error rate | 0.240 | errors: {'http_503': 12} |
+| TTFT p50 (s) | 0.544 | /ask/stream, n=22 |
+<!-- EVAL:END -->
+
+**Not yet measured for the current version:** RAGAS scores, citation correctness and the 50-request latency
+benchmark. The re-run on 2026-10-19 stopped when the Groq free tier's daily token cap (200K tokens/day per model)
+was reached. In that partial run, 27 of 30 sequential requests completed: 21 in 0.41–3.23 s and 6 after
+waiting 46.7–54.2 s for tokens-per-minute budget (that wait is now capped at 20 s by `GROQ_MAX_QUEUE_S`); the
+other 3 hit the daily cap. Re-run with fresh quota to fill this section.
+
+**How to read these numbers:** the test set is small (25 questions: 20 answerable, 5 out of scope), and the
+reference answers and labels were drafted by an AI assistant from the indexed text without review by a lawyer.
+RAGAS and citation scores are LLM-judged and vary between runs. Latency under load is bounded by the provider's
+8,000 tokens/minute: requests now queue briefly or get a clean "busy" error instead of failing as HTTP 500.
+
+### Running the evaluation
+
+With the backend running and a token for an existing LawTalk account (auth stays on):
+
+```bash
+pip install -r eval/requirements.txt
+export EVAL_EMAIL=you@example.com EVAL_PASSWORD=...
+export EVAL_AUTH_TOKEN=$(python eval/get_token.py)   # Windows: run it, then `set EVAL_AUTH_TOKEN=<token>`
+python eval/run_eval.py                    # full run (~30 min on the free tier)
+python eval/run_eval.py --in-process       # same pipeline without HTTP/auth, if no token is available
+python eval/retrieval_experiments.py       # retrieval only, no API cost
 ```
 
-**Response**
+Results are saved to `eval/results.json` and `eval/results.md`, and the block above is refreshed.
+See [`eval/README.md`](eval/README.md) for metric definitions and the test-set format.
 
-```json
-{
-  "response": "Under Indian rental law, tenants have several protected rights including..."
-}
-```
+## Known limitations
 
-**Status Codes**
+- Retrieval misses remain on 3 of 20 test questions (Hit@5 0.85); targets of ≥0.90 Hit@5 and ≥0.85 Recall@5 are not yet met.
+- The Groq free tier (8K tokens/minute, 200K/day per model) limits throughput to about 4 legal answers per minute and caps how much evaluation can run per day.
+- Some indexed texts are dated (the Motor Vehicles Act PDF predates the 2019 amendment; the labour-law material is from 2014).
+- Section labels are detected from the document text and shown only where detection succeeded.
+- LawTalk provides legal information, not legal advice.
 
-| Code | Meaning |
-|------|---------|
-| `200 OK` | Successful response with AI-generated answer |
-| `422 Unprocessable Entity` | Invalid or missing request body |
-| `500 Internal Server Error` | LLM or retrieval pipeline failure |
+## Author
 
-**Interactive Docs**
-
-Once the backend is running, visit:
-
-```
-http://localhost:8000/docs       ← Swagger UI
-http://localhost:8000/redoc      ← ReDoc UI
-```
-
----
-
-## 🧠 How RAG Works
-
-LawTalk AI uses a Retrieval-Augmented Generation pipeline to produce grounded, accurate legal responses. Here's the step-by-step flow:
-
-```
-User Query
-    │
-    ▼
-┌─────────────────────────────────┐
-│  1. EMBEDDING GENERATION        │
-│  Sentence Transformers converts │
-│  the query into a dense vector  │
-│  representation (embedding).    │
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│  2. FAISS VECTOR SEARCH         │
-│  The query embedding is         │
-│  compared against the pre-built │
-│  FAISS index of chunked legal   │
-│  documents using cosine         │
-│  similarity. Top-k chunks are   │
-│  retrieved as context.          │
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│  3. CONTEXTUAL PROMPT BUILDING  │
-│  Retrieved document chunks are  │
-│  injected into a structured     │
-│  prompt template alongside      │
-│  the original user query.       │
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│  4. GROQ LLM INFERENCE          │
-│  The enriched prompt is sent    │
-│  to the Groq API. The LLM       │
-│  generates a contextually       │
-│  grounded response, citing      │
-│  only retrieved information.    │
-└────────────────┬────────────────┘
-                 │
-                 ▼
-         AI Response → User
-```
-
-**Why RAG over plain LLMs?**
-
-| Plain LLM | LawTalk AI (RAG) |
-|-----------|-----------------|
-| Generates from training data only | Retrieves from real legal documents |
-| High hallucination risk | Grounded responses from actual sources |
-| No document-specific knowledge | Domain-specific legal context |
-| Static knowledge cutoff | Extensible with updated documents |
-
----
-
-## 🗄️ Supabase Schema
-
-LawTalk AI uses two Supabase tables to persist chat data:
-
-### `chats` table
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | `uuid` | Primary key |
-| `user_id` | `uuid` | Foreign key to Supabase Auth user |
-| `title` | `text` | Auto-generated chat title |
-| `created_at` | `timestamp` | Chat creation time |
-
-### `messages` table
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | `uuid` | Primary key |
-| `chat_id` | `uuid` | Foreign key to `chats.id` |
-| `role` | `text` | Either `"user"` or `"assistant"` |
-| `content` | `text` | Message content |
-| `created_at` | `timestamp` | Message timestamp |
-
----
-
-## 🔮 Future Improvements
-
-- [ ] 🔄 **Streaming responses** — Real-time token streaming via WebSockets for a ChatGPT-like experience
-- [ ] 📄 **User document upload** — Allow users to upload custom legal PDFs for personalized RAG
-- [ ] 🌍 **Multilingual support** — Extend embeddings and prompts to support regional Indian languages
-- [ ] 📊 **Source citations** — Surface the exact document chunks used to generate each response
-- [ ] 🧩 **Multi-turn context** — Maintain conversational memory across turns within a session
-- [ ] 🔒 **Role-based access** — Admin panel to manage documents, users, and usage analytics
-- [ ] 🧪 **Evaluation suite** — Automated RAG evaluation using metrics like faithfulness and answer relevance
-- [ ] 🐳 **Docker support** — Containerize backend for reproducible local and cloud deployment
-
----
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome!
-
-1. **Fork** the repository
-2. **Create** your feature branch: `git checkout -b feature/your-feature-name`
-3. **Commit** your changes: `git commit -m 'feat: add your feature'`
-4. **Push** to your branch: `git push origin feature/your-feature-name`
-5. **Open a Pull Request** describing what you've done
-
-Please follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages and ensure your code is clean and commented.
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
-```
-MIT License — free to use, modify, and distribute with attribution.
-```
-
----
-
-## 📬 Contact
-
-**Siddhesh K**
-
-[![GitHub](https://img.shields.io/badge/GitHub-SiddheshK1704-181717?style=flat-square&logo=github)](https://github.com/SiddheshK1704)
-
-> Found a bug? Have a suggestion? Open an [issue](https://github.com/SiddheshK1704/LawTalk-AI_RAG_Chatbot/issues) — contributions are always welcome.
-
----
-
-<div align="center">
-
-Made with ❤️ and ⚖️ by [Siddhesh K](https://github.com/SiddheshK1704)
-
-*If this project helped you, consider giving it a ⭐ on GitHub!*
-
-</div>
+**Siddhesh K** · [GitHub](https://github.com/SiddheshK1704) · [Report an issue](https://github.com/SiddheshK1704/LawTalk-AI_RAG_Chatbot/issues)

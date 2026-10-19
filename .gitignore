@@ -14,3 +14,9 @@ frontend/dist/
 .env
 
 *.json
+# Evaluation data and results are versioned
+!eval/*.json
+
+# Rebuilt indexes and eval judge cache (local artefacts)
+backend/faiss_index_v2*/
+eval/.ragas_cache/

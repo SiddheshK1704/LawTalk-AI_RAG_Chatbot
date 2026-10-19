@@ -15,11 +15,11 @@ def create_vector_db():
     documents = []
 
     if not os.path.exists(DATA_PATH):
-        print("❌ DATA_PATH does not exist:", DATA_PATH)
+        print("DATA_PATH does not exist:", DATA_PATH)
         return
 
-    print("✅ DATA_PATH:", DATA_PATH)
-    print("📂 FILES:", os.listdir(DATA_PATH))
+    print("DATA_PATH:", DATA_PATH)
+    print("FILES:", os.listdir(DATA_PATH))
 
     for file in os.listdir(DATA_PATH):
         file_path = os.path.join(DATA_PATH, file)
@@ -31,7 +31,7 @@ def create_vector_db():
         elif file.endswith(".txt"):
             with open(file_path, "r", encoding="utf-8") as f:
                 text = f.read()
-                documents.append(Document(page_content=text))
+                documents.append(Document(page_content=text, metadata={"source": file_path}))
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
@@ -59,12 +59,12 @@ def create_vector_db():
 
         clean_docs.append(doc)
 
-    print(f"🧹 Clean docs: {len(clean_docs)} / {len(docs)}")
+    print(f"Clean docs: {len(clean_docs)} / {len(docs)}")
 
     db = FAISS.from_documents(clean_docs, embeddings)
     db.save_local(DB_PATH)
 
-    print("🔥 FAISS index created!")
+    print("FAISS index created.")
 
 if __name__ == "__main__":
     create_vector_db()
