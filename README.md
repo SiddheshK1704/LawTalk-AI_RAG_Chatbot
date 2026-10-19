@@ -23,15 +23,6 @@ says so instead of guessing.
 ![Evidence Panel with Citations](assets/screenshots/evidence-panel.png)
 *Clicking a citation opens the matching retrieved passage, with its Act, section and page.*
 
-![Light/Dark Theme](assets/screenshots/theme.png)
-*Light and dark themes, switched with a circular reveal transition.*
-
-![Terminal Metrics](assets/screenshots/terminal-metrics.png)
-*Per-request latency lines and the rolling summary block in the uvicorn terminal.*
-
-![Evaluation Results](assets/screenshots/eval-results.png)
-*Output of `eval/run_eval.py`: RAGAS, retrieval, citation and latency metrics.*
-
 ## Features
 
 - **Two chat modes.** A router sends legal questions to RAG and everything else to a normal LLM answer, using legal vocabulary plus similarity to the indexed corpus, so legal questions without obvious keywords, such as "What is a dying declaration?", still use the sources.
