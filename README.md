@@ -11,16 +11,16 @@ says so instead of guessing.
 
 ## Screenshots
 
-![Landing Page](assets/screenshots/landing.png)
+![Landing Page](/assets/screenshots/landing.png)
 *Landing page: editorial hero with the Lady Justice artwork, product preview, how it works and features.*
 
-![Sign in / Sign up Modal](assets/screenshots/auth-modal.png)
+![Sign in / Sign up Modal](/assets/screenshots/auth-modal.png)
 *The Justice Orb: sign-in travels from the navbar into a circle that flips to reveal sign-up.*
 
-![Chat Interface](assets/screenshots/chat.png)
+![Chat Interface](/assets/screenshots/chat.png)
 *Research workspace: conversation history, streamed answer and composer.*
 
-![Evidence Panel with Citations](assets/screenshots/evidence-panel.png)
+![Evidence Panel with Citations](/assets/screenshots/evidence-panel.png)
 *Clicking a citation opens the matching retrieved passage, with its Act, section and page.*
 
 ## Features
