@@ -21,6 +21,7 @@ says so instead of guessing.
 *Research workspace: conversation history, streamed answer and composer.*
 
 ![Evidence Panel with Citations](frontend/assets/screenshots/evidence-panel.png)
+
 *Clicking a citation opens the matching retrieved passage, with its Act, section and page.*
 ## Features
 
