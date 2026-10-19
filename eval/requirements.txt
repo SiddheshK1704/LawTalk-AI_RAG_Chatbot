@@ -1,0 +1,4 @@
+# Evaluation-only dependencies (python eval/run_eval.py); install on top of backend/requirements.txt
+ragas==0.4.3
+huggingface_hub==1.8.0  # keep in step with the backend embedding stack
+httpx

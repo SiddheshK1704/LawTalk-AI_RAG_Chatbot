@@ -3,8 +3,10 @@ uvicorn
 pydantic
 python-dotenv
 
-# RAG (coming next)
+# RAG
 langchain
+langchain-community
+langchain-huggingface
 faiss-cpu
 pypdf
 sentence-transformers

@@ -1,0 +1,2094 @@
+{
+  "timestamp": "2026-10-19 14:05:51",
+  "config": {
+    "judge_model": "qwen/qwen3.8-27b",
+    "testset": "eval/testset.json",
+    "n_questions": 25,
+    "answer_endpoint": "/ask/stream",
+    "benchmark_endpoint": "/ask"
+  },
+  "summary": {
+    "Faithfulness": 0.594,
+    "Answer relevancy": 0.532,
+    "Context precision": 0.268,
+    "Context recall": 0.346,
+    "Retrieval Recall@5": 0.317,
+    "Retrieval Hit@5": 0.45,
+    "Citation correctness": 0.5,
+    "Unanswerable declined": 1.0,
+    "TTFT p50 (s)": 0.544,
+    "p95 latency (s)": 10.793,
+    "Request error rate": 0.24
+  },
+  "notes": {
+    "Faithfulness": "RAGAS, scored 13/20 answers",
+    "Answer relevancy": "RAGAS, scored 13/20 answers",
+    "Context precision": "RAGAS, scored 13/20 answers",
+    "Context recall": "RAGAS, scored 13/20 answers",
+    "Retrieval Recall@5": "labelled chunk IDs, n=20",
+    "Retrieval Hit@5": ">=1 labelled chunk in top 5",
+    "Citation correctness": "LLM judge, 2 citations in 10 answers",
+    "Unanswerable declined": "keyword heuristic, 2/5 answered",
+    "TTFT p50 (s)": "/ask/stream, n=22",
+    "p95 latency (s)": "50 requests",
+    "Request error rate": "errors: {'http_503': 12}"
+  },
+  "comparison": [
+    [
+      "p50 latency (s)",
+      2.863,
+      4.521,
+      "+58%"
+    ],
+    [
+      "p95 latency (s)",
+      11.731,
+      10.793,
+      "-8%"
+    ],
+    [
+      "mean latency (s)",
+      4.512,
+      4.44,
+      "-2%"
+    ],
+    [
+      "error rate",
+      0.2,
+      0.24,
+      "+20%"
+    ]
+  ],
+  "details": {
+    "retrieval": {
+      "recall_at_5": 0.317,
+      "hit_rate_at_5": 0.45,
+      "n": 20,
+      "per_item": [
+        {
+          "id": "t01",
+          "recall": 0.0,
+          "hit": 0.0
+        },
+        {
+          "id": "t02",
+          "recall": 1.0,
+          "hit": 1.0
+        },
+        {
+          "id": "t03",
+          "recall": 0.0,
+          "hit": 0.0
+        },
+        {
+          "id": "t04",
+          "recall": 0.0,
+          "hit": 0.0
+        },
+        {
+          "id": "t05",
+          "recall": 0.0,
+          "hit": 0.0
+        },
+        {
+          "id": "t06",
+          "recall": 0.0,
+          "hit": 0.0
+        },
+        {
+          "id": "t07",
+          "recall": 0.5,
+          "hit": 1.0
+        },
+        {
+          "id": "t08",
+          "recall": 0.0,
+          "hit": 0.0
+        },
+        {
+          "id": "t09",
+          "recall": 0.0,
+          "hit": 0.0
+        },
+        {
+          "id": "t10",
+          "recall": 1.0,
+          "hit": 1.0
+        },
+        {
+          "id": "t11",
+          "recall": 0.0,
+          "hit": 0.0
+        },
+        {
+          "id": "t12",
+          "recall": 0.3333333333333333,
+          "hit": 1.0
+        },
+        {
+          "id": "t13",
+          "recall": 0.0,
+          "hit": 0.0
+        },
+        {
+          "id": "t14",
+          "recall": 0.5,
+          "hit": 1.0
+        },
+        {
+          "id": "t15",
+          "recall": 0.6666666666666666,
+          "hit": 1.0
+        },
+        {
+          "id": "t16",
+          "recall": 1.0,
+          "hit": 1.0
+        },
+        {
+          "id": "t17",
+          "recall": 0.0,
+          "hit": 0.0
+        },
+        {
+          "id": "t18",
+          "recall": 0.0,
+          "hit": 0.0
+        },
+        {
+          "id": "t19",
+          "recall": 0.3333333333333333,
+          "hit": 1.0
+        },
+        {
+          "id": "t20",
+          "recall": 1.0,
+          "hit": 1.0
+        }
+      ]
+    },
+    "ragas": {
+      "n": 20,
+      "faithfulness": 0.594,
+      "answer_relevancy": 0.532,
+      "context_precision": 0.268,
+      "context_recall": 0.346,
+      "errors": [
+        {
+          "id": "t14",
+          "metric": "faithfulness",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t14",
+          "metric": "answer_relevancy",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t14",
+          "metric": "context_precision",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t14",
+          "metric": "context_recall",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t15",
+          "metric": "faithfulness",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t15",
+          "metric": "answer_relevancy",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t15",
+          "metric": "context_precision",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t15",
+          "metric": "context_recall",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t16",
+          "metric": "faithfulness",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t16",
+          "metric": "answer_relevancy",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t16",
+          "metric": "context_precision",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t16",
+          "metric": "context_recall",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t17",
+          "metric": "faithfulness",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t17",
+          "metric": "answer_relevancy",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t17",
+          "metric": "context_precision",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t17",
+          "metric": "context_recall",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t18",
+          "metric": "faithfulness",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t18",
+          "metric": "answer_relevancy",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t18",
+          "metric": "context_precision",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t18",
+          "metric": "context_recall",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t19",
+          "metric": "faithfulness",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t19",
+          "metric": "answer_relevancy",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t19",
+          "metric": "context_precision",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t19",
+          "metric": "context_recall",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t20",
+          "metric": "faithfulness",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t20",
+          "metric": "answer_relevancy",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t20",
+          "metric": "context_precision",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        },
+        {
+          "id": "t20",
+          "metric": "context_recall",
+          "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgwd09r3e0rr8ax889hrqs87` service tier `on_deman"
+        }
+      ],
+      "per_item": [
+        {
+          "id": "t01",
+          "faithfulness": 0.5,
+          "answer_relevancy": 0.0,
+          "context_precision": 0.0,
+          "context_recall": 0.0
+        },
+        {
+          "id": "t02",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.9756755066114225,
+          "context_precision": 0.8333333332916666,
+          "context_recall": 1.0
+        },
+        {
+          "id": "t03",
+          "faithfulness": 0.5,
+          "answer_relevancy": 0.9312126010632701,
+          "context_precision": 0.249999999975,
+          "context_recall": 1.0
+        },
+        {
+          "id": "t04",
+          "faithfulness": 0.5,
+          "answer_relevancy": 0.0,
+          "context_precision": 0.0,
+          "context_recall": 0.0
+        },
+        {
+          "id": "t05",
+          "faithfulness": 0.0,
+          "answer_relevancy": 0.7460883738628032,
+          "context_precision": 0.0,
+          "context_recall": 0.0
+        },
+        {
+          "id": "t06",
+          "faithfulness": 0.5,
+          "answer_relevancy": 0.0,
+          "context_precision": 0.0,
+          "context_recall": 0.0
+        },
+        {
+          "id": "t07",
+          "faithfulness": 0.5,
+          "answer_relevancy": 0.9440417466339524,
+          "context_precision": 0.99999999995,
+          "context_recall": 1.0
+        },
+        {
+          "id": "t08",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.0,
+          "context_precision": 0.0,
+          "context_recall": 0.0
+        },
+        {
+          "id": "t09",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.7313111748774039,
+          "context_precision": 0.699999999965,
+          "context_recall": 0.5
+        },
+        {
+          "id": "t10",
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.9602552038496087,
+          "context_precision": 0.49999999995,
+          "context_recall": 1.0
+        },
+        {
+          "id": "t11",
+          "faithfulness": 0.4444444444444444,
+          "answer_relevancy": 0.9411325013685022,
+          "context_precision": 0.0,
+          "context_recall": 0.0
+        },
+        {
+          "id": "t12",
+          "faithfulness": 0.7777777777777778,
+          "answer_relevancy": 0.6907375910189489,
+          "context_precision": 0.19999999998,
+          "context_recall": 0.0
+        },
+        {
+          "id": "t13",
+          "faithfulness": 0.0,
+          "answer_relevancy": 0.0,
+          "context_precision": 0.0,
+          "context_recall": 0.0
+        },
+        {
+          "id": "t14",
+          "faithfulness": null,
+          "answer_relevancy": null,
+          "context_precision": null,
+          "context_recall": null
+        },
+        {
+          "id": "t15",
+          "faithfulness": null,
+          "answer_relevancy": null,
+          "context_precision": null,
+          "context_recall": null
+        },
+        {
+          "id": "t16",
+          "faithfulness": null,
+          "answer_relevancy": null,
+          "context_precision": null,
+          "context_recall": null
+        },
+        {
+          "id": "t17",
+          "faithfulness": null,
+          "answer_relevancy": null,
+          "context_precision": null,
+          "context_recall": null
+        },
+        {
+          "id": "t18",
+          "faithfulness": null,
+          "answer_relevancy": null,
+          "context_precision": null,
+          "context_recall": null
+        },
+        {
+          "id": "t19",
+          "faithfulness": null,
+          "answer_relevancy": null,
+          "context_precision": null,
+          "context_recall": null
+        },
+        {
+          "id": "t20",
+          "faithfulness": null,
+          "answer_relevancy": null,
+          "context_precision": null,
+          "context_recall": null
+        }
+      ]
+    },
+    "citations": {
+      "answers_checked": 10,
+      "citations_checked": 2,
+      "unjudged": 18,
+      "citation_correctness": 0.5,
+      "per_citation": [
+        {
+          "id": "t02",
+          "claim": "The offence of cheating and dishonestly inducing delivery of property is punishable with **imprisonment of either description for a term which may extend to seven years, and also with a fine**.",
+          "supported": true,
+          "raw": "YES"
+        },
+        {
+          "id": "t03",
+          "claim": "**Article 21 of the Constitution guarantees the protection of life and personal liberty.** It states that “no person shall be deprived of his life or personal liberty except according to procedure est",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t05",
+          "claim": "- The IT Act expressly criminalises “authorised access” violations, covering any person who accesses a computer system without permission .",
+          "supported": false,
+          "raw": "NO"
+        },
+        {
+          "id": "t07",
+          "claim": "A person may not drive a motor vehicle in any public place unless he holds an effective driving licence authorising him to do so.",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t09",
+          "claim": "- Section 32 of the Indian Evidence Act (now BSA) allows statements of a dead person concerning the cause of death to be proved as relevant facts.",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t09",
+          "claim": "- The provision specifically lists “when it relates to cause of death” as a category of statements that may be admitted.",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t10",
+          "claim": "- Under the law, a confession to a police officer is inadmissible and “shall not be proved” as evidence against the accused .",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t10",
+          "claim": "- The same principle is reflected in the study material, which states that a confession to a police officer is not admissible in evidence .",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t11",
+          "claim": "- The officer **personally witnesses** the commission of a **cognizable, non‑bailable offence** (e.g., offences listed under sections 184, 185, 197 of the Motor Vehicles Act).",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t11",
+          "claim": "- A **private person** (or the police) can also make such an arrest if the offence is **non‑bailable and cognizable** and is committed **in the presence of the arresting person**.",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t11",
+          "claim": "- After the arrest, the police must **produce the person before the nearest magistrate or the officer in charge of a police station without unnecessary delay**, and the person cannot be detained for m",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t12",
+          "claim": "Record the information **in writing** in the FIR book (or the form prescribed by the State Government) at the place of the informant’s choice, in the presence of an interpreter or special educator if ",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t12",
+          "claim": "**Video‑graph** the entire recording of the oral statement.",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t12",
+          "claim": "**Video‑graph** the entire recording of the oral statement.",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t12",
+          "claim": "Obtain, as soon as possible, a **statement of the informant before a Judicial Magistrate** under Section 164(5A) (clause a).",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t12",
+          "claim": "Provide the informant with a **free copy** of the recorded information immediately.",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t14",
+          "claim": "The punishment for theft is imprisonment for a term which may extend to **three years**, or a fine, or both.",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t15",
+          "claim": "The offence of cruelty to a woman by her husband or his relatives is punishable with **imprisonment for a term which may extend to three years and also a fine**.",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t15",
+          "claim": "- The same penalty is reflected in the Code of Criminal Procedure (the BNS, effective from 1 July 2024) which makes the offence cognizable when a complaint is made by the aggrieved woman or a related ",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        },
+        {
+          "id": "t15",
+          "claim": "- “Cruelty” is defined to include conduct likely to drive the woman to suicide or cause grave injury to her life, limb, or health, whether mental or physical.",
+          "supported": null,
+          "raw": "error: RateLimitErro"
+        }
+      ]
+    },
+    "answers": [
+      {
+        "id": "t01",
+        "ok": true,
+        "ttft_s": 0.832701299999826,
+        "answer": "The provided sources do not contain the specific provision that states the punishment for murder under the Indian Penal Code. Therefore, I cannot give the answer from the given material.",
+        "citations": [],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "b86a7162-de30-4c2b-b658-a13ee20de5dc",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 246,
+            "text": "punishable under section 193 of the Indian Penal Code, and within the cognizance of this Court. \n(6) On section 304—That you, on or about the              day of                    , at                   , committed \nculpable homicide not amounting to murder, causing the death of                                         , and thereby \ncommitted an offence punishable under section 304 of the Indian Penal Code, and within the cognizance \nof this Court.",
+            "score": 0.7412,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "3e87c8a6-4bf3-46fd-8aaf-9740391e50be",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 251,
+            "text": "prisoner), the (1st, 2nd, 3rd, as the case may be), prisoner in case No.                                          of the \nCalendar for 19                     at the said Session, was duly convicted of the offence of culpable homicide \namounting to murder under section                               of the Indian Penal Code, and sentenced to death, \nsubject to the confirmation of the said sentence by the                     Court of                        ;",
+            "score": 0.7205,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "89cbcb82-49bf-4ae8-93bb-ae34cc1c38bd",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 99,
+            "text": "Indian Penal Code (45 of 1860), or \n(b) a criminal conspiracy to commit such offence, \nexcept with the previous sanction of the Central Government or of the State Government or of the District \nMagistrate.] \n(2) No Court shall take cognizance of the offence of any criminal conspiracy punishable under section 120B of \nthe Indian Penal Code (45 of 1860), other than a criminal conspiracy to commit 4[an offence] punishable with death,",
+            "score": 0.7138,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "9d773ff8-3e1b-40dd-a14f-15b6b6bfc304",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 248,
+            "text": "under section (or sections)                    of the Indian Penal Code ( or of                            Act          ), and \nwas sentenced to                                                  (state the punishment fully and distinctly); \n \nThis is to authorise and require you to receive the said                                         ( prisoner’s name) \ninto your custody in the said Jail, together with this warrant, and thereby carry the aforesaid sentence into \nexecution according to law.",
+            "score": 0.6903,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "dfdb0589-ac17-445c-9410-5df5c61ca987",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 143,
+            "text": "143 \n \n (2) The offences punishable under the sections of the Indian Penal Code (45 of 1860) specified in the first two \ncolumns of the Table next following may, with th e permission of the Court before which any prosecution for such \noffence is pending, be compounded by the persons mentioned in the third column of that Table: — \n1[TABLE \n       Offence Section of the  Person by whom offence \n Indian Penal may be compounded \n Code applicable  \n          1 2 3",
+            "score": 0.6901,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.8994698000005883
+      },
+      {
+        "id": "t02",
+        "ok": true,
+        "ttft_s": 0.34472639999876264,
+        "answer": "The offence of cheating and dishonestly inducing delivery of property is punishable with **imprisonment of either description for a term which may extend to seven years, and also with a fine**[1].",
+        "citations": [
+          1
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "b0814de1-70c3-4c16-854f-80c6fd26d5e2",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 96,
+            "text": "both. \n420. Cheating and dishonestly i nducing delivery of property .—Whoever cheats and thereby \ndishonestly induces the person deceived to deliver any property to any person, or to make, alter or destroy \nthe whole or any part of a valuable security, or anything which is signed or sealed, and which is capable \nof being converted into a valuable security, shall be punished with imprisonment of either description for \na term which may extend to seven years, and shall also be liable to fine.",
+            "score": 0.7393,
+            "cited": true
+          },
+          {
+            "id": 2,
+            "chunk_id": "f82c5f67-eb12-4c36-a143-1edb2899790e",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 96,
+            "text": "a term which may extend to seven years, and shall also be liable to fine. \nOf Fraudulent Deeds and Dispositions of Property \n421. Dishonest or fraudulent removal or concealment of property to prevent distribution among \ncreditors.—Whoever dishonestly or fraudulently removes, conceals or delivers to any person, or transfers \nor causes to be transferred to any person, without adequate consideration, any property, intending thereby",
+            "score": 0.6826,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "566f4473-9773-4c17-84dc-a70010eeb564",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 96,
+            "text": "by a legal contract, to protect, shall be punished with imprisonment of either description for a term which \nmay extend to three years, or with fine, or with both. \n419. Punishment for cheating by personation .—Whoever cheats by personation shall be punished \nwith imprisonment of either description for a term which may extend to three yea rs, or with fine, or with \nboth. \n420. Cheating and dishonestly i nducing delivery of property .—Whoever cheats and thereby",
+            "score": 0.6612,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "9defa840-56ba-4ba2-8534-a94b497ab90e",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 11,
+            "text": "Of Cheating \n415. Cheating. \n416. Cheating by personation. \n417. Punishment for cheating. \n418. Cheating with knowledge that wrongful loss may ensue to person whose interest offender is bound to protect. \n419. Punishment for cheating by personation. \n420. Cheating and dishonestly inducing delivery of property. \nOf Fraudulent Deeds and Dispositions of Property \n421. Dishonest or fraudulent removal or concealment of property to prevent distribution among creditor.",
+            "score": 0.6574,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "a5062274-ab4d-4117-9787-b33897284147",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 95,
+            "text": "414. Assisting in c oncealment of stolen property .—Whoever voluntarily assists in concealing or \ndisposing of or making away with property which he knows or has reason to believe to be stolen property, \nshall be punished with imprisonment of either description for a term which may extend to three yea rs, or \nwith fine, or with both. \nOf Cheating \n415. Cheating.—Whoever, by deceiving any person, fraudulently or dishonestly induces the person",
+            "score": 0.6548,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.43843070000002626
+      },
+      {
+        "id": "t03",
+        "ok": true,
+        "ttft_s": 0.5043508999988262,
+        "answer": "**Article 21 of the Constitution guarantees the protection of life and personal liberty.** It states that “no person shall be deprived of his life or personal liberty except according to procedure established by law.” [4]",
+        "citations": [
+          4
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "469e3fab-223f-4491-8525-080951b96d63",
+            "title": "Constitution of India",
+            "file": "ConstitutionOfIndia_pdf.pdf",
+            "page": 149,
+            "text": "in article 214 subject to such modifications or exceptions as Parliament may by law provide. 6[(3) Subject to the provisions of this Constitution and to the provisions of any law of the appropriate Legislature made by virtue of powers conferred on that Legislature by or under this Constitution, every High Court exercising jurisdiction immediately before the commencement of the Constitution (Seventh Amendment) Act, 1956, in relation to any Union territory shall continue to exercise such",
+            "score": 0.6113,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "c1e98b8d-ddf0-4325-9776-c5dfb8c6b971",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 331,
+            "text": "of the national life (Article 38).\n(2) The State shall, in particular, strive to minimise the inequalities in income and endeavour to eliminate\ninequalities in status, facilities, and opportunities, not only amongst individuals but also among\ngroups of people residing in different areas or engaged in different vocations. (introduced by\nConstitution 44th Amendment Act).\n(b) Certain principles of policy to be followed by the State . The State, particularly, must direct its policy",
+            "score": 0.5916,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "cbecd8dd-342a-41d0-b633-4ff9068d689f",
+            "title": "Constitution of India",
+            "file": "ConstitutionOfIndia_pdf.pdf",
+            "page": 242,
+            "text": "the provisions of this Constitution.356. Provisions in case of failure of constitutional machinery in States.—(1) If the President, on receipt of a report from the Governor2*** of a State or otherwise, is satisfied that a situation has arisen in which the Government of the State cannot be carried  on  in accordance with the provisions of this Constitution, the President may by Proclamation—______________________________________________1. Added by the Constitution (Forty-second Amendment) Act,",
+            "score": 0.5885,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "0913453a-0c34-46f8-9ade-1e7e26395977",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 319,
+            "text": "Part III of the Constitution are not distinct and mutually exclusive. Thus, a law depriving\na person of personal liberty and prescribing a procedure for that purpose within the\nmeaning of Article 21 has still to stand the test of one or more of fundamental rights\nconferred by Article 19 which may be applicable to a given situation.\nProcedure established by law: The expression ‘procedure established by law’ means procedure laid down by",
+            "score": 0.5813,
+            "cited": true
+          },
+          {
+            "id": 5,
+            "chunk_id": "c5313f43-8df6-4a6e-a259-703b2c324d44",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 303,
+            "text": "(v) Cultural and Educational Rights – Articles 29 and 30;\n(vi) Right to Constitutional Remedies – Articles 32.\n[Earlier the right to property under Article 31 was also guaranteed as a Fundamental Right which has been\nremoved by the 44th Constitutional Amendment Act, 1978. Now right to property is not afundamental right, it is\nnow only a legal right.\nApart from this, Articles 12 and 13 deal with definition of ‘State’ and ‘Law’ respectively. Articles 33 to 35 deal with",
+            "score": 0.58,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.593555399998877
+      },
+      {
+        "id": "t04",
+        "ok": true,
+        "ttft_s": 1.071856900000057,
+        "answer": "The provided sources do not specify the section of the Code of Criminal Procedure that deals with anticipatory bail, nor do they list the courts empowered to grant it.",
+        "citations": [],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "8cfc6d19-a205-4d50-8cad-171a0f7456a1",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 263,
+            "text": "263 \n(1B) The presence of the applicant seeking anticipatory bail shall be obligatory at the time of final \nhearing of the application and passing of final order by the Court, if on an application made to it by \nthe Public Prosecutor, the Court considers such presence necessary in the interest of justice.”. \n*                                    *                                    *                                     *                               *",
+            "score": 0.7387,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "66917291-6193-4013-9808-4dc453f53d1d",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 106,
+            "text": "1[(a) commit, after complying with the provisions of section 207 or section 208, as the case may \nbe, the case to the Court of Session, and subject to the provisions of this Code relating to bail, remand \nthe accused to custody until such commitment has been made;] \n(b) subject to the provisions of this Code relating to bail, remand the accused to cu stody during, \nand until the conclusion of, the trial;",
+            "score": 0.7243,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "c3f37de4-4ed6-416e-a139-c729373346b4",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 478,
+            "text": "(d) Sentences in cases of conviction of several offences at one trial\nSection 31 relates to the quantum of punishment which the Court is authorised to impose where the accused is\nconvicted of two or more offences at one trial.\nTest your knowledge\nAn ‘anticipatory bail’ is granted by:\n(a) The High Court\n(b) The Supreme Court\n(c) The Court of Session\n(d) Any Magistrate\nCorrect Answer: (a) and (c)\nARREST OF PERSONS",
+            "score": 0.722,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "01274bd2-48d4-4476-83f4-f9068467760d",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 181,
+            "text": "Penal Code (45 of 1860) or abatement of, or conspiracy or attempt to commit, any such offe nce, is released on bail \nunder sub-section (1), 4[the Court shall impose the conditions,— \n(a) that such person shall attend in accordance with the conditions of the bond executed under this Chapter,  \n(b) that such person shall not commit an offence similar to the offence of which he is accused, or suspected, \nof the commission of which he is suspected, and",
+            "score": 0.6824,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "d7f77bd1-f20b-4226-90de-c422276411fb",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 180,
+            "text": "180 \n \nCHAPTER XXXIII \nPROVISIONS AS TO BAIL AND BONDS \n436. In what cases bail to be taken. —(1) When any person other than a  person accused of a non -bailable \noffence is arrested or detained without warrant by an officer in charge of a police station, or ap pears or is brought \nbefore a Court, and is prepared at any time while in the custody of such officer or at any stage of the proceeding \nbefore such Court to give bail, such person shall be released on bail:",
+            "score": 0.6661,
+            "cited": false
+          }
+        ],
+        "e2e_s": 1.1410292000000481
+      },
+      {
+        "id": "t05",
+        "ok": true,
+        "ttft_s": 0.5326863000009325,
+        "answer": "Logging in with another person’s password without permission constitutes **unauthorised access** under the Information Technology Act, 2000. Such conduct is punishable under the Act and can lead to imprisonment (up to ten years) and/or a fine.  \n\n- The IT Act expressly criminalises “authorised access” violations, covering any person who accesses a computer system without permission [2].  \n- Penalties include imprisonment for a term which may extend to ten years and a fine.  \n\nThus, the offender may be prosecuted, arrested, and sentenced to imprisonment and/or fined under the IT Act.",
+        "citations": [
+          2
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "32e6be3a-bc25-4830-9993-c40613a9472a",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 140,
+            "text": "ten days or more. \nWrongfully confining a person in 346 The person confined. \nsecret. \nAssault or use of criminal force. 352, The person assaulted or to whom \n 355, criminal force is used. \n 358  \nTheft. 379 The owner of the property stolen. \nDishonest misappropriation of 403 The owner of the property \nproperty.  misappropriated. \nCriminal breach of trust by a carrier, 407 The owner of the property in respect \nwharfinger, etc.  of which the breach of trust has been \n  committed.",
+            "score": 0.4047,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "e9e4ff22-a433-4d48-b826-37f121d3283c",
+            "title": "Information Technology Act, 2000",
+            "file": "ITAct_pdf.pdf",
+            "page": 25,
+            "text": "authorised access; or \n(iii) introducing or causing to introduce any computer contaminant, \nand by means of such conduct causes or is likely to cause death or injuries to persons or damage to or \ndestruction of property or disrupts or knowing that it is likely to cause damage or disruption of supplies or \nservices essential to the life of the community or adversely affect the critical information infrastructure \nspecified under section 70; or",
+            "score": 0.3895,
+            "cited": true
+          },
+          {
+            "id": 3,
+            "chunk_id": "69c8d567-3152-4212-add5-950cb11e91c0",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 63,
+            "text": "63 \n \nperson, or attempts to induce any other person to receive the same, shall be punished with imprisonment \nof either description for a term which may extend to ten years, and shall also be liable to fine. \n252. Possession of coin by person who knew it to be altered when he became possessed \nthereof.—Whoever fraudulently or with intent that fraud may be committed, is in possession of coin with",
+            "score": 0.3875,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "10a5fff2-a8ee-4a2d-af09-87b7c07958dd",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 139,
+            "text": "any inquiry into, or trial of, an offence, it appears from the evidence that any person not being the accused has \ncommitted any offence for which such person could be tried together with the accused, the Court may p roceed \nagainst such person for the offence which he appears to have committed. \n (2) Where such person is not attending the Court, he may be arrested or summoned, as the circumstances of the \ncase may require, for the purpose aforesaid.",
+            "score": 0.3805,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "b4c3a7d4-c764-4b3d-9d44-4d190f45b1f4",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 83,
+            "text": "of any person, or knowing it to be likely that such person will be so subjected or disposed of, shall be \npunished with imprisonment of either description for a term which may extend to ten years, and shall also \nbe liable to fine. \n368. Wrongfully concealing or keeping in confinement,  kidnapped or abducted person .—\nWhoever, knowing that any  person has been kidnapped or has been abducted, wrongfully conceals or",
+            "score": 0.374,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.7916663000014523
+      },
+      {
+        "id": "t06",
+        "ok": true,
+        "ttft_s": 0.36225569999987783,
+        "answer": "The provided sources do not contain a definition of “child” under the Protection of Children from Sexual Offences (POCSO) Act. Therefore, I cannot answer the question based on the given material.",
+        "citations": [],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "68767c5a-8462-4012-8e47-5d62f67a7e44",
+            "title": null,
+            "file": null,
+            "page": null,
+            "text": "Q: What is POCSO Act?\nA: The POCSO Act protects children from sexual offenses and provides strict punishment for offenders.\n\nQ: What should I do if I lose my driving license?\nA: You can apply for a duplicate license through the Regional Transport Office (RTO) or online portal.\n\nQ: What documents are required to file a legal case?\nA: Required documents depend on the case but generally include identity proof, evidence, and relevant records.",
+            "score": 0.5528,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "d31405ec-c989-4eb6-a21b-f7c291370395",
+            "title": "Protection of Children from Sexual Offences Act, 2012",
+            "file": "POCSO_pdf.pdf",
+            "page": 14,
+            "text": "1. Subs. by Act 25 of 2019, s. 9, for “the Juvenile Justice (Care and Protection of Children) Act, 2000 ( 56 of 2000)” (w.e.f. 16 -\n08-2019).",
+            "score": 0.5409,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "c5136f99-4952-4f30-9ab1-c08fc093304e",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 209,
+            "text": "Lesson 12 The Child Labour (Prohibition and Regulation) Act, 1986 185\n– Plastic units and fiberglass workshops;\n– Domestic workers or servant\n– Dhabas, restaurants, hotels, motels, tea shops, resorts, spas or other recreational centers\n– Diving\n– Circus\n– Caring of elephant\nProcesses set forth Part B of the Schedule are as follows:\n– Beedi-making.\n– Carpet-weaving.\n– Cement manufacture, including bagging of cement.\n– Cloth printing, dyeing and weaving.",
+            "score": 0.5234,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "5508dc31-9d60-4087-8f64-87c47b21a841",
+            "title": "Protection of Children from Sexual Offences Act, 2012",
+            "file": "POCSO_pdf.pdf",
+            "page": 16,
+            "text": "involving a child to the designated authority under sub-section (1) of section 15; \n(aa) the manner of reporting about por nographic material in any form involving a child under \nsub-section (2) of section 15;] \n 2[(ab)] the qualifications and experience of, and the fees payable to, a translator or an interpreter, \na special educator or any person familiar with the manner of communication of the child or an expert",
+            "score": 0.5104,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "51c7774f-15c1-44ce-8c3f-b5d7418b4503",
+            "title": "Protection of Children from Sexual Offences Act, 2012",
+            "file": "POCSO_pdf.pdf",
+            "page": 15,
+            "text": "(1), shall, also include, its activities under this section, in the annual report referred to in section 16 of the \nCommissions for Protection of Child Rights Act, 2005 (4 of 2006).  \n                                                           \n1. Subs. by Act 13 of 2013, s. 29, for s. 42 (w.e.f. 3-2-2013). \n 2. Subs. by Act 22 of 2018, s. 25, for “376A, 376C, 376D” (w.e.f. 21-4-2018).",
+            "score": 0.5055,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.4487599999993108
+      },
+      {
+        "id": "t07",
+        "ok": true,
+        "ttft_s": 0.489184900001419,
+        "answer": "Yes. A person may not drive a motor vehicle in any public place unless he holds an effective driving licence authorising him to do so[1].",
+        "citations": [
+          1
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "90aa1236-ffdd-46a9-9bbb-6ee7defce082",
+            "title": "Motor Vehicles Act, 1988",
+            "file": "MotorVehiclesAct_pdf.pdf",
+            "page": 11,
+            "text": "3. Necessity for driving licence .—(1) No person shall drive a motor vehicle in any public place \nunless he holds an effective driving licence issued to him authorising him to drive the vehicle; and no \nperson shall so drive a transport vehicle [other than 3[a motor cab or motor cycle] hired for his own use or \nrented under any scheme made under sub-section (2) of section 75] unless his driving licence spec ifically \nentitles him so to do.",
+            "score": 0.7231,
+            "cited": true
+          },
+          {
+            "id": 2,
+            "chunk_id": "7e684d39-c7d2-47e9-a486-774bbec0c4b0",
+            "title": "Motor Vehicles Act, 1988",
+            "file": "MotorVehiclesAct_pdf.pdf",
+            "page": 12,
+            "text": "transport vehicle in any public place. \n(3) No learner’s licence or driving licence shall be issued to any person to drive a vehicle of the class \nto which he has made an application unless he is eligible to drive that class of vehicle under this section.  \n5. Responsibility of owners of motor vehicles for con travention of sections 3 and 4 .—No owner \nor person in charge of a motor vehicle shall cause or permit any person who does not satisfy the",
+            "score": 0.6752,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "332470ec-ec6b-4022-b6c9-5149514c7a70",
+            "title": "Motor Vehicles Act, 1988",
+            "file": "MotorVehiclesAct_pdf.pdf",
+            "page": 12,
+            "text": "with the rules made under section 139, the person specified therein to drive a motor vehicle. \n(2) No holder of a driving licence or a learner’s licence shall permit it to be used by any other person. \n(3) Nothing in this section shall prevent a licensing authority having the jurisdiction referred to in \nsub-section (1) of section 9 from adding to the classes of vehicles which the driving licence authorises the \nholder to drive.",
+            "score": 0.6394,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "1f41b0ab-8796-43c7-bb3c-13e9b4813dec",
+            "title": "Motor Vehicles Act, 1988",
+            "file": "MotorVehiclesAct_pdf.pdf",
+            "page": 15,
+            "text": "be prescribed by the Central Government. \n(2) A learner’s licence or, as the case may be, driving licence shall also be expressed as entitling the \nholder to drive a motor vehicle of one or more of the following classes, namely:— \n(a) motor cycle without gear; \n(b) motor cycle with gear; \n(c) invalid carriage; \n(d) light motor vehicle; \n2[(e) transport vehicle;] \n(i) road-roller; \n(j) motor vehicle of a specified description.",
+            "score": 0.6357,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "a9984c6a-5009-4d0c-9ab4-3fe475e55852",
+            "title": "Motor Vehicles Act, 1988",
+            "file": "MotorVehiclesAct_pdf.pdf",
+            "page": 13,
+            "text": "licence to drive a motor vehicle: \nProvided that a licensing authority may issue a learner ’s licence to drive a motor cycle or a light \nmotor vehicle notwithstanding that it is not the appropriate licensing authority, if  such authority is \nsatisfied that there is good reason for the applicant ’s inability to apply to the appropriate licensing \nauthority. \n(7) Where the Central Government is satisfied that it is necessary or expedient so to do, it may, by",
+            "score": 0.6348,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.5540593000005174
+      },
+      {
+        "id": "t08",
+        "ok": true,
+        "ttft_s": 1.8871970000000147,
+        "answer": "The provided excerpts do not specify the penalty for driving without a licence; they only define the offence and procedural requirements. Consequently, the penalty cannot be determined from the given sources.",
+        "citations": [],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "9a319397-f4be-4d00-b8fc-9b8dcd68fa66",
+            "title": "Motor Vehicles Act, 1988",
+            "file": "MotorVehiclesAct_pdf.pdf",
+            "page": 88,
+            "text": "182. Offences r elating to licences.—(1) Whoever, being disqualified under this Act for holding or \nobtaining a driving licence drives a motor vehicle in a public place or in any other place, or applies for or \nobtains a driving licence or, not being entitled to have a driving licence issued to him free of endorsement, \napplies for or obtains a driving licence without disclosing the endorsement made on a driving licence",
+            "score": 0.6492,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "099b44cd-ab06-48e5-bdf7-18ff8dda7d6e",
+            "title": "Motor Vehicles Act, 1988",
+            "file": "MotorVehiclesAct_pdf.pdf",
+            "page": 21,
+            "text": "on any driving licence held by the person convicted. \n(3) Any person accused of an offence prescribed under sub-section (2) shall when attending the Court \nbring with him his driving licence if it is in his possession. \n(4) Where any person is convicted of any offence under this Act and sentenced to imprisonment for a \nperiod exceeding three months the Court awarding the sentence shall endorse the fact of such sentence",
+            "score": 0.5805,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "f31d81e9-d107-4761-a1fc-063f196a3255",
+            "title": "Motor Vehicles Act, 1988",
+            "file": "MotorVehiclesAct_pdf.pdf",
+            "page": 14,
+            "text": "have passed a test in driving a motor cycle without gear. \n(7) When any application has been duly made to the appropriate licensing authority and the applicant \nhas satisfied such authority of his competence to drive, the licensing authority shall issue the applicant a \ndriving licence unless the a pplicant is for the time being disqualified for holding or obtaining a driving \nlicence: \nProvided that a licensing authority may issue a driving licence to drive a motor cycle or a light motor",
+            "score": 0.5745,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "90aa1236-ffdd-46a9-9bbb-6ee7defce082",
+            "title": "Motor Vehicles Act, 1988",
+            "file": "MotorVehiclesAct_pdf.pdf",
+            "page": 11,
+            "text": "3. Necessity for driving licence .—(1) No person shall drive a motor vehicle in any public place \nunless he holds an effective driving licence issued to him authorising him to drive the vehicle; and no \nperson shall so drive a transport vehicle [other than 3[a motor cab or motor cycle] hired for his own use or \nrented under any scheme made under sub-section (2) of section 75] unless his driving licence spec ifically \nentitles him so to do.",
+            "score": 0.5738,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "c7dcf8c2-cf30-489d-a27b-b17c78006709",
+            "title": "Motor Vehicles Act, 1988",
+            "file": "MotorVehiclesAct_pdf.pdf",
+            "page": 13,
+            "text": "without gear. \n9. Grant of driving licence—(1) Any person who is not for the time being disqualified for holding or \nobtaining a driving licence may apply to the licensing authority having jurisdiction in the area— \n(i) in which he ordinarily resides or carries on business, or \n(ii) in which the school or establishment referred to in section 12 from where he is receiving  or \nhas received instruction in driving a motor vehicle is situated,  \nfor the issue to him of a driving licence.",
+            "score": 0.5588,
+            "cited": false
+          }
+        ],
+        "e2e_s": 1.9637550999996165
+      },
+      {
+        "id": "t09",
+        "ok": true,
+        "ttft_s": 0.5121565000008559,
+        "answer": "Yes. A statement made by a person who is dead about the cause of his/her death is admissible as **relevant evidence** under the rule of dying declarations.\n\n- Section 32 of the Indian Evidence Act (now BSA) allows statements of a dead person concerning the cause of death to be proved as relevant facts[1].  \n- The provision specifically lists “when it relates to cause of death” as a category of statements that may be admitted[5].  \n\nThus, a dying declaration about how the person died can be presented in court as evidence.",
+        "citations": [
+          1,
+          5
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "ab47b4da-5695-4a3f-bf05-4cb034f51668",
+            "title": "Indian Evidence Act, 1872",
+            "file": "IndianEvidenceAct_pdf.pdf",
+            "page": 54,
+            "text": "statement is relevant under section 32.  \nThe fact that the person is dead must be proved by the person proposing to prove the statement, \nbefore evidence is given of the statement. \n(b) It is proposed to prove, by a copy, the contents of a document said to be lost. \nThe fact that the original is lost must be proved b y the person proposing to produce the copy, before \nthe copy is produced. \n(c) A is accused of receiving stolen property knowing it to have been stolen.",
+            "score": 0.5453,
+            "cited": true
+          },
+          {
+            "id": 2,
+            "chunk_id": "a08b29d6-9554-4a05-816d-b8b19ac89732",
+            "title": "Indian Evidence Act, 1872",
+            "file": "IndianEvidenceAct_pdf.pdf",
+            "page": 55,
+            "text": "contents of any document, which, in the opinion of the Court, ought to be produced, the adverse party \nmay object to such evidence being given until such document is produced, or until facts have been proved \nwhich entitle the party who called the witness to give secondary evidence of it.  \nExplanation . –– A witness may give oral evidence of statements  made by other persons about the \ncontents of documents if such statements are in themselves relevant facts.  \nIllustration",
+            "score": 0.5389,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "fe55fab8-9309-45d7-b940-966fa7d481c8",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 439,
+            "text": "the sense of “original evidence” as distinguished from “hearsay” evidence and it is not used in contradicition to\n“circumstantial” or “presumptive evidence”. According to Section 60 oral evidence must in all cases whatever,\nbe direct; that is to say:\n– if it refers to a fact which could be seen, it must be the evidence of a witness who says he saw it;\n– if it refers to a fact which could be heard, it must be the evidence of a witness who says he heard it;",
+            "score": 0.5349,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "f00ee0ad-9ecd-4ca8-8776-95fe73b8bdab",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 439,
+            "text": "depose it, and if the fact to be proved is one that could be heard, the person who heard it must appear in the\nCourt to depose before it and so on. In defining the direct evidence in Section 60, the Act impliedly enacts what\nis called the rule against hearsay. Since the evidence as to a fact which could be seen, by a person who did not\nsee it, is not direct but hearsay and so is the evidence as to a statement, by a person who did hear it.\nDocumentary evidence",
+            "score": 0.5259,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "3e6b1742-8904-4b24-82ca-de6305c67532",
+            "title": "Indian Evidence Act, 1872",
+            "file": "IndianEvidenceAct_pdf.pdf",
+            "page": 2,
+            "text": "S\nTATEMENTS  BY  PERSONS  WHO CANNOT  BE CALLED AS  WITNESSES  \n32. Cases in which statement of relevant fact by person who is dead or cannot be found, etc., is \nrelevant. \nWhen it relates to cause of death; \nor is made in course of business; \nor against interest of maker; \nor gives opinion as to public right or custom, or matters of general interest; \nor relates to existence of relationship; \nor is made in will or deed relating to family affairs;",
+            "score": 0.5202,
+            "cited": true
+          }
+        ],
+        "e2e_s": 0.7794083000007959
+      },
+      {
+        "id": "t10",
+        "ok": true,
+        "ttft_s": 0.5590658000000985,
+        "answer": "A confession made to a police officer **cannot be used as evidence against the accused**.\n\n- Under the law, a confession to a police officer is inadmissible and “shall not be proved” as evidence against the accused [2].  \n- The same principle is reflected in the study material, which states that a confession to a police officer is not admissible in evidence [1].",
+        "citations": [
+          1,
+          2
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "8552f3fc-c0c6-44b3-b846-3d89cbb8e2fb",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 432,
+            "text": "reference to the charge against the accused;\n(ii) to a Police Officer; or\n(iii) to any one at a time when the accused is in the custody of a Police Officer and no Magistrate is present.\nThus, a statement made by an accused person if it is an admission, is admissible in evidence. The confession\nis an evidence only against its maker and against another person who is being jointly tried with him for an\noffence.",
+            "score": 0.799,
+            "cited": true
+          },
+          {
+            "id": 2,
+            "chunk_id": "73b9a869-90c7-4885-aacd-af393b57266f",
+            "title": "Indian Evidence Act, 1872",
+            "file": "IndianEvidenceAct_pdf.pdf",
+            "page": 21,
+            "text": "having reference to the charge against the accused person, proceeding from a person in authority and \nsufficient, in the opinion of the Court, to give th e accused person grounds which would appear to him \nreasonable for supposing that by making it he would  gain any advantage or avoid any evil of a temporal  \nnature in reference to the proceedings against him. \n25. Confession to police-officer not to be proved. ––No confession made to a police-officer 3, shall",
+            "score": 0.7331,
+            "cited": true
+          },
+          {
+            "id": 3,
+            "chunk_id": "5213553b-633d-48f7-92fe-526062e0dda8",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 434,
+            "text": "judicial confession should be corroborated in all cases. When such confession was proved by an independent\nwitness who was a responsible officer and one who bore no animus against the accused, there is hardly any\njustification to disbelieve it. Also, where the Court finds that the confession made by the accused to his friend\nwas unambiguous and unmistakably conveyed that the accused was the perpetrator of the crime and the testimony",
+            "score": 0.6917,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "f62e7cef-ad5b-44c4-bc4b-6d785a6f8c19",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 82,
+            "text": "has been conferred under any law for the time being in force.] \n (2) The Magistrate shall, befo re recording any such confession, explain to the person making it that he is not \nbound to make a confession and that, if he does so, it may be used as evidence against him; and the Magistrate shall \nnot record any such confession unless, upon questioning th e person making it, he has reason to believe that it is \nbeing made voluntarily.",
+            "score": 0.6717,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "f073b3c2-31b3-42c5-814b-d4035299cbfa",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 432,
+            "text": "offence.\nSection 30 is an exception to the general rule that confession is only an evidence against the confessor and not\nagainst the others.",
+            "score": 0.6281,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.7273270999994565
+      },
+      {
+        "id": "t11",
+        "ok": true,
+        "ttft_s": 2.4830672000007326,
+        "answer": "The police may arrest a person without a warrant when:\n\n- The officer **personally witnesses** the commission of a **cognizable, non‑bailable offence** (e.g., offences listed under sections 184, 185, 197 of the Motor Vehicles Act)[2].  \n- A **private person** (or the police) can also make such an arrest if the offence is **non‑bailable and cognizable** and is committed **in the presence of the arresting person**[4].  \n- After the arrest, the police must **produce the person before the nearest magistrate or the officer in charge of a police station without unnecessary delay**, and the person cannot be detained for more than **24 hours** before that production[5].  \n\nThese provisions govern warrant‑less arrests under the current procedural law.",
+        "citations": [
+          2,
+          4,
+          5
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "4e0599f5-2827-4b7e-84d8-c0e8748f80c4",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 481,
+            "text": "Test your knowledge\nChoose the correct answer\nWhen a person is arrested without a warrant, he/she can be kept in the custody not\nmore than:\n(a) 24 hours\n(b) 48 hours\n(c) 72 hours\n(d) 15 days\nCorrect Answer: (a)\nWARRANT OF ARREST\nEvery warrant of arrest issued by a Court under this Code shall be in writing, signed by the presiding officer of\nsuch Court, and shall bear the seal of the Court. Such warrant shall remain in force until it is cancelled by the",
+            "score": 0.7322,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "b875dc9d-6a86-484e-a999-7b7ee5996edd",
+            "title": "Motor Vehicles Act, 1988",
+            "file": "MotorVehiclesAct_pdf.pdf",
+            "page": 92,
+            "text": "the State Government may, by notification in the Official Gazette, authorise.] \n202. Power to arrest without warrant.—(1) A police officer in uniform may arrest without warrant \nany person who in his presence commits an offence punishable under section 184 or secti on 185 or \nsection 197: \nProvided that any person so arrested in connection with an offence punishable under section 185 \nshall, within two hours of his arrest, be subjected to a medical examination referred to in sections 203 and",
+            "score": 0.7268,
+            "cited": true
+          },
+          {
+            "id": 3,
+            "chunk_id": "d5eceb99-4e0e-4bc7-af33-02b8d86a5635",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 492,
+            "text": "unnecessary delay. When a person is arrested under a warrant, Section 76 becomes applicable, and\nwhen he is arrested without a warrant, he can be kept into custody for period not exceeding 24 hours,\nand before the expiry of that period he is to be produced before the nearest Magistrate, who can order\nhis detention for a term not exceeding 15 days, or he can be taken to a Magistrate, under whose",
+            "score": 0.7199,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "a8fd13fb-efc4-44e3-9281-f31e0edfdca8",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 492,
+            "text": "person without a warrant.\n– Further, a private person may arrest or cause to be arrested any person who in his presence commits\na non-bailable and cognizable offence or who is a proclaimed offender. Furthermore, the Magistrate\nhas been given power to arrest a person who has committed an offence in his presence and also\ncommit him to custody.\n– Whether the arrest to be made is with a warrant or without a warrant, it is necessary that in making",
+            "score": 0.715,
+            "cited": true
+          },
+          {
+            "id": 5,
+            "chunk_id": "7be7eda9-3f38-4491-a426-046fd7bd15e3",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 45,
+            "text": "56. Person arrested to be taken before Magistrate or officer in charge of police station. —A \npolice officer making an arrest without warrant shall, without unnecessary delay and subject to the \nprovisions herein contained as to bail, take or send the person arrested before a Magistrate having \njurisdiction in the case, or before the officer in charge of a police station. \n57. Person arrested not to be detained more than twenty -four h ours.—No police officer shall",
+            "score": 0.7113,
+            "cited": true
+          }
+        ],
+        "e2e_s": 2.880713200000173
+      },
+      {
+        "id": "t12",
+        "ok": true,
+        "ttft_s": 0.9432923000003939,
+        "answer": "**Answer**\n\nWhen an oral report of a cognizable offence is made, the police officer must:\n\n1. Record the information **in writing** in the FIR book (or the form prescribed by the State Government) at the place of the informant’s choice, in the presence of an interpreter or special educator if required[1].  \n2. **Video‑graph** the entire recording of the oral statement[1][2].  \n3. Obtain, as soon as possible, a **statement of the informant before a Judicial Magistrate** under Section 164(5A) (clause a)[2].  \n4. Provide the informant with a **free copy** of the recorded information immediately[2].  \n\nThese steps ensure that an oral complaint is captured accurately, preserved in both written and visual form, and later verified before a magistrate.",
+        "citations": [
+          1,
+          2
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "fbdb604a-00da-4349-ae91-0b8d853f0c11",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 78,
+            "text": "1860) is alleged to have been committed or a ttempted, is temporarily or permanently mentally or physically \ndisabled, then such information shall be recorded by a police officer, at the residenc e of the person seeking to \nreport such offence or a t a convenient place of such person’s choice, in the pre sence of an interpreter or a \nspecial educator, as the case may be; \n(b) the recording of such information shall be video graphed;",
+            "score": 0.6745,
+            "cited": true
+          },
+          {
+            "id": 2,
+            "chunk_id": "d146e81d-a1dd-4ef8-b839-d7c1a75d8f80",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 78,
+            "text": "(b) the recording of such information shall be video graphed; \n(c) the police officer shall get the statement of the person recorded by a Judicial Magistrate under clause ( a) \nof sub-section (5A) of section 164 as soon as possible.] \n(2) A copy of the information as recorded under sub-section (1) shall be given forthwith, free of cost, to the informant. \n(3) Any person aggrieved by a refusal on the part of an officer in charge of a police statio n to record the",
+            "score": 0.6198,
+            "cited": true
+          },
+          {
+            "id": 3,
+            "chunk_id": "17f3fed9-7e14-4da6-8073-a33fd139ec44",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 90,
+            "text": "of the offence upon a police report and to try the accused or commit him for trial, or, if the offence is bailable and",
+            "score": 0.6065,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "6c3a1a1b-9cfa-41e1-897b-1db3aca5a52a",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 485,
+            "text": "information about the alleged criminal activities so as to punish the guilty.\nFor the purpose of enabling the police to start investigation, it is open to the Magistrate to direct the police to\nregister an FIR. There is nothing illegal in doing so. After all registration of an FIR involves only the process of\nentering the substance of the information relating to the commission of the cognizable offence in a book kept by",
+            "score": 0.6035,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "2621841d-7ed5-48ae-abb5-53d157b40af1",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 493,
+            "text": "shall be entered in a book kept by such officer in such form as may be prescribed by the State\nGovernment in this behalf. The above information given to a police officer and reduced to writing is\nknown as First Information Report (FIR). The investigation of the case proceeds on this information\nonly.\n– In case of a cognizable offence the police officer may conduct investigations without the order of a",
+            "score": 0.5953,
+            "cited": false
+          }
+        ],
+        "e2e_s": 1.4205237999995006
+      },
+      {
+        "id": "t13",
+        "ok": true,
+        "ttft_s": 0.42723900000055437,
+        "answer": "The sources provided do not specify who is entitled to file a complaint under the Consumer Protection Act, 2019.",
+        "citations": [],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "c87be4ee-320a-4885-9ef1-225bcd4b569b",
+            "title": "Consumer Protection Act, 2019",
+            "file": "ConsumerProtectionAct_pdf.pdf",
+            "page": 13,
+            "text": "or to the Commissioner of a regional office, as the case may be.\n17. A complaint relating to violation of consumer rights or unfair trade practices or\nfalse or misleading advertisements which are prejudicial to the interests of consumers as a\nclass, may be forwarded either in writing or in electronic mode, to any one of the authorities,\nnamely, the District Collector or the Commissioner of regional office or the Central Authority.\n18. (1) The Central Authority shall—",
+            "score": 0.6317,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "a16350b0-d944-4a58-ac7a-9982a2bc5225",
+            "title": "Consumer Protection Act, 2019",
+            "file": "ConsumerProtectionAct_pdf.pdf",
+            "page": 1,
+            "text": "Short title,\nextent,\ncommencement\nand\napplication.\nTHE CONSUMER PROTECTION ACT, 2019\nNO. 35 OF  2019\n[9th August, 2019.]\nAn Act to provide for protection of the interests of consumers and for the said\npurpose, to establish authorities for timely and effective administration and\nsettlement of consumers' disputes and for matters connected therewith or\nincidental thereto.\nBE it enacted by Parliament in the Seventieth Year of the Republic of India as follows:—\nCHAPTER I\nPRELIMINARY",
+            "score": 0.6146,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "a21dda32-ec6c-41ff-800a-b57bcf768501",
+            "title": "Consumer Protection Act, 2019",
+            "file": "ConsumerProtectionAct_pdf.pdf",
+            "page": 13,
+            "text": "(c) intervene in any proceedings before the District Commission or the State\nCommission or the National Commission, as the case may be, in respect of any allegation\nof violation of consumer rights or unfair trade practices;\n(d) review the matters relating to, and the factors inhibiting enjoyment of,\nconsumer rights, including safeguards provided for the protection of consumers under\nany other law for the time being in force and recommend appropriate remedial measures",
+            "score": 0.6095,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "efd9bc24-9d85-44fb-a949-eb41baefaf9a",
+            "title": "Consumer Protection Act, 2019",
+            "file": "ConsumerProtectionAct_pdf.pdf",
+            "page": 13,
+            "text": "reference made to him by the Central Authority or the Commissioner of a regional office,\ninquire into or investigate complaints regarding violation of rights of consumers as a class,\non matters relating to violations of consumer rights, unfair trade practices and false or\nmisleading advertisements, within his jurisdiction and submit his report to the Central Authority\nor to the Commissioner of a regional office, as the case may be.",
+            "score": 0.6073,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "77d74265-00e7-490c-a937-41840ded8f76",
+            "title": "Consumer Protection Act, 2019",
+            "file": "ConsumerProtectionAct_pdf.pdf",
+            "page": 31,
+            "text": "State Commission or the National Commission, as the case may be, shall record settlement of\nthe issues which have been so settled and continue to hear other issues involved in such\nconsumer dispute.\n(3) Where the consumer dispute could not be settled by mediation, the District\nCommission or the State Commission or the National Commission, as the case may be, shall\ncontinue to hear all the issues involved in such consumer dispute.\nCHAPTER VI\nP\nRODUCT LIABILITY",
+            "score": 0.6067,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.47767469999962486
+      },
+      {
+        "id": "t14",
+        "ok": true,
+        "ttft_s": 0.366222700000435,
+        "answer": "The punishment for theft is imprisonment for a term which may extend to **three years**, or a fine, or both[1].",
+        "citations": [
+          1
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "5477960e-cb69-4ee3-aabe-8068e5c0140a",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 89,
+            "text": "Here, as A does not take dishonestly, he does not commit theft. \n379. Punishment for theft .—Whoever commits theft shall be punished with imprisonment of either \ndescription for a term which may extend to three years, or with fine, or with both. \n380. Theft in dwelling house, etc .—Whoever commits theft in any building, tent or vessel, which \nbuilding, tent or vessel is used as a human dwelling, or used for the custody of property, shall be punished",
+            "score": 0.7449,
+            "cited": true
+          },
+          {
+            "id": 2,
+            "chunk_id": "5410214f-f7a2-4ff8-bc3b-64e3021272ae",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 90,
+            "text": "punished with imprisonment of either description for a term which may extend to ten years, and shall also \nbe liable to fine; an d, if the offence be punishable under section 377 of this Code, may be punished with \n1[imprisonment for life]. \nOf Robbery and Dacoity \n390. Robbery.—In all robbery there is either theft or extortion. \nWhen theft is robbery .—Theft is “robbery” if, in order to the committing of the theft, or in",
+            "score": 0.7276,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "4c7d146a-e019-407c-aab0-913d92dfee5a",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 89,
+            "text": "a term which may extend to seven years, and shall also be liable to fine.  \n382. Theft after preparation made for causing death, hurt or restraint in order to  the \ncommitting of the theft .—Whoever commits theft, having made preparation  for causing death, or hurt, \nor restraint, or fear of death, or of hurt, or of restraint, to any person, in order to the committing of such \ntheft, or in order to the effecting of his escape after the committing of such theft , or in order to the",
+            "score": 0.724,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "6990e928-313e-424e-a3b2-d6fca8f67087",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 215,
+            "text": "such theft, or to retiring after committing \nit, or to retaining  property taken by it. \nRigorous imprisonment \nfor 10 years and fine. \nDitto Ditto Magistrate of \nthe first \nclass. \n \n \n \n      \n                                                 \n1. Ins. by Act 22 of 2018, s. 24 (w.e.f. 21-4-2018). \n2.  Subs. by Act 30 of 2001, s. 3 and the Second Sch., for  the entries relating to s. 377 (w.e.f. 3-9-2001).",
+            "score": 0.7005,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "13947d6a-14cb-492e-96dd-c6671462d196",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 92,
+            "text": "be punished with 1[imprisonment for life], or with rigorous imprisonment for a term which may extend to \nten years, and shall also be liable to fine. \n401. Punishment for belonging to gang of thieves .—Whoever, at any time after the passing of this \nAct, shall belong to any wandering or other gang of p ersons associated for the purpose of habitually \ncommitting theft or robbery, and not being a gang of thugs or dacoits, shall be punished with rigorous",
+            "score": 0.6896,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.4240542000006826
+      },
+      {
+        "id": "t15",
+        "ok": true,
+        "ttft_s": 2.1703250999999,
+        "answer": "The offence of cruelty to a woman by her husband or his relatives is punishable with **imprisonment for a term which may extend to three years and also a fine**[2].  \n\n- The same penalty is reflected in the Code of Criminal Procedure (the BNS, effective from 1 July 2024) which makes the offence cognizable when a complaint is made by the aggrieved woman or a related person[1].  \n- “Cruelty” is defined to include conduct likely to drive the woman to suicide or cause grave injury to her life, limb, or health, whether mental or physical[3].",
+        "citations": [
+          1,
+          2,
+          3
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "1e93876c-b9e7-4dab-b70c-c9aa5857f126",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 222,
+            "text": "222 \n \n1 2 3 4 5 6 \n1[CHAPTER XXA.—OF CRUELTY BY HUSBAND OR RELATIVES OF HUSBAND \n498A Punishment for subjecting a married \nwoman to cruelty. \nImprisonment for three years and \nfine. \nCognizable if \ninformation relating \nto the commission of \nthe offence is given \nto an officer  in \ncharge of a police \nstation by the person \naggrieved by the \noffence or by any \nperson related to her \nby blood, marriage  \nor adoption or if there \nis no such relative, by \nany public ser vant \nbelonging to such",
+            "score": 0.7773,
+            "cited": true
+          },
+          {
+            "id": 2,
+            "chunk_id": "766b7178-cf99-4685-8a9b-7d5b25b380bd",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 108,
+            "text": "such woman, shall be punishe d with imprisonment of either description for a term which may extend to \ntwo years, or with fine, or with both. \n1[CHAPTER XXA \nOF CRUELTY BY HUSBANDOR RELATIVESOF HUSBAND \n498A. Husband or relative of husband of a woman subjecting her to cruelt y.—Whoever, being \nthe husband or the relative of the husband of a woman, subjects such woman to cruelty shall be punished \nwith imprisonment for a term which may extend to three years and shall also be liable to fine.",
+            "score": 0.7538,
+            "cited": true
+          },
+          {
+            "id": 3,
+            "chunk_id": "279e48ca-e2bd-4b06-abe9-7f9e2e54fae7",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 108,
+            "text": "with imprisonment for a term which may extend to three years and shall also be liable to fine. \nExplanation.—For the purposes of this section, “cruelty” means— \n(a) anywilful conduct which is of such a nature as is likely to drive the woman to commit suicide \nor to cause grave injury or danger to life, limb or health (whether menta l or physical) of the woman; \nor \n(b) harassment of the woman where such harassment is with a view to coercing her or any person",
+            "score": 0.7179,
+            "cited": true
+          },
+          {
+            "id": 4,
+            "chunk_id": "71749aa8-d991-4f3e-b6eb-f6cee1c53ea9",
+            "title": "Indian Evidence Act, 1872",
+            "file": "IndianEvidenceAct_pdf.pdf",
+            "page": 48,
+            "text": "her marriage and that her husband or such relative of her husband had subjected her to cruelty, the co urt \nmay presume, having regard to all the other circums tances of the case, that such suicide had been abet ted \nby her husband or by such relative of her husband. \nExplanation.  –– For the purposes of this section, “cruelty” sha ll have the same meaning as in      \nsection 498A of the Indian Penal Code (45 of 1860).]",
+            "score": 0.5826,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "bcb3e301-0ff2-43f1-a9ae-f12af45f2f13",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 102,
+            "text": "person related to her by blood, marriage or adoption].   \n(2) For the purposes of sub -section (1), no person other than the husband of the woman shall be deemed to be \naggrieved by any offence punishable under section 497 or section 498 of the said Code:  \nProvided that in the absence of the husband, some person who had care of  the woman on his behalf at the time \nwhen such offence was committed may, with the leave of the Court, make a complaint on his behalf.",
+            "score": 0.5567,
+            "cited": false
+          }
+        ],
+        "e2e_s": 2.4455741999991005
+      },
+      {
+        "id": "t16",
+        "ok": true,
+        "ttft_s": 0.5443044999992708,
+        "answer": "The minimum punishment for dowry death is imprisonment for **seven years**.  \n\n- Section 304B of the IPC provides that whoever commits dowry death shall be punished with imprisonment for a term **not less than seven years**, which may extend to life imprisonment[1][2].",
+        "citations": [
+          1,
+          2
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "c2d539bd-1296-4733-ad7c-15a70c1f5119",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 72,
+            "text": "such husband or relative shall be deemed to have caused her death. \nExplanation.—For the purposes of this sub -section, “dowry” shall have the same meaning as in \nsection 2 of the Dowry Prohibition Act, 1961 (28 of 1961). \n(2) Whoever commits dowry death shall be punished with imprisonment for a term which shall not be \nless than seven years but which may extend to imprisonment for life.] \n305. Abetment of suic ide of child or insane person .—If any person under eighteen years of age,",
+            "score": 0.7104,
+            "cited": true
+          },
+          {
+            "id": 2,
+            "chunk_id": "2b805b53-e840-4a12-a925-0f79788c0c2b",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 72,
+            "text": "3[304B. Dowry death.—(1) Where the death of a woman is caused by any burns or bodily injury or \noccurs otherwise than under normal circumstances within seven years of her marriage and it is shown that \nsoon before her death she was subjected to cruelty or harassment by her husband or any relative of her \nhusband for, or in connection with, any demand for dowry, such death shall be c alled “dowry death”, and \nsuch husband or relative shall be deemed to have caused her death.",
+            "score": 0.707,
+            "cited": true
+          },
+          {
+            "id": 3,
+            "chunk_id": "01c5678d-21d9-4c50-b998-4308d9526a33",
+            "title": "Indian Evidence Act, 1872",
+            "file": "IndianEvidenceAct_pdf.pdf",
+            "page": 48,
+            "text": "section 498A of the Indian Penal Code (45 of 1860).] \n3[113B. Presumption as to dowry death.  ––-When the question is whether a person has commi tted \nthe dowry death of a woman and it is shown that soo n before her death such woman had been subjected \nby such person to cruelty or harassment for, or in connection with, any demand for dowry, the court sh all \npresume that such person had caused the dowry death.",
+            "score": 0.6784,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "4e62f881-9db5-4f8d-bf6a-6523a253a2ab",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 72,
+            "text": "to cause death, or to cause such bodily injury as is likely to cause death. \n2[304A. Causing death by negligence .—Whoever causes the death of any person by doing any rash \nor negligent act not amounting to culpable homicide , shall be punished with imprisonment of either \ndescription for a term which may extend to two years, or with fine, or with both.] \n3[304B. Dowry death.—(1) Where the death of a woman is caused by any burns or bodily injury or",
+            "score": 0.6084,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "15dfa215-5f75-4a98-8532-657543c5883e",
+            "title": "Indian Evidence Act, 1872",
+            "file": "IndianEvidenceAct_pdf.pdf",
+            "page": 48,
+            "text": "presume that such person had caused the dowry death.  \nExplanation.  –– For the purposes of this section, “dowry death”  shall have the same meaning as in \nsection 304B of the Indian Penal Code (45 of 1860).] \n114. Court may presume existence of certain facts.  –– The Court may presume the existence of any \nfact which it thinks likely to have happened, regar d being had to the common course of natural events,",
+            "score": 0.5546,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.7106079999994108
+      },
+      {
+        "id": "t17",
+        "ok": true,
+        "ttft_s": 0.4891310999992129,
+        "answer": "The provided sources do not contain information on who is entitled to claim maintenance under the Code of Criminal Procedure. Consequently, I cannot answer the question based on the given references.",
+        "citations": [],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "31f8b234-9dc6-4713-90bd-5ae442a59cc7",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 474,
+            "text": "liability for criminal offences by Directors, Secretary, Manager or other Principal Officer under different corporate\nand industrial laws. Nevertheless, it is necessary that company secretaries and other secretarial staff should be\nfamiliar with some of the relevant features of the Code. It is an Act to consolidate and amend the law relating to\nthe procedure to be followed in apprehending the criminals, investigating the criminal cases and their trial before",
+            "score": 0.6298,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "9e6649a7-6633-48c2-9abf-c9be78c65537",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 255,
+            "text": "Section 345, 316 and 348 of the Code of Criminal Procedure, 1973.\nThus, we see that Section 11(1) gives wide powers to various authorities. However, power to lay-down its own\nprocedure is subject to rules made by the appropriate Government. The Industrial Disputes (Central) Rules,\n1957 has prescribed a detailed procedure which these authorities are required to follow. (See Rules 9 to 30).",
+            "score": 0.608,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "b5dd72a5-dcbb-4832-9745-a44f9de31ae5",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 473,
+            "text": "has forged to protect itself against anti-social\nbehaviour.\nThe law of criminal procedure is meant to be\ncomplimentary to criminal law. It is intended to\nprovide a mechanism for the enforcement of\ncriminal law. The Code of Criminal Procedure\ncreates the necessary machinery for\napprehending the criminals, investigating the\ncriminal cases, their trials before the criminal\ncourts and imposition of proper punishment on\nthe guilty person. The Code enumerates the",
+            "score": 0.5881,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "a7af5017-dcec-44f1-adb7-d92973569803",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 198,
+            "text": "warrant issued under the Code.\nTest your knowledge\nChoose the correct answer\nWhich Section of the Contract Labour (Regulation and Abolition) Act, 1970, deals\nwith cognizance of offence?\n(a) Section 26\n(b) Section 27\n(c) Section 28\n(d) Section 29\nCorrect answer: (a)\nMAINTENANCE OF RECORDS & REGISTERS\nSection 29 states that every principal employer and every contractor shall maintain such registers and records\nin such forms as may be prescribed.",
+            "score": 0.5756,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "9eecfb5b-75b9-4e55-b66f-b8eee3f2f82d",
+            "title": "Constitution of India",
+            "file": "ConstitutionOfIndia_pdf.pdf",
+            "page": 321,
+            "text": "Civil Procedure, 1908, or, as the case may be, the Code of Criminal Procedure, 18981, as he deems appropriate, and thereupon the said Council, court or officer shall try the suits, cases or offences in exercise of the powers so conferred.(2) The Governor may withdraw or modify any of the powers conferred on a District Council, Regional Council, court or officer under sub-paragraph (1) of this paragraph.(3) Save as expressly provided in this paragraph, the Code of Civil Procedure, 1908, and the",
+            "score": 0.5719,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.5584421000003204
+      },
+      {
+        "id": "t18",
+        "ok": true,
+        "ttft_s": 1.5101826999998593,
+        "answer": "The provided sources do not contain information about the article that abolishes untouchability.",
+        "citations": [],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "8f6a6bf6-a92e-494d-8cdf-9ddaf4df5d44",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 306,
+            "text": "19(1)(g). To remove the infirmity the Constitution (First Amendment) Act, 1951 was passed which permitted\ncreation by law of State monopoly in respect of motor transport business. The Court held that the Article by\nreason of its language could not be read as having obliterated the entire operation of the inconsistent law or\nhaving wiped it altogether from the statute book. In case of a pre-Constitution law or statute, it was held, that the",
+            "score": 0.585,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "40116ee1-f97a-4f91-812a-5df4ac44031e",
+            "title": "Constitution of India",
+            "file": "ConstitutionOfIndia_pdf.pdf",
+            "page": 175,
+            "text": "to in this article shall not be deemed to be an amendment of this Constitution for the purposes of article 368 notwithstanding that it contains any provision which amends or has the effect of amending this Constitution.]",
+            "score": 0.5672,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "c5313f43-8df6-4a6e-a259-703b2c324d44",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 303,
+            "text": "(v) Cultural and Educational Rights – Articles 29 and 30;\n(vi) Right to Constitutional Remedies – Articles 32.\n[Earlier the right to property under Article 31 was also guaranteed as a Fundamental Right which has been\nremoved by the 44th Constitutional Amendment Act, 1978. Now right to property is not afundamental right, it is\nnow only a legal right.\nApart from this, Articles 12 and 13 deal with definition of ‘State’ and ‘Law’ respectively. Articles 33 to 35 deal with",
+            "score": 0.5619,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "947a46b8-3c90-41b8-9564-a63ea7744b9b",
+            "title": "Constitution of India",
+            "file": "ConstitutionOfIndia_pdf.pdf",
+            "page": 203,
+            "text": "of any existing law except in so far  as the President may by order otherwise direct; and nothing in article 301 shall affect the operation  of any law made before the commencement of the Constitution (Fourth Amendment) Act, 1955, in so far as it  relates to, or prevent Parliament or the Legislature of a State from making any law relating to, any such matter as is referred to in sub-clause (ii) of clause (6) of article 19.]306. [Power  of  certain States in  Part B  of  the First Schedule to",
+            "score": 0.5509,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "0c4f596c-1337-4a95-99bd-d7b4ad50cc48",
+            "title": "Constitution of India",
+            "file": "ConstitutionOfIndia_pdf.pdf",
+            "page": 49,
+            "text": "or order of any court or Tribunal to the contrary, each of the said Acts and Regulations shall, subject to the power of any competent Legislature to repeal or amend it, continue in force.]3[31C. Saving of laws giving effect to certain directive principles.—Notwithstanding anything contained in article 13, no law giving effect to the policy of the State towards securing 4[all or any of the principles laid down in Part IV] shall be deemed to be void on the ground that it is inconsistent with, or",
+            "score": 0.5493,
+            "cited": false
+          }
+        ],
+        "e2e_s": 1.5493991999992431
+      },
+      {
+        "id": "t19",
+        "ok": true,
+        "ttft_s": 0.7097776999999041,
+        "answer": "**Answer**\n\n- Under the **CrPC**, a police officer must **inform the arrested person of the grounds/reasons for the arrest** and of his right to be released on bail (and to arrange sureties) at the time of arrest[2].  \n- The officer must also **record in writing the reasons for not making an arrest** when arrest is not required[1], and **provide information about the place of detention** to the arrested person’s nominated friends or relatives[5].  \n\n**Constitutional requirement**\n\n- The Constitution (Article 22(1)) requires that a person arrested be informed of the grounds of arrest, but none of the supplied sources contain the constitutional text. Therefore, the constitutional requirement cannot be quoted from the given material.",
+        "citations": [
+          1,
+          2,
+          5
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "12af91c3-bc33-4c20-8223-e166a9702b4f",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 40,
+            "text": "(e) as unless such person is arrested, his presence in the Court whenever required cannot \nbe ensured, \nand the police officer shall record while making such arrest, his reasons in writing: \n2[Provided that a police officer shall, in all cases where the arrest of a person is not required under \nthe provisions of this sub-section, record the reasons in writing for not making the arrest.]; \n(ba) against whom credible information has been received that he has committed a cognizable",
+            "score": 0.6873,
+            "cited": true
+          },
+          {
+            "id": 2,
+            "chunk_id": "e0e6b8df-5a37-4631-b41f-de99eff30017",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 43,
+            "text": "offence for which he is arrested or other grounds for such arrest. \n(2) Where a police officer arrests without warrant any person other than a person accused of a non-bailable \noffence, he shall inform the person arrested that he is entitled to be released on bail and that he may arrange for \nsureties on his behalf. \n2[50A. Obligation of person making arrest to inform about the arrest, etc., to a nominated person.—(1)",
+            "score": 0.6256,
+            "cited": true
+          },
+          {
+            "id": 3,
+            "chunk_id": "82d65d41-3a40-4935-86b7-b9ab96ae231b",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 41,
+            "text": "an arrest shall— \n(a) bear an accurate, visible and clear identification of his name which will facilitate easy \nidentification; \n(b) prepare a memorandum of arrest which shall be— \n(i) attested by at least one witness, who is a member of the family of the person arrested or a \nrespectable member of the locality where the arrest is made; \n(ii) countersigned by the person arrested; and \n(c) inform the person arrested, unless the memorandum is attested by a member of his family, that",
+            "score": 0.595,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "9cce3019-7c79-4cfe-8f50-950547700ac4",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 41,
+            "text": "41 \n \n (i) for whose arrest any requisition, whether written or oral, has been received from another \npolice officer, provided that the requisition specifies the person to be arrested and the offence or other \ncause for which the arrest is to be made and it appears therefrom that the person might lawfully be \narrested without a warrant by the officer who issued the requisition. \n1[(2) Subject to the provisions of section 42, no person concerned in a non -cognizable offence or",
+            "score": 0.5926,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "14dbec9d-f4df-42ad-9ba1-13560ffbef7c",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 43,
+            "text": "Every police officer or other person making any arrest under this Code shall forthwith give the information \nregarding such arrest and place where the arrested person is being held to any of his friends, relatives or such \nother persons as may be disclosed or nominated by the arrested person for the purpose of giving such \ninformation. \n(2) The police officer shall inform the arrested person of his rights under sub -section ( 1) as soon as he is \nbrought to the police station.",
+            "score": 0.5796,
+            "cited": true
+          }
+        ],
+        "e2e_s": 1.0429094999999506
+      },
+      {
+        "id": "t20",
+        "ok": true,
+        "ttft_s": 0.33311260000118637,
+        "answer": "An employee becomes entitled to gratuity after **five years of continuous service** with the employer.  \n\n- The five‑year requirement is waived if the employee’s employment ends because of death or disablement due to accident or disease[4].  \n- The same rule is reiterated in other study material excerpts, confirming that five years of continuous service is the general threshold for gratuity eligibility[2][3].",
+        "citations": [
+          2,
+          3,
+          4
+        ],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "8698e4aa-ad6c-4396-ba39-d57687d09dfe",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 153,
+            "text": "period of three months immediately preceding the termination of employment.\nOR\nSince the Registered Establishment is a seasonal establishment, gratuity was paid at the rate of\nseven days for each season.\n(b) In the event of death or disablement of any employee due to accident or disease, the gratuity was\npaid without the requirement of five years of continuous service.\n(c) In the event of death, the gratuity was paid to nominees or legal heir(s) or where the person entitled",
+            "score": 0.8005,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "657dd92d-1b52-4409-894e-e1a9bb65fff8",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 154,
+            "text": "Act even if the number of persons employed falls bellow 10 at any subsequent stage.\n– An employee is eligible for receiving gratuity payment only after he has completed five years of\ncontinuous service. This condition of five years is not necessary if the termination of the employment\nof an employee is due to death or disablement. The maximum amount of Gratuity payable is Rs. 10\nlakhs.\n– Each employee is required to nominate one or more member of his family, as defined in the Act, who",
+            "score": 0.7699,
+            "cited": true
+          },
+          {
+            "id": 3,
+            "chunk_id": "2b22c2a5-c6c5-47b0-bf29-a82c12a8e850",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 145,
+            "text": "disablement due to accident or disease, However,\nthe completion of continuous service of five years\nshall not be necessary where the termination of\nthe employment of any employee is due to death\nor disablement. The employer shall pay gratuity\nto an employee at the rate of fifteen days' wages\nbased on the rate of wages last drawn by the\nemployee concerned for every completed year of\nservice or part thereof in excess of six months.\nThe object of this lesson is to impart knowledge",
+            "score": 0.7587,
+            "cited": true
+          },
+          {
+            "id": 4,
+            "chunk_id": "bd11c3fa-62f5-44e1-8922-2a78b7e63de3",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 149,
+            "text": "any other allowance. [Section 2(s)]\nWHEN IS GRATUITY PAYABLE?\nAccording to Section 4(1) of the Payment of Gratuity Act, 1972, gratuity shall be payable to an employee on the\ntermination of his employment after he has rendered continuous service for not less than five years:\n(a) on his superannuation, or\n(b) on his retirement or resignation, or\n(c) on his death or disablement due to accident or disease.",
+            "score": 0.758,
+            "cited": true
+          },
+          {
+            "id": 5,
+            "chunk_id": "d45f929a-7f94-48cb-90e4-4ae11907e97d",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 145,
+            "text": "schemes, therefore, serve as instruments of\nsocial security and their significance in a\ndeveloping country like India where the general\nincome level is low cannot be over emphasised.\nGratuity shall be payable to an employee on the\ntermination of his employment after he has\nrendered continuous service for not less than five\nyears:- (i) on his superannuation; or (ii) on his\nretirement or resignation; or (iii) on his death or\ndisablement due to accident or disease, However,",
+            "score": 0.725,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.5047897000004014
+      },
+      {
+        "id": "t21",
+        "ok": true,
+        "ttft_s": 1.1312268000001495,
+        "answer": "The provided sources do not contain any information about the rate of capital gains tax applicable to the sale of listed shares. Consequently, I cannot give a specific rate based on the cited material.",
+        "citations": [],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "579e7c02-5550-4e73-a27f-73c0d895a969",
+            "title": "Constitution of India",
+            "file": "ConstitutionOfIndia_pdf.pdf",
+            "page": 347,
+            "text": "or air; taxes on railway fares and freights.90. Taxes other than stamp duties on transactions in stock exchanges and futures markets.91. Rates of stamp duty in respect of bills of exchange, cheques, promissory notes, bills of lading, letters of credit, policies of insurance, transfer of shares, debentures, proxies and receipts.1[92. *                  *                  *                  *                  *                  *]2[92A. Taxes on the sale or purchase of goods other than",
+            "score": 0.44,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "56191df9-eef9-4091-8a82-5673b825e2ae",
+            "title": "Constitution of India",
+            "file": "ConstitutionOfIndia_pdf.pdf",
+            "page": 347,
+            "text": "THE CONSTITUTION OF  INDIA(Seventh Schedule) 31686. Taxes on the capital value of the assets, exclusive of agricultural land, of individuals and companies; taxes on the capital of companies.87. Estate duty in respect of property other than agricultural land.88. Duties in respect of succession to property other than agricultural land. 89. Terminal taxes on goods or passengers, carried by railway, sea or air; taxes on railway fares and freights.90. Taxes other than stamp duties on transactions in",
+            "score": 0.4153,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "ef8964b9-ea8b-4488-a3a4-a4cad6578600",
+            "title": "Constitution of India",
+            "file": "ConstitutionOfIndia_pdf.pdf",
+            "page": 347,
+            "text": "*                  *                  *]2[92A. Taxes on the sale or purchase of goods other than newspapers, where such sale or purchase takes place in the course of inter-State trade or commerce.]3[92B. Taxes on the consignments of goods (whether the consignment is to the person making it or to any other person), where such consignment takes place in the course of inter-State trade or  commerce.]4[92C. *                  *                  *                  *                  *",
+            "score": 0.4121,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "42b64f72-edfa-4682-90b3-a787daeb98d3",
+            "title": "Constitution of India",
+            "file": "ConstitutionOfIndia_pdf.pdf",
+            "page": 257,
+            "text": "of the Central Government or the State or Union territory, as the case may be];(27) “sub-clause” means a sub-clause of the clause in which the expression occurs;(28) “taxation” includes the imposition of any tax or impost, whether general or local or special, and “tax” shall be construed accordingly; (29) “tax on income” includes a tax in the nature of an excess profits tax;4[(29A) “tax on the sale or purchase of goods” includes— (a) a tax on the transfer, otherwise than in pursuance of a",
+            "score": 0.3819,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "18a8f34a-a091-4c6f-b8dd-25ffbbf08767",
+            "title": "Industrial, Labour and General Laws (ICSI study material)",
+            "file": "LabourLaws_pdf.pdf",
+            "page": 137,
+            "text": "year in respect of his income, profits and gains during the year.\n(d) such further sums as are specified in respect of the employer in the Third Schedule.\n(iii) Calculation of direct tax payable by the employer\nUnder Section 7, any direct tax payable by the employer for any accounting year shall, subject to the following\nprovisions, be calculated at the rates applicable to the income of the employer for that year, namely:\n(a) in calculating such tax no account shall be taken of",
+            "score": 0.3766,
+            "cited": false
+          }
+        ],
+        "e2e_s": 1.21292529999846
+      },
+      {
+        "id": "t22",
+        "ok": true,
+        "ttft_s": 0.4125199000009161,
+        "answer": "The provided sources do not contain any provision of the Bharatiya Nyaya Sanhita (BNS) or indicate which section of the BNS prescribes the punishment for murder. They only refer to the Indian Penal Code (sections 302, 304, etc.) and the Code of Criminal Procedure. Consequently, I cannot give the BNS punishment or section based on the given material.",
+        "citations": [],
+        "sources": [
+          {
+            "id": 1,
+            "chunk_id": "b86a7162-de30-4c2b-b658-a13ee20de5dc",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 246,
+            "text": "punishable under section 193 of the Indian Penal Code, and within the cognizance of this Court. \n(6) On section 304—That you, on or about the              day of                    , at                   , committed \nculpable homicide not amounting to murder, causing the death of                                         , and thereby \ncommitted an offence punishable under section 304 of the Indian Penal Code, and within the cognizance \nof this Court.",
+            "score": 0.6019,
+            "cited": false
+          },
+          {
+            "id": 2,
+            "chunk_id": "5b5121cd-e850-447b-91e4-46052039a5a7",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 72,
+            "text": "72 \n \n302. Punishment for murder .—Whoever commits murder sha ll be punished with death or \n1[imprisonment for life], and shall also be liable to fine. \n303. Punishment for murder by life -convict.—Whoever, being under sentence of 1[imprisonment \nfor life], commits murder, shall be punished with death. \n304. Punishment for culpable homi cide not amounting to murder .—Whoever commits culpable \nhomicide not amounting to murder, shall be punished with 1[imprisonment for life], or imprisonment of",
+            "score": 0.5672,
+            "cited": false
+          },
+          {
+            "id": 3,
+            "chunk_id": "aa4350cf-25b4-4c56-9a7a-1198b3015950",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 247,
+            "text": "(c) And I hereby direct that you be tried by the said Court on the said charge. \n \n(Signature and seal of the Magistrate) \n \n[To be substituted for (b)]:— \n(2) On sections 302 and 304—First—That you, on or about the                 day of             , at           , \ncommitted murder by causing the death of                                      , and thereby committed an offence \npunishable under section 302 of the Indian Penal Code, and within the cognizance of the Court of \nSession.",
+            "score": 0.5663,
+            "cited": false
+          },
+          {
+            "id": 4,
+            "chunk_id": "24bc25a5-35ef-4edf-b2ab-c2157a81ef0a",
+            "title": "Indian Penal Code",
+            "file": "IPC_pdf.pdf",
+            "page": 36,
+            "text": "in this section. \n7*    *   *    *    *  \n8[121A. Conspiracy to commit offences punishable by section 121 .—Whoever within or without \n9[India] conspires to commit any of the offen ces punishable by section 121, 10*** or conspires to \noverawe, by means of criminal force or the show of criminal  force, 11[the Central Government or any \n12[State] Government 13***], shall be punished with 14[imprisonment for life], or with imprisonment of",
+            "score": 0.566,
+            "cited": false
+          },
+          {
+            "id": 5,
+            "chunk_id": "14d9cb1e-5c3d-464f-b793-5529d3a79960",
+            "title": "Code of Criminal Procedure, 1973",
+            "file": "CrPC_pdf.pdf",
+            "page": 182,
+            "text": "the Indian Penal Code (45 of 1860).] \nSTATE AMENDMENTS \nWest Bengal.— \nTo sub-section (1) of section 438 of the principal Act, the following proviso shall be added:— \n“Provided that where the apprehended accusation relates to an offence punishable with death, imprisonment for \n                                                 \n1. Ins. by Act 5 of 2009, s. 31 (w.e.f. 31-12-2009)  \n1. Ins. by Act 22 of 2018, s. 22 (w.e.f. 21-4-2018).",
+            "score": 0.5553,
+            "cited": false
+          }
+        ],
+        "e2e_s": 0.5843545999996422
+      },
+      {
+        "id": "t23",
+        "ok": false,
+        "error": "rate_limited",
+        "e2e_s": 0.034631499998795334
+      },
+      {
+        "id": "t24",
+        "ok": false,
+        "error": "rate_limited",
+        "e2e_s": 0.035408199999437784
+      },
+      {
+        "id": "t25",
+        "ok": false,
+        "error": "rate_limited",
+        "e2e_s": 0.035160899999027606
+      }
+    ],
+    "benchmark": {
+      "base_url": "http://127.0.0.1:8000",
+      "endpoint": "/ask",
+      "config": {
+        "sequential": 30,
+        "concurrent": 20,
+        "concurrency": 4,
+        "warmup": 2,
+        "delay_s": 2.0
+      },
+      "overall": {
+        "requests": 50,
+        "errors": 12,
+        "error_rate": 0.24,
+        "p50_s": 4.521,
+        "p95_s": 10.793,
+        "mean_s": 4.44,
+        "ttft_p50_s": null
+      },
+      "sequential": {
+        "requests": 30,
+        "errors": 0,
+        "error_rate": 0.0,
+        "p50_s": 3.555,
+        "p95_s": 6.313,
+        "mean_s": 3.293,
+        "ttft_p50_s": null
+      },
+      "concurrent": {
+        "requests": 20,
+        "errors": 12,
+        "error_rate": 0.6,
+        "p50_s": 7.12,
+        "p95_s": 16.093,
+        "mean_s": 8.741,
+        "ttft_p50_s": null,
+        "wall_s": 53.88
+      },
+      "errors_by_type": {
+        "http_503": 12
+      }
+    },
+    "baseline": {
+      "base_url": "http://127.0.0.1:8001",
+      "endpoint": "/ask",
+      "config": {
+        "sequential": 30,
+        "concurrent": 20,
+        "concurrency": 4,
+        "warmup": 2,
+        "delay_s": 2.0
+      },
+      "overall": {
+        "requests": 50,
+        "errors": 10,
+        "error_rate": 0.2,
+        "p50_s": 2.863,
+        "p95_s": 11.731,
+        "mean_s": 4.512,
+        "ttft_p50_s": null
+      },
+      "sequential": {
+        "requests": 30,
+        "errors": 0,
+        "error_rate": 0.0,
+        "p50_s": 1.94,
+        "p95_s": 7.812,
+        "mean_s": 3.484,
+        "ttft_p50_s": null
+      },
+      "concurrent": {
+        "requests": 20,
+        "errors": 10,
+        "error_rate": 0.5,
+        "p50_s": 7.104,
+        "p95_s": 16.05,
+        "mean_s": 7.594,
+        "ttft_p50_s": null,
+        "wall_s": 64.74
+      },
+      "errors_by_type": {
+        "http_500": 10
+      },
+      "label": "baseline",
+      "timestamp": "2026-10-19 12:36:17"
+    },
+    "unanswerable": {
+      "n": 5,
+      "answered": 2,
+      "declined_rate": 1.0,
+      "per_item": [
+        {
+          "id": "t21",
+          "answered": true,
+          "declined": true
+        },
+        {
+          "id": "t22",
+          "answered": true,
+          "declined": true
+        },
+        {
+          "id": "t23",
+          "answered": false,
+          "declined": false
+        },
+        {
+          "id": "t24",
+          "answered": false,
+          "declined": false
+        },
+        {
+          "id": "t25",
+          "answered": false,
+          "declined": false
+        }
+      ]
+    }
+  },
+  "caveats": [
+    "This run hit provider rate/daily limits: 3 answer requests failed, 28 RAGAS metric calls and 18 citation checks could not be judged, and 12 benchmark requests returned errors. Scores cover only what was measured; re-run with fresh quota for complete numbers.",
+    "Reference answers and relevance labels were drafted by an AI assistant from the indexed text and have not been reviewed by a lawyer.",
+    "25 questions: small-sample metrics, useful for regressions rather than absolute claims.",
+    "LLM-judged metrics (RAGAS, citation correctness) depend on the judge model and can vary between runs.",
+    "Latency is dominated by the Groq free tier (8K tokens/minute): concurrent requests queue or fail on rate limits.",
+    "The latency benchmark runs first and alone, like the baseline; quality metrics run afterwards."
+  ]
+}

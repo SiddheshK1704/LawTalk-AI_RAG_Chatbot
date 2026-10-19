@@ -1,0 +1,44 @@
+{
+  "base_url": "http://127.0.0.1:8001",
+  "endpoint": "/ask",
+  "config": {
+    "sequential": 30,
+    "concurrent": 20,
+    "concurrency": 4,
+    "warmup": 2,
+    "delay_s": 2.0
+  },
+  "overall": {
+    "requests": 50,
+    "errors": 10,
+    "error_rate": 0.2,
+    "p50_s": 2.863,
+    "p95_s": 11.731,
+    "mean_s": 4.512,
+    "ttft_p50_s": null
+  },
+  "sequential": {
+    "requests": 30,
+    "errors": 0,
+    "error_rate": 0.0,
+    "p50_s": 1.94,
+    "p95_s": 7.812,
+    "mean_s": 3.484,
+    "ttft_p50_s": null
+  },
+  "concurrent": {
+    "requests": 20,
+    "errors": 10,
+    "error_rate": 0.5,
+    "p50_s": 7.104,
+    "p95_s": 16.05,
+    "mean_s": 7.594,
+    "ttft_p50_s": null,
+    "wall_s": 64.74
+  },
+  "errors_by_type": {
+    "http_500": 10
+  },
+  "label": "baseline",
+  "timestamp": "2026-10-19 12:36:17"
+}

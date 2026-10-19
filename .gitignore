@@ -14,3 +14,5 @@ frontend/dist/
 .env
 
 *.json
+# Evaluation data and results are versioned
+!eval/*.json

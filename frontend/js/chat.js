@@ -1,267 +1,594 @@
-// Chat page logic: history, send, persist
+// LawTalk workspace: conversations (Supabase), streaming answers, evidence panel.
 import { supabase } from './supabase.js';
 import { requireAuth, logout, onAuthChange } from './auth.js';
-import { askAI } from './api.js';
+import { streamAsk } from './api.js';
+import { renderMarkdown, plainAnswer } from './markdown.js';
+import { initThemeToggles } from './theme.js';
 
-const messagesEl = document.getElementById('messages');
-const emptyState = document.getElementById('emptyState');
-const form = document.getElementById('chatForm');
-const input = document.getElementById('chatInput');
-const sendBtn = document.getElementById('sendBtn');
-const newChatBtn = document.getElementById('newChatBtn');
-const chatListEl = document.getElementById('chatList');
-const titleEl = document.getElementById('chatTitle');
-const userEmailEl = document.getElementById('userEmail');
-const avatarEl = document.getElementById('userAvatar');
-const logoutBtn = document.getElementById('logoutBtn');
-const sidebar = document.getElementById('sidebar');
-const openSidebarBtn = document.getElementById('openSidebar');
-const closeSidebarBtn = document.getElementById('closeSidebar');
+const $ = (id) => document.getElementById(id);
+const app = $('app');
+const scrollEl = $('scroll');
+const messagesEl = $('messages');
+const emptyState = $('emptyState');
+const form = $('chatForm');
+const input = $('chatInput');
+const sendBtn = $('sendBtn');
+const stopBtn = $('stopBtn');
+const chatListEl = $('chatList');
+const chatListEmpty = $('chatListEmpty');
+const searchEl = $('chatSearch');
+const titleEl = $('chatTitle');
+const evidenceBody = $('evidenceBody');
+const evidenceCount = $('evidenceCount');
+const toggleEvidenceBtn = $('toggleEvidence');
+const scrim = $('scrim');
+const statusEl = $('status');
+
+const mqDesktop = window.matchMedia('(min-width: 1024px)');
+const mqTablet = window.matchMedia('(min-width: 768px)');
 
 let session = null;
 let currentChatId = null;
+let chats = [];
+let busy = false;
+let controller = null;
+let sourcesColumn = true;       // set false if the messages table has no `sources` column
+const thread = [];              // assistant message records in the open conversation
 
-// Init
+const ICONS = {
+  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  retry: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-1.5zM8 7h6M8 11h6"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>',
+  arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  mark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 21h14M7 7h10M4 7l-2 6a3 3 0 0 0 6 0L6 7M18 7l-2 6a3 3 0 0 0 6 0l-2-6"/></svg>',
+};
+
+function el(tag, className, text) {
+  const n = document.createElement(tag);
+  if (className) n.className = className;
+  if (text != null) n.textContent = text;
+  return n;
+}
+function iconButton(icon, label, cls = 'icon-btn') {
+  const b = el('button', cls);
+  b.type = 'button';
+  b.setAttribute('aria-label', label);
+  b.dataset.tip = label;
+  b.innerHTML = ICONS[icon]; // static icon markup, no user data
+  return b;
+}
+function announce(msg) { statusEl.textContent = ''; setTimeout(() => { statusEl.textContent = msg; }, 30); }
+
+let toastTimer;
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+const storage = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode */ } },
+};
+
+/* ================= Init ================= */
+initThemeToggles();
 (async () => {
   session = await requireAuth();
   if (!session) return;
-  const user = session.user;
-  userEmailEl.textContent = user.email;
-  avatarEl.textContent = (user.email?.[0] || 'U').toUpperCase();
+  const email = session.user.email || '';
+  $('userEmail').textContent = email;
+  $('userAvatar').textContent = (email[0] || 'U').toUpperCase();
+  if (storage.get('lt.sidebar') === 'collapsed' && mqTablet.matches) app.classList.add('sidebar-collapsed');
   await loadChats();
+  input.focus();
 })();
 
-logoutBtn?.addEventListener('click', () => logout());
 onAuthChange((s) => { if (!s) window.location.href = 'index.html'; });
+$('logoutBtn').addEventListener('click', () => logout());
 
-openSidebarBtn?.addEventListener('click', () => sidebar.classList.remove('-translate-x-full'));
-closeSidebarBtn?.addEventListener('click', () => sidebar.classList.add('-translate-x-full'));
-
-newChatBtn.addEventListener('click', () => startNewChat());
-
-input.addEventListener('input', () => {
-  input.style.height = 'auto';
-  input.style.height = Math.min(input.scrollHeight, 160) + 'px';
-});
-input.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
-});
-
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  input.style.height = 'auto';
-  await sendMessage(text);
-});
-
-function startNewChat() {
-  currentChatId = null;
-  titleEl.textContent = 'New Conversation';
-  messagesEl.innerHTML = '';
-  messagesEl.appendChild(emptyState);
-  emptyState.style.display = '';
-  document.querySelectorAll('.chat-item').forEach(c => c.classList.remove('active'));
+/* ================= Sidebar & panels ================= */
+function setSidebar(open) {
+  if (mqTablet.matches) {
+    app.classList.toggle('sidebar-collapsed', !open);
+    storage.set('lt.sidebar', open ? 'open' : 'collapsed');
+  } else {
+    app.classList.toggle('sidebar-open-mobile', open);
+    if (open) $('closeSidebar').focus();
+  }
+  syncScrim();
 }
+function sidebarOpen() {
+  return mqTablet.matches ? !app.classList.contains('sidebar-collapsed') : app.classList.contains('sidebar-open-mobile');
+}
+$('openSidebar').addEventListener('click', () => setSidebar(!sidebarOpen()));
+$('collapseSidebar').addEventListener('click', () => setSidebar(false));
+$('closeSidebar').addEventListener('click', () => { setSidebar(false); $('openSidebar').focus(); });
 
+function evidenceOpen() {
+  return mqDesktop.matches ? !app.classList.contains('evidence-closed') : app.classList.contains('evidence-open-mobile');
+}
+function setEvidence(open, { focus = false } = {}) {
+  if (mqDesktop.matches) app.classList.toggle('evidence-closed', !open);
+  else app.classList.toggle('evidence-open-mobile', open);
+  toggleEvidenceBtn.setAttribute('aria-expanded', String(open));
+  if (open && focus && !mqDesktop.matches) $('closeEvidence').focus();
+  syncScrim();
+}
+toggleEvidenceBtn.addEventListener('click', () => setEvidence(!evidenceOpen(), { focus: true }));
+$('closeEvidence').addEventListener('click', () => { setEvidence(false); toggleEvidenceBtn.focus(); });
+
+function syncScrim() {
+  const show = (!mqTablet.matches && app.classList.contains('sidebar-open-mobile'))
+    || (!mqDesktop.matches && app.classList.contains('evidence-open-mobile'));
+  scrim.classList.toggle('show', show);
+}
+scrim.addEventListener('click', () => {
+  app.classList.remove('sidebar-open-mobile', 'evidence-open-mobile');
+  toggleEvidenceBtn.setAttribute('aria-expanded', 'false');
+  syncScrim();
+});
+[mqDesktop, mqTablet].forEach((mq) => mq.addEventListener('change', () => {
+  app.classList.remove('sidebar-open-mobile', 'evidence-open-mobile');
+  syncScrim();
+}));
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if ($('confirmDialog').classList.contains('show')) return; // handled by dialog
+  if (app.classList.contains('evidence-open-mobile')) { setEvidence(false); toggleEvidenceBtn.focus(); }
+  else if (app.classList.contains('sidebar-open-mobile')) { setSidebar(false); $('openSidebar').focus(); }
+  else if (busy) controller?.abort();
+});
+
+/* ================= Conversation list ================= */
 async function loadChats() {
   const { data, error } = await supabase
-    .from('chats')
-    .select('*')
-    .eq('user_id', session.user.id)
-    .order('created_at', { ascending: false });
-  if (error) { console.error(error); return; }
-  renderChatList(data || []);
+    .from('chats').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false });
+  if (error) { toast('Could not load conversations.'); console.error(error); return; }
+  chats = data || [];
+  renderChatList();
 }
 
-function renderChatList(chats) {
-  chatListEl.innerHTML = '';
-  if (!chats.length) {
-    chatListEl.innerHTML = '<div class="text-white/40 text-xs px-1">No chats yet</div>';
-    return;
+function renderChatList() {
+  const q = searchEl.value.trim().toLowerCase();
+  const shown = chats.filter((c) => !q || (c.title || '').toLowerCase().includes(q));
+  chatListEl.replaceChildren();
+  chatListEmpty.hidden = shown.length > 0;
+  chatListEmpty.textContent = chats.length ? 'No matching conversations.' : 'No conversations yet.';
+  for (const c of shown) {
+    const li = el('li', 'chat-item' + (c.id === currentChatId ? ' active' : ''));
+    const open = el('button', 'chat-open');
+    open.type = 'button';
+    open.append(el('span', 'chat-title', c.title || 'Untitled'));
+    const arrow = el('span', 'nudge');
+    arrow.setAttribute('aria-hidden', 'true');
+    arrow.innerHTML = ICONS.arrow; // static icon
+    open.append(arrow);
+    open.title = c.title || '';
+    if (c.id === currentChatId) open.setAttribute('aria-current', 'true');
+    open.addEventListener('click', () => openChat(c));
+    const del = iconButton('trash', 'Delete conversation', 'icon-btn chat-del');
+    delete del.dataset.tip;
+    del.addEventListener('click', () => confirmDelete(c));
+    li.append(open, del);
+    chatListEl.append(li);
   }
-  chats.forEach(c => {
-    const div = document.createElement('div');
-    div.className = 'chat-item' + (c.id === currentChatId ? ' active' : '');
-    div.dataset.id = c.id;
+}
+searchEl.addEventListener('input', renderChatList);
 
-    const title = document.createElement('span');
-    title.className = 'chat-item-title';
-    title.textContent = c.title || 'Untitled';
-    title.title = c.title || '';
-    title.addEventListener('click', () => openChat(c));
-
-    const del = document.createElement('button');
-    del.className = 'chat-delete';
-    del.title = 'Delete chat';
-    del.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>';
-    del.addEventListener('click', (e) => {
-      e.stopPropagation();
-      deleteChat(c);
-    });
-
-    div.appendChild(title);
-    div.appendChild(del);
-    chatListEl.appendChild(div);
-  });
+/* Delete with a confirm dialog */
+function confirmDelete(chat) {
+  const dlg = $('confirmDialog');
+  const ok = $('confirmOk'), cancel = $('confirmCancel');
+  const prev = document.activeElement;
+  $('confirmText').textContent = `“${chat.title || 'Untitled'}” and its messages will be permanently deleted.`;
+  dlg.classList.add('show');
+  dlg.setAttribute('aria-hidden', 'false');
+  cancel.focus();
+  const close = () => {
+    dlg.classList.remove('show');
+    dlg.setAttribute('aria-hidden', 'true');
+    ok.removeEventListener('click', onOk); cancel.removeEventListener('click', close);
+    dlg.removeEventListener('keydown', onKey); dlg.removeEventListener('click', onBackdrop);
+    prev?.focus?.();
+  };
+  const onOk = async () => { close(); await deleteChat(chat); };
+  const onKey = (e) => {
+    if (e.key === 'Escape') { e.stopPropagation(); close(); }
+    if (e.key === 'Tab') { e.preventDefault(); (document.activeElement === ok ? cancel : ok).focus(); }
+  };
+  const onBackdrop = (e) => { if (e.target === dlg) close(); };
+  ok.addEventListener('click', onOk); cancel.addEventListener('click', close);
+  dlg.addEventListener('keydown', onKey); dlg.addEventListener('click', onBackdrop);
 }
 
 async function deleteChat(chat) {
-  if (!confirm(`Delete "${chat.title || 'this chat'}"? This cannot be undone.`)) return;
-
-  // 1) Delete messages first (in case the FK has no ON DELETE CASCADE)
-  const { error: msgErr, count: msgCount } = await supabase
-    .from('messages')
-    .delete({ count: 'exact' })
-    .eq('chat_id', chat.id);
-  console.log('[deleteChat] messages deleted:', msgCount, 'error:', msgErr);
-  if (msgErr) {
-    alert('Failed to delete messages: ' + msgErr.message +
-      '\n\nLikely an RLS policy on the messages table. See console.');
-    return;
-  }
-
-  // 2) Delete the chat row
-  const { error: chatErr, count: chatCount } = await supabase
-    .from('chats')
-    .delete({ count: 'exact' })
-    .eq('id', chat.id)
-    .eq('user_id', session.user.id);
-  console.log('[deleteChat] chats deleted:', chatCount, 'error:', chatErr);
-  if (chatErr) {
-    alert('Failed to delete chat: ' + chatErr.message);
-    return;
-  }
-  if (chatCount === 0) {
-    alert('Chat was not deleted (0 rows affected). Likely an RLS policy on the chats table is blocking DELETE for this user.');
-    return;
-  }
-
+  // Messages first, in case the FK has no ON DELETE CASCADE.
+  const { error: msgErr } = await supabase.from('messages').delete().eq('chat_id', chat.id);
+  if (msgErr) { toast('Could not delete messages.'); console.error(msgErr); return; }
+  const { error, count } = await supabase.from('chats').delete({ count: 'exact' })
+    .eq('id', chat.id).eq('user_id', session.user.id);
+  if (error || count === 0) { toast('Could not delete the conversation.'); console.error(error); return; }
   if (currentChatId === chat.id) startNewChat();
-  await loadChats();
+  chats = chats.filter((c) => c.id !== chat.id);
+  renderChatList();
+  toast('Conversation deleted');
 }
+
+/* ================= Opening / new ================= */
+function resetThread() {
+  if (busy) controller?.abort();
+  messagesEl.replaceChildren();
+  thread.length = 0;
+  showEvidence(null);
+}
+
+function startNewChat() {
+  resetThread();
+  currentChatId = null;
+  titleEl.textContent = 'New conversation';
+  emptyState.hidden = false;
+  emptyState.classList.remove('leaving');
+  renderChatList();
+  if (!mqTablet.matches) setSidebar(false);
+  input.focus();
+}
+$('newChatBtn').addEventListener('click', startNewChat);
 
 async function openChat(chat) {
+  resetThread();
   currentChatId = chat.id;
-  titleEl.textContent = chat.title;
-  emptyState.style.display = 'none';
-  messagesEl.innerHTML = '';
-  document.querySelectorAll('.chat-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.id === chat.id);
-  });
-  const { data } = await supabase
-    .from('messages')
-    .select('*')
-    .eq('chat_id', chat.id)
-    .order('created_at', { ascending: true });
-  (data || []).forEach(m => addBubble(m.role, m.content, false));
-  scrollToBottom();
-  if (window.innerWidth < 768) sidebar.classList.add('-translate-x-full');
+  titleEl.textContent = chat.title || 'Untitled';
+  emptyState.hidden = true;
+  renderChatList();
+  if (!mqTablet.matches) setSidebar(false);
+  const { data, error } = await supabase
+    .from('messages').select('*').eq('chat_id', chat.id).order('created_at', { ascending: true });
+  if (currentChatId !== chat.id) return; // another chat was opened meanwhile
+  if (error) { toast('Could not load messages.'); console.error(error); return; }
+  let lastQuestion = '';
+  for (const m of data || []) {
+    if (m.role === 'user') { addUser(m.content, false); lastQuestion = m.content; }
+    else {
+      const rec = addAssistant(lastQuestion, false);
+      rec.rowId = m.id;
+      rec.sources = Array.isArray(m.sources) ? m.sources : [];
+      finishAssistant(rec, m.content);
+    }
+  }
+  const last = thread[thread.length - 1];
+  if (last?.sources.length) showEvidence(last);
+  scrollToBottom(true);
 }
 
+/* ================= Composer ================= */
+function autosize() {
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 200) + 'px';
+  sendBtn.disabled = busy || !input.value.trim();
+}
+input.addEventListener('input', autosize);
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+});
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text || busy) return;
+  if (text.length > 2000) { toast('Questions are limited to 2,000 characters.'); return; }
+  input.value = '';
+  autosize();
+  send(text);
+});
+stopBtn.addEventListener('click', () => controller?.abort());
+document.querySelectorAll('.suggestion').forEach((b) => b.addEventListener('click', () => {
+  if (!busy) send(b.dataset.q);
+}));
+
+function setBusy(v) {
+  busy = v;
+  sendBtn.hidden = v;
+  stopBtn.hidden = !v;
+  autosize();
+  if (v) stopBtn.focus({ preventScroll: true }); else if (document.activeElement === stopBtn || document.activeElement === document.body) input.focus();
+}
+
+/* ================= Messages ================= */
+function nearBottom() { return scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight < 120; }
+function scrollToBottom(force = false) {
+  if (force || nearBottom()) scrollEl.scrollTop = scrollEl.scrollHeight;
+}
+
+function hideEmptyState() {
+  if (emptyState.hidden) return;
+  emptyState.classList.add('leaving');
+  setTimeout(() => { emptyState.hidden = true; emptyState.classList.remove('leaving'); }, 180);
+}
+
+const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Message fade-in with GSAP; falls back to the CSS keyframe if GSAP didn't load.
+function reveal(row, animate) {
+  if (!animate || reduceMotion()) { row.classList.add('no-anim'); return; }
+  if (window.gsap) {
+    row.classList.add('no-anim');
+    window.gsap.from(row, { opacity: 0, y: 6, duration: 0.28, ease: 'power2.out', clearProps: 'all' });
+  }
+}
+
+function addUser(text, animate = true) {
+  const row = el('div', 'msg msg-user');
+  row.append(el('div', 'bubble', text));
+  messagesEl.append(row);
+  reveal(row, animate);
+  return row;
+}
+
+function addAssistant(question, animate = true) {
+  const row = el('div', 'msg msg-ai');
+  const avatar = el('span', 'brand-mark avatar');
+  avatar.setAttribute('aria-hidden', 'true');
+  avatar.innerHTML = ICONS.mark; // static icon
+  const col = el('div');
+  const body = el('div', 'prose');
+  col.append(body);
+  row.append(avatar, col);
+  messagesEl.append(row);
+  reveal(row, animate);
+  const rec = { row, col, body, question, answer: '', sources: [], rowId: null };
+  thread.push(rec);
+  return rec;
+}
+
+function showThinking(rec) {
+  rec.body.replaceChildren();
+  rec.col.querySelector('.msg-actions')?.remove();
+  rec.col.querySelector('.msg-note')?.remove();
+  const t = el('div', 'thinking');
+  const dots = el('span', 'dots');
+  dots.append(el('span'), el('span'), el('span'));
+  t.append(dots, el('span', null, 'Searching the legal sources…'));
+  rec.body.append(t);
+}
+
+function finishAssistant(rec, answer, note) {
+  rec.answer = answer;
+  rec.body.classList.remove('streaming');
+  renderMarkdown(rec.body, answer, { maxCite: rec.sources.length });
+  rec.col.querySelector('.msg-actions')?.remove();
+  rec.col.querySelector('.msg-note')?.remove();
+  if (note) rec.col.append(el('div', 'msg-note', note));
+  const actions = el('div', 'msg-actions');
+  const copy = iconButton('copy', 'Copy answer');
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(plainAnswer(rec.answer));
+      copy.innerHTML = ICONS.check;
+      toast('Answer copied');
+      setTimeout(() => { copy.innerHTML = ICONS.copy; }, 1400);
+    } catch { toast('Copy failed — select the text instead.'); }
+  });
+  actions.append(copy);
+  if (rec.question) {
+    const retry = iconButton('retry', 'Regenerate answer');
+    retry.addEventListener('click', () => { if (!busy) send(rec.question, { replace: rec }); });
+    actions.append(retry);
+  }
+  if (rec.sources.length) {
+    const src = el('button', 'btn btn-ghost');
+    src.type = 'button';
+    src.innerHTML = ICONS.book; // static icon
+    src.append(document.createTextNode(`${rec.sources.length} sources`));
+    src.addEventListener('click', () => { showEvidence(rec); setEvidence(true, { focus: true }); });
+    actions.append(src);
+  }
+  rec.col.append(actions);
+}
+
+function showError(rec, message) {
+  rec.body.replaceChildren();
+  rec.col.querySelector('.msg-actions')?.remove();
+  const box = el('div', 'msg-error');
+  box.setAttribute('role', 'alert');
+  box.append(el('span', null, message));
+  const retry = el('button', 'btn btn-secondary', 'Retry');
+  retry.type = 'button';
+  retry.style.height = '28px';
+  retry.addEventListener('click', () => { if (!busy) send(rec.question, { replace: rec }); });
+  box.append(retry);
+  rec.body.append(box);
+}
+
+// Citation clicks (event delegation)
+messagesEl.addEventListener('click', (e) => {
+  const cite = e.target.closest('.cite');
+  if (!cite) return;
+  const rec = thread.find((r) => r.row.contains(cite));
+  if (!rec) return;
+  showEvidence(rec, Number(cite.dataset.cite));
+  setEvidence(true, { focus: false });
+  messagesEl.querySelectorAll('.cite.active').forEach((c) => c.classList.remove('active'));
+  cite.classList.add('active');
+});
+
+// Hovering a citation highlights its source when that answer's sources are on screen.
+messagesEl.addEventListener('mouseover', (e) => peekSource(e.target.closest('.cite'), true));
+messagesEl.addEventListener('mouseout', (e) => peekSource(e.target.closest('.cite'), false));
+messagesEl.addEventListener('focusin', (e) => peekSource(e.target.closest('.cite'), true));
+messagesEl.addEventListener('focusout', (e) => peekSource(e.target.closest('.cite'), false));
+function peekSource(cite, on) {
+  if (!cite) return;
+  const rec = thread.find((r) => r.row.contains(cite));
+  if (!rec || rec !== shownRec) return;
+  document.getElementById(`src-${cite.dataset.cite}`)?.classList.toggle('peek', on);
+}
+
+/* ================= Evidence panel ================= */
+let shownRec = null;
+function showEvidence(rec, highlight) {
+  const same = rec && rec === shownRec && evidenceBody.childElementCount === (rec.sources || []).length;
+  shownRec = rec;
+  const sources = rec?.sources || [];
+  evidenceCount.hidden = sources.length === 0;
+  evidenceCount.textContent = String(sources.length);
+  evidenceBody.replaceChildren();
+  if (!sources.length) {
+    const p = el('p', 'evidence-empty');
+    p.textContent = rec
+      ? 'No source passages were saved for this answer.'
+      : 'Retrieved legal passages appear here. Click a numbered citation in an answer to jump to its source.';
+    evidenceBody.append(p);
+    return;
+  }
+  for (const s of sources) {
+    const card = el('article', 'source-card');
+    card.id = `src-${s.id}`;
+    card.setAttribute('aria-label', `Source ${s.id}`);
+    const head = el('div', 'source-head');
+    head.append(el('span', 'source-num', String(s.id)));
+    const info = el('div', 'min-w-0');
+    info.append(el('div', 'source-title' + (s.title ? '' : ' untitled'), s.title || 'Untitled passage (no document metadata)'));
+    const meta = el('div', 'source-meta');
+    if (s.page) meta.append(el('span', 'badge', `Page ${s.page}`));
+    if (s.cited) meta.append(el('span', 'badge', 'Cited'));
+    if (meta.childElementCount) info.append(meta);
+    head.append(info);
+    const text = el('p', 'source-text', (s.text || '').replace(/[ \t]+/g, ' ').trim());
+    card.append(head, text);
+    if ((s.text || '').length > 320) {
+      const more = el('button', 'source-toggle', 'Show full passage');
+      more.type = 'button';
+      more.setAttribute('aria-expanded', 'false');
+      more.addEventListener('click', () => {
+        const open = card.classList.toggle('expanded');
+        more.textContent = open ? 'Show less' : 'Show full passage';
+        more.setAttribute('aria-expanded', String(open));
+      });
+      card.append(more);
+    }
+    evidenceBody.append(card);
+  }
+  if (!same && window.gsap && !reduceMotion()) {
+    evidenceBody.querySelectorAll('.source-card').forEach((c) => { c.style.animation = 'none'; });
+    window.gsap.from(evidenceBody.querySelectorAll('.source-card'),
+      { opacity: 0, y: 8, duration: 0.25, stagger: 0.04, ease: 'power2.out', clearProps: 'opacity,transform' });
+  }
+  if (highlight) {
+    const card = $(`src-${highlight}`);
+    if (card) {
+      card.classList.add('highlight', 'expanded');
+      card.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      setTimeout(() => card.classList.remove('highlight'), 1600);
+    }
+  }
+}
+
+/* ================= Persistence ================= */
 async function ensureChat(firstMessage) {
   if (currentChatId) return currentChatId;
   const title = firstMessage.slice(0, 60) + (firstMessage.length > 60 ? '…' : '');
-  const { data, error } = await supabase
-    .from('chats')
-    .insert({ user_id: session.user.id, title })
-    .select()
-    .single();
+  const { data, error } = await supabase.from('chats').insert({ user_id: session.user.id, title }).select().single();
   if (error) throw error;
   currentChatId = data.id;
   titleEl.textContent = title;
-  await loadChats();
+  chats.unshift(data);
+  renderChatList();
   return currentChatId;
 }
 
-async function persistMessage(role, content) {
-  if (!currentChatId) return;
-  await supabase.from('messages').insert({
-    chat_id: currentChatId, role, content
-  });
+async function persistMessage(role, content, sources) {
+  if (!currentChatId) return null;
+  const row = { chat_id: currentChatId, role, content };
+  if (sources && sourcesColumn) {
+    const { data, error } = await supabase.from('messages').insert({ ...row, sources }).select('id').single();
+    if (!error) return data.id;
+    // Older schema without a `sources` column: store the answer text only.
+    if (/sources/i.test(error.message || '') || error.code === 'PGRST204' || error.code === '42703') sourcesColumn = false;
+    else { console.error(error); return null; }
+  }
+  const { data, error } = await supabase.from('messages').insert(row).select('id').single();
+  if (error) { console.error(error); return null; }
+  return data.id;
 }
 
-async function sendMessage(text) {
-  emptyState.style.display = 'none';
-  addBubble('user', text);
-  scrollToBottom();
-  sendBtn.disabled = true;
+/* ================= Send ================= */
+async function send(text, { replace } = {}) {
+  hideEmptyState();
+  let rec;
+  if (replace) {
+    rec = replace;
+    rec.sources = [];
+  } else {
+    addUser(text);
+    rec = addAssistant(text);
+  }
+  showThinking(rec);
+  scrollToBottom(true);
+  setBusy(true);
+  controller = new AbortController();
+  const chatAtStart = currentChatId;
 
   try {
-    await ensureChat(text);
-    await persistMessage('user', text);
-
-    const typingEl = addTyping();
-    scrollToBottom();
-
-    const reply = await askAI(text);
-    typingEl.remove();
-    addBubble('assistant', reply);
-    scrollToBottom();
-    await persistMessage('assistant', reply);
+    if (!replace) {
+      await ensureChat(text);
+      await persistMessage('user', text);
+    }
   } catch (err) {
-    addBubble('assistant', '⚠️ ' + (err.message || 'Failed to get a response.'));
-  } finally {
-    sendBtn.disabled = false;
+    console.error(err);
+    toast('Could not save this conversation; the answer will not be stored.');
   }
-}
 
-function addBubble(role, content, animate = true) {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'flex';
-  const bubble = document.createElement('div');
-  bubble.className = 'bubble ' + (role === 'user' ? 'bubble-user' : 'bubble-ai');
-  if (role === 'assistant') {
-    // Backend returns HTML-formatted answer (h2/p/ul/li/strong). Render it.
-    bubble.innerHTML = sanitizeHtml(content ?? '');
-  } else {
-    bubble.textContent = content ?? '';
-  }
-  wrapper.appendChild(bubble);
-  if (!animate) bubble.style.animation = 'none';
-  messagesEl.appendChild(wrapper);
-  return wrapper;
-}
-
-// Minimal sanitizer: allow a small set of formatting tags, strip everything else.
-function sanitizeHtml(html) {
-  const allowed = new Set(['H1','H2','H3','H4','P','UL','OL','LI','STRONG','B','EM','I','BR','CODE','PRE','BLOCKQUOTE','A','SPAN','DIV']);
-  const tpl = document.createElement('template');
-  tpl.innerHTML = String(html);
-  const walk = (node) => {
-    [...node.childNodes].forEach(child => {
-      if (child.nodeType === 1) {
-        if (!allowed.has(child.tagName)) {
-          // unwrap disallowed tag
-          while (child.firstChild) node.insertBefore(child.firstChild, child);
-          node.removeChild(child);
-          return;
-        }
-        // strip all attributes except href on <a>
-        [...child.attributes].forEach(a => {
-          if (!(child.tagName === 'A' && a.name === 'href')) child.removeAttribute(a.name);
-        });
-        if (child.tagName === 'A') {
-          child.setAttribute('target', '_blank');
-          child.setAttribute('rel', 'noopener noreferrer');
-        }
-        walk(child);
-      }
-    });
+  let raw = '';
+  let frame = 0;
+  const paint = () => {
+    frame = 0;
+    rec.body.classList.add('streaming');
+    renderMarkdown(rec.body, raw, { maxCite: rec.sources.length });
+    scrollToBottom();
   };
-  walk(tpl.content);
-  return tpl.innerHTML;
+  try {
+    const final = await streamAsk(text, {
+      signal: controller.signal,
+      onSources: (sources) => {
+        rec.sources = sources;
+        showEvidence(rec);
+        if (mqDesktop.matches && sources.length) setEvidence(true);
+      },
+      onToken: (t) => { raw += t; if (!frame) frame = requestAnimationFrame(paint); },
+    });
+    cancelAnimationFrame(frame);
+    rec.sources = final.sources || rec.sources;
+    finishAssistant(rec, final.answer);
+    showEvidence(rec);
+    announce('Answer ready');
+    if (currentChatId === chatAtStart || !chatAtStart) await saveAnswer(rec, final.answer, replace);
+  } catch (err) {
+    cancelAnimationFrame(frame);
+    if (err.name === 'AbortError') {
+      if (raw.trim()) {
+        finishAssistant(rec, raw, 'Generation stopped.');
+        await saveAnswer(rec, raw, replace);
+      } else {
+        showError(rec, 'Generation stopped.');
+      }
+      announce('Generation stopped');
+    } else {
+      showError(rec, err.message || 'Something went wrong.');
+      announce('The answer failed');
+    }
+  } finally {
+    controller = null;
+    setBusy(false);
+    scrollToBottom();
+  }
 }
 
-function addTyping() {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'flex';
-  wrapper.innerHTML = `<div class="bubble bubble-ai"><div class="typing"><span></span><span></span><span></span></div></div>`;
-  messagesEl.appendChild(wrapper);
-  return wrapper;
-}
-
-function scrollToBottom() {
-  messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
+async function saveAnswer(rec, answer, replaced) {
+  const oldId = replaced ? rec.rowId : null;
+  rec.rowId = await persistMessage('assistant', answer, rec.sources);
+  if (oldId && rec.rowId) await supabase.from('messages').delete().eq('id', oldId);
 }
