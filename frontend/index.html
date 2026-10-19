@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LawTalk — The law, without the fog</title>
-<meta name="description" content="Ask questions about legal documents, explore relevant passages, and understand answers grounded in evidence." />
+<title>LAW/TALK — The law, without the fog</title>
+<meta name="description" content="Explore Indian legal documents and get answers grounded in the passages they come from, with citations you can check." />
 <meta name="color-scheme" content="dark light" />
 <script>
   /* Theme before first paint (same key as js/theme.js); flag motion so GSAP can reveal the hero. */
@@ -18,7 +18,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config = { corePlugins: { preflight: false } };</script>
 <link rel="stylesheet" href="css/app.css" />
@@ -30,70 +30,75 @@
 
 <a href="#main" class="skip-link">Skip to content</a>
 
-<!-- ============ Floating navbar (glass) ============ -->
-<header class="nav-wrap">
-  <nav class="nav glass" aria-label="Main">
-    <a href="index.html" class="brand" aria-label="LawTalk home">
-      <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 21h14M7 7h10M4 7l-2 6a3 3 0 0 0 6 0L6 7M18 7l-2 6a3 3 0 0 0 6 0l-2-6"/></svg>
-      </span>
-      LawTalk
-    </a>
-    <div class="nav-links">
-      <a href="#product" class="link-u">Product</a>
-      <a href="#how" class="link-u">How It Works</a>
-    </div>
+<!-- ============ Masthead: split editorial navigation ============ -->
+<header id="masthead" class="masthead">
+  <nav class="masthead-inner" aria-label="Main">
+    <a href="index.html" class="wordmark" aria-label="LAW/TALK home"><span class="wordmark-mark" aria-hidden="true"></span>LAW<span class="wordmark-slash">/</span>TALK</a>
+    <ul class="nav-links">
+      <li><a href="#product" class="link-u">Product</a></li>
+      <li><a href="#how" class="link-u">How it works</a></li>
+      <li><a href="#features" class="link-u">Features</a></li>
+      <li><a href="https://github.com/SiddheshK1704/LawTalk-AI_RAG_Chatbot" class="link-u" target="_blank" rel="noopener noreferrer">GitHub<span class="ext" aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></li>
+    </ul>
     <div class="nav-actions">
       <button class="icon-btn theme-toggle" type="button" aria-label="Switch theme" data-tip="Theme">
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
       </button>
-      <span class="nav-auth">
-        <button id="openLogin" class="btn btn-ghost" type="button">Log in</button>
-        <span class="nav-sep" aria-hidden="true">/</span>
-        <button id="openSignup" class="btn btn-ghost" type="button">Sign up</button>
-      </span>
-      <button class="btn btn-primary nav-cta" type="button" data-start>Start researching</button>
+      <button id="openLogin" class="btn btn-outline nav-login" type="button">Log in</button>
+      <button class="btn btn-primary nav-cta" type="button" data-start><span class="start-label">Start researching</span> <span class="arrow" aria-hidden="true">↗</span></button>
       <button id="menuBtn" class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
-        <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M4 8h16M4 16h16"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </div>
   </nav>
-  <div id="mobileMenu" class="mobile-menu glass" hidden>
+  <div id="mobileMenu" class="mobile-menu" hidden>
     <a href="#product">Product</a>
-    <a href="#how">How It Works</a>
-    <button type="button" data-menu-login>Log in</button>
-    <button type="button" data-menu-signup>Sign up</button>
-    <button class="btn btn-primary" type="button" data-start>Start researching</button>
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="https://github.com/SiddheshK1704/LawTalk-AI_RAG_Chatbot" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    <div class="mobile-menu-actions">
+      <button class="btn btn-outline" type="button" data-menu-login>Log in</button>
+      <button class="btn btn-primary" type="button" data-start><span class="start-label">Start researching</span> <span class="arrow" aria-hidden="true">↗</span></button>
+    </div>
   </div>
 </header>
 
 <main id="main">
-  <!-- ============ Hero ============ -->
+  <!-- ============ 01 Hero ============ -->
   <section class="hero" aria-labelledby="heroTitle">
-    <div class="hero-inner">
+    <div class="hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow" data-reveal="hero">Legal research, grounded in the text</p>
-        <h1 id="heroTitle" class="display" data-reveal="hero">The law, without the fog.</h1>
-        <p class="hero-sub" data-reveal="hero">Ask questions about legal documents, explore relevant passages, and understand answers grounded in evidence.</p>
-        <div class="hero-ctas" data-reveal="hero">
-          <button id="startChatting" class="btn btn-primary btn-lg" type="button" data-start>Start researching</button>
-          <a href="#how" class="btn btn-secondary btn-lg">Explore how it works</a>
+        <div class="rule-row" data-reveal="hero">
+          <span class="index">01 — Legal research / Evidence-based</span>
         </div>
+        <h1 id="heroTitle" class="display hero-title" data-reveal="hero">The law, without <em>the fog.</em></h1>
+        <p class="hero-sub" data-reveal="hero">LawTalk helps you explore Indian legal documents and get answers grounded in the passages they come from, with numbered citations you can open and check.</p>
+        <div class="hero-ctas" data-reveal="hero">
+          <button id="startChatting" class="btn btn-primary btn-lg" type="button" data-start data-status="Opens the research workspace"><span class="start-label">Start researching</span> <span class="arrow" aria-hidden="true">↗</span></button>
+          <a href="#how" class="text-link" data-status="Three steps: ask, retrieve, verify">Explore how it works <span class="arrow" aria-hidden="true">→</span></a>
+        </div>
+        <p class="status" data-reveal="hero" aria-live="polite">
+          <span class="status-mark" aria-hidden="true"></span>
+          <span id="heroStatus" data-default="9 statutes and study texts indexed">9 statutes and study texts indexed</span>
+        </p>
       </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="art-glow"></div>
+      <figure class="hero-art" aria-hidden="true">
         <img src="assets/lady-justice.png" alt="" width="980" height="980" class="lady" data-reveal="lady" />
-      </div>
+        <figcaption class="index art-caption">Fig. 01 — Iustitia</figcaption>
+      </figure>
     </div>
   </section>
 
-  <!-- ============ Product preview ============ -->
+  <!-- ============ 02 Product (existing preview, unchanged) ============ -->
   <section id="product" class="section" aria-labelledby="productTitle">
     <div class="section-inner">
-      <p class="eyebrow" data-reveal>Product</p>
-      <h2 id="productTitle" class="display section-title" data-reveal>A workspace built around the source text.</h2>
+      <header class="section-head" data-reveal>
+        <span class="index">02 — Product</span>
+        <h2 id="productTitle" class="display section-title">A workspace built around the source text.</h2>
+        <p class="section-lede">Your conversation sits in the centre. For legal questions, the passages LawTalk retrieved sit beside it, so every answer can be read against its source.</p>
+      </header>
       <figure class="preview" data-reveal>
         <div class="preview-frame" aria-hidden="true">
           <div class="pv-side">
@@ -120,138 +125,187 @@
     </div>
   </section>
 
-  <!-- ============ Capabilities (editorial) ============ -->
-  <section class="section" aria-labelledby="capTitle">
+  <!-- ============ 03 How it works ============ -->
+  <section id="how" class="section" aria-labelledby="howTitle">
     <div class="section-inner">
-      <h2 id="capTitle" class="sr-only">What LawTalk does</h2>
-      <ol class="capabilities">
-        <li class="capability" data-reveal>
-          <span class="cap-num">01</span>
-          <h3 class="display">Answers you can check</h3>
-          <p>Each statement carries a numbered citation. Click <span class="cite" aria-hidden="true">1</span> and the passage it came from opens beside the answer.</p>
+      <header class="section-head" data-reveal>
+        <span class="index">03 — How it works</span>
+        <h2 id="howTitle" class="display section-title">Three steps from question to source.</h2>
+      </header>
+      <ol class="steps">
+        <li class="step" data-reveal>
+          <span class="step-num display">01</span>
+          <h3>Ask</h3>
+          <p>Submit a legal question in plain language, for example “When can the police arrest without a warrant?”</p>
         </li>
-        <li class="capability" data-reveal>
-          <span class="cap-num">02</span>
-          <h3 class="display">The evidence, not a summary of it</h3>
-          <p>The evidence panel shows the retrieved text itself, with the document title and page number when the source records one.</p>
+        <li class="step" data-reveal>
+          <span class="step-num display">02</span>
+          <h3>Retrieve</h3>
+          <p>LawTalk finds the most relevant passages in its legal knowledge base, by meaning and by the exact words and section numbers you use.</p>
         </li>
-        <li class="capability" data-reveal>
-          <span class="cap-num">03</span>
-          <h3 class="display">Honest about its limits</h3>
-          <p>If the indexed documents don't cover your question, LawTalk says so rather than guessing at sections or penalties.</p>
-        </li>
-        <li class="capability" data-reveal>
-          <span class="cap-num">04</span>
-          <h3 class="display">Your research, kept</h3>
-          <p>Conversations are saved to your account and searchable, so you can return to a line of inquiry later.</p>
+        <li class="step" data-reveal>
+          <span class="step-num display">03</span>
+          <h3>Verify</h3>
+          <p>The answer is written from those passages only. Each claim carries a citation that opens the evidence behind it.</p>
         </li>
       </ol>
-      <p class="coverage" data-reveal>
-        <span class="t-label">Indexed documents</span>
-        Constitution of India · Indian Penal Code · Code of Criminal Procedure · Indian Evidence Act · Information Technology Act ·
-        Motor Vehicles Act · Consumer Protection Act, 2019 · POCSO Act · labour-law study material.
-        <span class="coverage-note">The IPC, CrPC and Evidence Act were replaced by the BNS, BNSS and BSA from 1 July 2024; answers based on them say so.</span>
-      </p>
     </div>
   </section>
 
-  <!-- ============ How it works ============ -->
-  <section id="how" class="section" aria-labelledby="howTitle">
+  <!-- ============ 04 Capabilities ============ -->
+  <section id="features" class="section" aria-labelledby="featuresTitle">
     <div class="section-inner">
-      <p class="eyebrow" data-reveal>How it works</p>
-      <h2 id="howTitle" class="display section-title" data-reveal>Three steps from question to source.</h2>
-      <ol class="steps">
-        <li class="step" data-reveal>
-          <span class="step-num">1</span>
-          <h3>Ask</h3>
-          <p>Write your question in plain language, for example “When can police arrest without a warrant?”</p>
+      <header class="section-head" data-reveal>
+        <span class="index">04 — Features</span>
+        <h2 id="featuresTitle" class="display section-title">What it does, and where it stops.</h2>
+      </header>
+      <ol class="capabilities">
+        <li class="capability" data-reveal>
+          <span class="cap-num index">A</span>
+          <h3>Legal document retrieval</h3>
+          <p>Searches the indexed statutes by meaning and by exact terms. A question naming a provision, such as “Article 21” or “Section 438 CrPC”, goes straight to it.</p>
         </li>
-        <li class="step" data-reveal>
-          <span class="step-num">2</span>
-          <h3>Retrieve</h3>
-          <p>LawTalk searches the indexed documents and selects the five most relevant passages.</p>
+        <li class="capability" data-reveal>
+          <span class="cap-num index">B</span>
+          <h3>Evidence-grounded answers</h3>
+          <p>Legal answers are written only from the retrieved passages. If those passages don’t cover the question, LawTalk says so instead of guessing.</p>
         </li>
-        <li class="step" data-reveal>
-          <span class="step-num">3</span>
-          <h3>Read the cited answer</h3>
-          <p>The answer streams in, written only from those passages, each claim linked to its source.</p>
+        <li class="capability" data-reveal>
+          <span class="cap-num index">C</span>
+          <h3>Source citations</h3>
+          <p>Every cited passage opens in the evidence panel with its document, provision and page, wherever the source records them.</p>
+        </li>
+        <li class="capability" data-reveal>
+          <span class="cap-num index">D</span>
+          <h3>General mode for everything else</h3>
+          <p>Questions that aren’t legal get a normal assistant answer, with no document search and no evidence panel, so it is always clear which answers are grounded in sources.</p>
         </li>
       </ol>
+      <div class="coverage" data-reveal>
+        <span class="index">Indexed documents</span>
+        <p>Constitution of India · Indian Penal Code · Code of Criminal Procedure · Indian Evidence Act · Information Technology Act · Motor Vehicles Act · Consumer Protection Act, 2019 · POCSO Act · labour-law study material (ICSI).</p>
+        <p class="coverage-note">The IPC, CrPC and Evidence Act were replaced by the BNS, BNSS and BSA from 1 July 2024; their passages carry that note. Coverage is limited to these documents.</p>
+      </div>
     </div>
   </section>
 
   <!-- ============ Final CTA ============ -->
-  <section class="section final-cta" aria-labelledby="ctaTitle">
-    <div class="section-inner" data-reveal>
+  <section class="final-cta" aria-labelledby="ctaTitle">
+    <div class="section-inner final-inner" data-reveal>
       <h2 id="ctaTitle" class="display">Start with a question.</h2>
-      <p>Sign in to open your research workspace.</p>
-      <div class="hero-ctas">
-        <button class="btn btn-primary btn-lg" type="button" data-start>Start researching</button>
+      <div class="final-side">
+        <p>Sign in to open your research workspace. Your conversations are saved to your account.</p>
+        <button class="btn btn-primary btn-lg" type="button" data-start><span class="start-label">Start researching</span> <span class="arrow" aria-hidden="true">↗</span></button>
       </div>
     </div>
   </section>
 </main>
 
+<!-- ============ Footer ============ -->
 <footer class="footer">
-  <div class="footer-inner">
-    <span class="brand" style="font-size:var(--fs-base)">
-      <span class="brand-mark" aria-hidden="true" style="width:20px;height:20px;border-radius:6px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 21h14M7 7h10M4 7l-2 6a3 3 0 0 0 6 0L6 7M18 7l-2 6a3 3 0 0 0 6 0l-2-6"/></svg>
-      </span>
-      LawTalk
-    </span>
-    <p class="disclaimer">LawTalk provides general legal information drawn from the documents it has indexed. It is not legal advice and is not a substitute for a qualified lawyer.</p>
-    <a class="footer-link link-u" href="https://github.com/SiddheshK1704/LawTalk-AI_RAG_Chatbot" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="wordmark"><span class="wordmark-mark" aria-hidden="true"></span>LAW<span class="wordmark-slash">/</span>TALK</a>
+      <p>A legal research assistant for Indian law that answers from the indexed statutes and shows the passages behind every answer.</p>
+    </div>
+    <nav class="footer-col" aria-label="Footer: sections">
+      <span class="index">Navigate</span>
+      <a href="#product" class="link-u">Product</a>
+      <a href="#how" class="link-u">How it works</a>
+      <a href="#features" class="link-u">Features</a>
+    </nav>
+    <nav class="footer-col" aria-label="Footer: project">
+      <span class="index">Project</span>
+      <a href="https://github.com/SiddheshK1704/LawTalk-AI_RAG_Chatbot" class="link-u" target="_blank" rel="noopener noreferrer">Source on GitHub ↗</a>
+      <a href="https://github.com/SiddheshK1704/LawTalk-AI_RAG_Chatbot/issues" class="link-u" target="_blank" rel="noopener noreferrer">Report an issue ↗</a>
+    </nav>
+    <div class="footer-col">
+      <span class="index">Notice</span>
+      <p class="disclaimer">LawTalk provides general legal information drawn from the documents it has indexed. It is not legal advice and is not a substitute for a qualified lawyer.</p>
+    </div>
   </div>
+  <div class="footer-base">
+    <span class="index">© 2026 LAW/TALK</span>
+    <span class="index">Built by Siddhesh K</span>
+  </div>
+  <div class="footer-mark" aria-hidden="true">LAW/TALK</div>
 </footer>
 
-<!-- ============ Auth modal (glass) ============ -->
-<div id="authModal" class="auth-modal" hidden>
-  <div class="auth-backdrop" data-close-modal></div>
-  <div class="auth-card glass" role="dialog" aria-modal="true" aria-labelledby="authTitle" aria-describedby="authSub">
-    <button class="icon-btn auth-close" type="button" data-close-modal aria-label="Close">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-    </button>
-    <div class="auth-brand">
-      <span class="brand-mark" aria-hidden="true" style="width:32px;height:32px;border-radius:9px">
-        <svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 21h14M7 7h10M4 7l-2 6a3 3 0 0 0 6 0L6 7M18 7l-2 6a3 3 0 0 0 6 0l-2-6"/></svg>
-      </span>
-      <div>
-        <h2 id="authTitle">Welcome back</h2>
-        <p id="authSub">Sign in to your legal research workspace</p>
-      </div>
-    </div>
-
-    <div class="segmented" role="tablist" aria-label="Account">
-      <span class="segmented-thumb" aria-hidden="true"></span>
-      <button class="auth-tab" role="tab" type="button" data-tab="login" id="tab-login" aria-selected="true" aria-controls="authForm">Sign in</button>
-      <button class="auth-tab" role="tab" type="button" data-tab="signup" id="tab-signup" aria-selected="false" aria-controls="authForm" tabindex="-1">Sign up</button>
-    </div>
-
-    <form id="authForm" class="auth-form" novalidate role="tabpanel" aria-labelledby="tab-login">
-      <div class="field">
-        <label for="authEmail">Email</label>
-        <input type="email" id="authEmail" class="field-input" autocomplete="email" required aria-describedby="emailError" />
-        <p id="emailError" class="field-error" hidden></p>
-      </div>
-      <div class="field">
-        <label for="authPassword">Password</label>
-        <div class="password-wrap">
-          <input type="password" id="authPassword" class="field-input" autocomplete="current-password" required minlength="6" aria-describedby="passwordError passwordHint" />
-          <button type="button" id="togglePassword" class="icon-btn password-toggle" aria-label="Show password" aria-pressed="false">
-            <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M3 3l18 18M10.6 5.1A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.9 8.4 2 12 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
-          </button>
+<!-- ============ Justice Orb: sign in / create account ============ -->
+<div id="authModal" class="orb-modal" hidden>
+  <div class="orb-backdrop" data-close-modal></div>
+  <span class="orb-bubble" aria-hidden="true"></span>
+  <div class="orb" role="dialog" aria-modal="true" aria-labelledby="loginTitle" id="orb">
+    <div class="orb-flipper">
+      <!-- Front: sign in -->
+      <section class="orb-face orb-front" id="loginFace" aria-labelledby="loginTitle">
+        <button class="icon-btn orb-close" type="button" data-close-modal aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+        <div class="orb-content">
+          <span class="index orb-item">Sign in</span>
+          <h2 id="loginTitle" class="display orb-title orb-item">Welcome back.</h2>
+          <form id="loginForm" class="orb-form" novalidate>
+            <div class="field orb-item">
+              <label for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" class="field-input" autocomplete="email" required aria-describedby="loginEmailError" />
+              <p id="loginEmailError" class="field-error" hidden></p>
+            </div>
+            <div class="field orb-item">
+              <label for="loginPassword">Password</label>
+              <div class="password-wrap">
+                <input type="password" id="loginPassword" class="field-input" autocomplete="current-password" required minlength="6" aria-describedby="loginPasswordError" />
+                <button type="button" class="icon-btn password-toggle" data-toggle-password="loginPassword" aria-label="Show password" aria-pressed="false">
+                  <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M3 3l18 18M10.6 5.1A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.9 8.4 2 12 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                </button>
+              </div>
+              <p id="loginPasswordError" class="field-error" hidden></p>
+            </div>
+            <p id="loginMessage" class="form-message" role="alert" hidden></p>
+            <button type="submit" id="loginSubmit" class="btn btn-primary btn-lg orb-submit orb-item">
+              <span class="spinner" aria-hidden="true" hidden></span><span class="submit-label">Log in</span>
+            </button>
+          </form>
+          <p class="orb-switch orb-item">No account yet? <button type="button" class="text-link" id="toSignup">Create account</button></p>
         </div>
-        <p id="passwordHint" class="field-hint" hidden>At least 6 characters.</p>
-        <p id="passwordError" class="field-error" hidden></p>
-      </div>
-      <p id="authError" class="form-message" role="alert" hidden></p>
-      <button type="submit" id="authSubmit" class="btn btn-primary btn-lg w-full">
-        <span class="spinner" aria-hidden="true" hidden></span>
-        <span id="authSubmitLabel">Sign in</span>
-      </button>
-    </form>
+      </section>
+
+      <!-- Back: create account -->
+      <section class="orb-face orb-back" id="signupFace" aria-labelledby="signupTitle" inert>
+        <button class="icon-btn orb-close" type="button" data-close-modal aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+        <div class="orb-content">
+          <span class="index">Create account</span>
+          <h2 id="signupTitle" class="display orb-title">Open your workspace.</h2>
+          <form id="signupForm" class="orb-form" novalidate>
+            <div class="field">
+              <label for="signupEmail">Email</label>
+              <input type="email" id="signupEmail" class="field-input" autocomplete="email" required aria-describedby="signupEmailError" />
+              <p id="signupEmailError" class="field-error" hidden></p>
+            </div>
+            <div class="field">
+              <label for="signupPassword">Password</label>
+              <div class="password-wrap">
+                <input type="password" id="signupPassword" class="field-input" autocomplete="new-password" required minlength="6" aria-describedby="signupPasswordHint signupPasswordError" />
+                <button type="button" class="icon-btn password-toggle" data-toggle-password="signupPassword" aria-label="Show password" aria-pressed="false">
+                  <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M3 3l18 18M10.6 5.1A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.9 8.4 2 12 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                </button>
+              </div>
+              <p id="signupPasswordHint" class="field-hint">At least 6 characters.</p>
+              <p id="signupPasswordError" class="field-error" hidden></p>
+            </div>
+            <p id="signupMessage" class="form-message" role="alert" hidden></p>
+            <button type="submit" id="signupSubmit" class="btn btn-primary btn-lg orb-submit">
+              <span class="spinner" aria-hidden="true" hidden></span><span class="submit-label">Create account</span>
+            </button>
+          </form>
+          <p class="orb-switch">Already have an account? <button type="button" class="text-link" id="toLogin">Log in</button></p>
+        </div>
+      </section>
+    </div>
   </div>
 </div>
 

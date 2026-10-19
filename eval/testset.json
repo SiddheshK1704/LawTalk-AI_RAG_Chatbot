@@ -5,6 +5,10 @@
     "reference_answer": "Under section 302 IPC, whoever commits murder shall be punished with death or imprisonment for life, and shall also be liable to fine.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "ipc-0072-0272999",
+      "ipc-0072-0275088"
+    ],
+    "relevant_chunk_ids_legacy": [
       "5b5121cd-e850-447b-91e4-46052039a5a7",
       "7f5d4cf2-f0de-4610-b7ad-344201015343"
     ],
@@ -22,6 +26,9 @@
     "reference_answer": "Under section 420 IPC, the offence is punishable with imprisonment of either description for a term which may extend to seven years, and the offender is also liable to fine.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "ipc-0096-0373495"
+    ],
+    "relevant_chunk_ids_legacy": [
       "b0814de1-70c3-4c16-854f-80c6fd26d5e2"
     ],
     "sources": [
@@ -38,6 +45,9 @@
     "reference_answer": "Article 21 provides that no person shall be deprived of his life or personal liberty except according to procedure established by law.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "constitution-0042-0059228"
+    ],
+    "relevant_chunk_ids_legacy": [
       "a09bcde0-59d8-4560-b6b2-fa96d44c8bb7"
     ],
     "sources": [
@@ -54,6 +64,9 @@
     "reference_answer": "Section 438 CrPC: a person who has reason to believe he may be arrested on an accusation of a non-bailable offence may apply to the High Court or the Court of Session, which may direct that in the event of arrest he shall be released on bail.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "crpc-0182-0621616"
+    ],
+    "relevant_chunk_ids_legacy": [
       "8772a47e-118f-4957-a46e-560e697bd573"
     ],
     "sources": [
@@ -70,6 +83,9 @@
     "reference_answer": "Under section 66C of the IT Act (identity theft), whoever fraudulently or dishonestly makes use of the electronic signature, password or other unique identification feature of any other person shall be punished with imprisonment of either description up to three years and shall also be liable to fine.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "it_act-0024-0077588"
+    ],
+    "relevant_chunk_ids_legacy": [
       "d8e92023-dcaa-4392-b85d-76b195dd0ef4"
     ],
     "sources": [
@@ -86,6 +102,9 @@
     "reference_answer": "Under section 2(1)(d) of the POCSO Act, 2012, \"child\" means any person below the age of eighteen years.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "pocso-0003-0004938"
+    ],
+    "relevant_chunk_ids_legacy": [
       "aa56fe7c-463a-4ec9-9938-846c24d0a223"
     ],
     "sources": [
@@ -102,6 +121,9 @@
     "reference_answer": "Yes. Section 3 of the Motor Vehicles Act, 1988 provides that no person shall drive a motor vehicle in any public place unless he holds an effective driving licence.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "motor_vehicles-0011-0025326"
+    ],
+    "relevant_chunk_ids_legacy": [
       "061a287d-3a68-48b6-a20c-17b6f104146b",
       "90aa1236-ffdd-46a9-9bbb-6ee7defce082"
     ],
@@ -119,6 +141,13 @@
     "reference_answer": "According to section 181 of the Motor Vehicles Act as it appears in the indexed text, driving in contravention of section 3 or 4 is punishable with imprisonment up to three months, or fine up to five hundred rupees, or both. (The indexed PDF may predate the 2019 amendment.)",
     "answerable": true,
     "relevant_chunk_ids": [
+      "motor_vehicles-0088-0315540",
+      "motor_vehicles-0088-0316420",
+      "motor_vehicles-0088-0317103",
+      "motor_vehicles-0088-0317866",
+      "motor_vehicles-0088-0318658"
+    ],
+    "relevant_chunk_ids_legacy": [
       "caa42876-8e42-4863-a0c0-fe4fac047780",
       "a6f7dd41-5853-47ea-ab36-955f903a5670",
       "62b7a6c4-baa1-45fa-a036-917b87bdb2b2",
@@ -141,6 +170,9 @@
     "reference_answer": "Yes. Under section 32(1) of the Indian Evidence Act, a statement by a person who is dead as to the cause of his death or the circumstances of the transaction which resulted in his death is relevant where the cause of death comes into question, whether or not he expected death when making it.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "evidence_act-0022-0053386"
+    ],
+    "relevant_chunk_ids_legacy": [
       "00442910-4cc8-44af-88bc-84efa754c45e"
     ],
     "sources": [
@@ -157,6 +189,9 @@
     "reference_answer": "No. Section 25 of the Indian Evidence Act provides that no confession made to a police officer shall be proved as against a person accused of any offence.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "evidence_act-0021-0048945"
+    ],
+    "relevant_chunk_ids_legacy": [
       "73b9a869-90c7-4885-aacd-af393b57266f"
     ],
     "sources": [
@@ -173,6 +208,9 @@
     "reference_answer": "Under section 41 CrPC, a police officer may arrest without an order from a Magistrate and without a warrant a person who commits a cognizable offence in his presence, or against whom a reasonable complaint, credible information or reasonable suspicion exists of a cognizable offence (subject to the conditions in the section), among other listed grounds.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "crpc-0040-0099287"
+    ],
+    "relevant_chunk_ids_legacy": [
       "f249b1bf-35f6-4fe4-8dd4-d9c93e3ff93f"
     ],
     "sources": [
@@ -189,6 +227,11 @@
     "reference_answer": "Under section 154(1) CrPC, oral information about a cognizable offence given to the officer in charge of a police station shall be reduced to writing by him or under his direction, read over to the informant, signed by the informant, and its substance entered in a book kept by the officer.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "crpc-0078-0244151",
+      "crpc-0078-0244846",
+      "crpc-0078-0246341"
+    ],
+    "relevant_chunk_ids_legacy": [
       "2db5a40f-0723-4226-8938-6af3d92b44f6",
       "fdbd7934-4e3f-41e5-a9f8-08e3601bc40e",
       "d146e81d-a1dd-4ef8-b839-d7c1a75d8f80"
@@ -207,6 +250,10 @@
     "reference_answer": "Under section 35, a complaint about goods sold or services provided may be filed with a District Commission by the consumer concerned (including one alleging an unfair trade practice), by a recognised consumer association, and by others listed in the section.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "consumer_protection-0018-0050729",
+      "consumer_protection-0018-0051499"
+    ],
+    "relevant_chunk_ids_legacy": [
       "b23e3497-d468-48e6-a4f3-959ba1142cd3",
       "3b1dd36c-2351-409b-82ad-f1bfda14ba07",
       "7148b2a4-8c1e-4236-9fd3-fea88afc5e12"
@@ -225,6 +272,10 @@
     "reference_answer": "Under section 379 IPC, theft is punishable with imprisonment of either description for a term which may extend to three years, or with fine, or with both.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "ipc-0089-0344262",
+      "ipc-0089-0345149"
+    ],
+    "relevant_chunk_ids_legacy": [
       "5477960e-cb69-4ee3-aabe-8068e5c0140a",
       "f0bf9d47-071d-4c2a-81f2-059073f01bf8",
       "4c7d146a-e019-407c-aab0-913d92dfee5a",
@@ -244,6 +295,11 @@
     "reference_answer": "Under section 498A IPC, a husband or relative of the husband who subjects a woman to cruelty shall be punished with imprisonment up to three years and shall also be liable to fine.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "ipc-0108-0425202",
+      "ipc-0108-0425684",
+      "ipc-0108-0426278"
+    ],
+    "relevant_chunk_ids_legacy": [
       "378f84de-441d-4570-8cd7-ddcc9e727a48",
       "766b7178-cf99-4685-8a9b-7d5b25b380bd",
       "279e48ca-e2bd-4b06-abe9-7f9e2e54fae7"
@@ -262,6 +318,9 @@
     "reference_answer": "Under section 304B(2) IPC, whoever commits dowry death shall be punished with imprisonment for not less than seven years, which may extend to imprisonment for life.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "ipc-0072-0274767"
+    ],
+    "relevant_chunk_ids_legacy": [
       "c2d539bd-1296-4733-ad7c-15a70c1f5119"
     ],
     "sources": [
@@ -278,6 +337,9 @@
     "reference_answer": "Under section 125 CrPC, where a person with sufficient means neglects or refuses to maintain his wife, minor child, adult child unable to maintain itself due to abnormality or injury (not a married daughter), or father or mother, unable to maintain themselves, a Magistrate of the first class may order a monthly maintenance allowance.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "crpc-0066-0201979"
+    ],
+    "relevant_chunk_ids_legacy": [
       "0e8c55b8-4b61-4e4f-b0f8-b5ab7f5f9fb0"
     ],
     "sources": [
@@ -294,6 +356,9 @@
     "reference_answer": "Article 17 abolishes \"Untouchability\" and forbids its practice in any form; enforcing any disability arising out of it is an offence punishable in accordance with law.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "constitution-0040-0054808"
+    ],
+    "relevant_chunk_ids_legacy": [
       "1b692cb1-70c2-4225-b0de-db5c02412003"
     ],
     "sources": [
@@ -310,6 +375,10 @@
     "reference_answer": "Article 22(1): an arrested person shall not be detained without being informed, as soon as may be, of the grounds of arrest, nor denied the right to consult a legal practitioner of his choice. Section 50(1) CrPC: a police officer arresting without warrant shall forthwith communicate full particulars of the offence or other grounds for the arrest.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "constitution-0042-0060091",
+      "crpc-0043-0113139"
+    ],
+    "relevant_chunk_ids_legacy": [
       "f372e905-de91-4640-8158-791aff9925d3",
       "e5dac65e-d1d1-433e-88a4-7cb3c912ffe9",
       "e0e6b8df-5a37-4631-b41f-de99eff30017"
@@ -332,6 +401,9 @@
     "reference_answer": "According to the indexed study material on the Payment of Gratuity Act, gratuity is payable on termination after continuous service of not less than five years, except that five years are not required where termination is due to death or disablement.",
     "answerable": true,
     "relevant_chunk_ids": [
+      "labour_laws-0145-0376932"
+    ],
+    "relevant_chunk_ids_legacy": [
       "d45f929a-7f94-48cb-90e4-4ae11907e97d"
     ],
     "sources": [
@@ -348,6 +420,7 @@
     "reference_answer": null,
     "answerable": false,
     "relevant_chunk_ids": [],
+    "relevant_chunk_ids_legacy": [],
     "sources": [],
     "verified_by_human": false
   },
@@ -357,6 +430,7 @@
     "reference_answer": null,
     "answerable": false,
     "relevant_chunk_ids": [],
+    "relevant_chunk_ids_legacy": [],
     "sources": [],
     "verified_by_human": false
   },
@@ -366,6 +440,7 @@
     "reference_answer": null,
     "answerable": false,
     "relevant_chunk_ids": [],
+    "relevant_chunk_ids_legacy": [],
     "sources": [],
     "verified_by_human": false
   },
@@ -375,6 +450,7 @@
     "reference_answer": null,
     "answerable": false,
     "relevant_chunk_ids": [],
+    "relevant_chunk_ids_legacy": [],
     "sources": [],
     "verified_by_human": false
   },
@@ -384,6 +460,7 @@
     "reference_answer": null,
     "answerable": false,
     "relevant_chunk_ids": [],
+    "relevant_chunk_ids_legacy": [],
     "sources": [],
     "verified_by_human": false
   }

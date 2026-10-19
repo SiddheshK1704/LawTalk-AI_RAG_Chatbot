@@ -36,7 +36,7 @@ export async function askAI(query) {
 }
 
 /**
- * Stream an answer over SSE. Callbacks: onSources(sources), onToken(text).
+ * Stream an answer over SSE. Callbacks: onSources(sources, mode), onToken(text).
  * Resolves with the final {answer, citations, sources}; rejects with ApiError,
  * or with an AbortError when `signal` is aborted (stop button).
  */
@@ -72,7 +72,8 @@ export async function streamAsk(query, { signal, onSources, onToken } = {}) {
       }
       let payload;
       try { payload = JSON.parse(data); } catch { throw new ApiError('Received a malformed response from the server.', 'malformed'); }
-      if (event === 'sources') onSources?.(payload.sources || []);
+      // mode: "RAG" (legal, with sources) or "LLM" (normal mode, no sources).
+      if (event === 'sources') onSources?.(payload.sources || [], payload.mode || 'RAG');
       else if (event === 'token') onToken?.(payload.text || '');
       else if (event === 'done') final = payload;
       else if (event === 'error') throw new ApiError(payload.message || 'Something went wrong.', payload.code);

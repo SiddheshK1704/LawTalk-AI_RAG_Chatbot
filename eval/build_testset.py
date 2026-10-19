@@ -16,7 +16,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-INDEX = ROOT / "backend" / "faiss_index" / "index.pkl"
+INDEX = ROOT / "backend" / "faiss_index"
 OUT = Path(__file__).with_name("testset.json")
 
 # (id, question, reference_answer, [(file, page, evidence), ...]); no evidence = unanswerable
@@ -100,33 +100,57 @@ def shingles(s: str, n: int = 6) -> list[str]:
     return ["".join(w[i:i + n]) for i in range(max(1, len(w) - n + 1))]
 
 
-def main() -> None:
-    with open(INDEX, "rb") as f:
+def load_chunks(index_dir: Path) -> list:
+    with open(index_dir / "index.pkl", "rb") as f:
         docstore, id_map = pickle.load(f)  # our own index file
-    chunks = [(cid, docstore._dict[cid]) for cid in id_map.values()]
+    return [(cid, docstore._dict[cid]) for cid in id_map.values()]
+
+
+def resolve(chunks: list, tid: str, evidence: list) -> list[str]:
+    """Chunks from the same file whose page range covers the evidence page and that share
+    a 6-word run with the evidence phrase. Works for per-page chunks (original index) and
+    page-spanning chunks (faiss_index_v2) alike, so both are labelled by the same rule."""
+    relevant = []
+    for file, page, phrase in evidence:
+        sh = shingles(phrase)
+        hits = []
+        for cid, d in chunks:
+            m = d.metadata or {}
+            if Path(m.get("source", "").replace("\\", "/")).name != file:
+                continue
+            first = m.get("page")
+            last = m.get("page_end", first)
+            if first is None or not (first <= page - 1 <= last):
+                continue
+            if any(s in squash(d.page_content) for s in sh):
+                hits.append(cid)
+        if not hits:
+            raise SystemExit(f"{tid}: no chunk found for {file} p{page}: {phrase[:50]!r}")
+        relevant.extend(hits)
+    return relevant
+
+
+def main() -> None:
+    legacy = load_chunks(INDEX)
+    v2_dir = ROOT / "backend" / "faiss_index_v2"
+    v2 = load_chunks(v2_dir) if (v2_dir / "index.pkl").exists() else None
     items = []
     for tid, question, reference, evidence in SEEDS:
-        relevant = []
-        for file, page, phrase in evidence:
-            sh = shingles(phrase)
-            hits = [cid for cid, d in chunks
-                    if Path(d.metadata.get("source", "").replace("\\", "/")).name == file
-                    and d.metadata.get("page") == page - 1
-                    and any(s in squash(d.page_content) for s in sh)]
-            if not hits:
-                raise SystemExit(f"{tid}: no chunk found for {file} p{page}: {phrase[:50]!r}")
-            relevant.extend(hits)
-        items.append({
+        item = {
             "id": tid,
             "question": question,
             "reference_answer": reference,
             "answerable": bool(evidence),
-            "relevant_chunk_ids": relevant,
+            # labels for the index the app currently serves (v2 when built), plus the original index
+            "relevant_chunk_ids": resolve(v2, tid, evidence) if v2 else resolve(legacy, tid, evidence),
+            "relevant_chunk_ids_legacy": resolve(legacy, tid, evidence),
             "sources": [{"file": f, "page": p} for f, p, _ in evidence],
             "verified_by_human": False,
-        })
+        }
+        items.append(item)
     OUT.write_text(json.dumps(items, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"wrote {len(items)} items ({sum(i['answerable'] for i in items)} answerable) to {OUT}")
+    print(f"wrote {len(items)} items ({sum(i['answerable'] for i in items)} answerable) to {OUT}"
+          f" (labels for {'faiss_index_v2 and faiss_index' if v2 else 'faiss_index'})")
 
 
 if __name__ == "__main__":

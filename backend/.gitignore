@@ -12,3 +12,5 @@ venv/
 # RAG data
 faiss_index/
 data/legal_docs/
+data/.cache/
+faiss_index_v2*/

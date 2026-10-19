@@ -86,9 +86,26 @@ from the indexed text and have **not** been reviewed by a lawyer (`verified_by_h
   `retry-after`) or fail with a 503 `rate_limited` error, which dominates p95 and the error rate.
 - The free tier also caps each model at 200,000 tokens/day. A full run uses a large share of the judge's daily budget; if it is exhausted, the run stops with the provider's message rather than waiting. Use `--judge-model` to pick another model.
 - 25 questions is a small sample: use these numbers to catch regressions, not as absolute claims.
-- Retrieval experiments tried and *not* adopted (measured on this test set): preferring chunks from an
-  Act named in the question (no change in Recall@5), and a cross-encoder reranker over the top 30
-  (Recall@5 0.317 → 0.367, Hit@5 unchanged, +~350 ms per query on CPU).
+- Retrieval experiments are recorded in `eval/retrieval_experiments.json` (see the main README for the table).
+  A cross-encoder reranker was tried twice and not adopted: lower Hit@5 and ~0.6–0.9 s per query on CPU.
+
+## What changed in the evaluation (this version)
+
+- **Retrieval experiments without API cost:** `python eval/retrieval_experiments.py` compares index and retrieval
+  variants on the 20 labelled questions (Recall@5, Hit@5, MRR, retrieval latency) and writes
+  `eval/retrieval_experiments.json`. Labels are resolved per index by the same rule as `build_testset.py`, so
+  indexes with different chunking are compared on the same evidence. `testset.json` keeps labels for both the
+  original index (`relevant_chunk_ids_legacy`) and the rebuilt one (`relevant_chunk_ids`); questions and
+  references are unchanged.
+- **RAGAS contexts are exactly what the model saw** (source label, any note, text), not raw chunk text.
+- **Two judge models share the load:** faithfulness, context recall and citations use `--judge-model`
+  (default `qwen/qwen3.8-27b`); answer relevancy and context precision use `--judge-model-2` (default
+  `openai/gpt-oss-20b`). One full run needs about 240K judge tokens, more than one free-tier model's 200K/day.
+  Judge calls are cached in `eval/.ragas_cache/` so re-runs don't spend tokens again.
+- **Provider rate limits are reported separately** from application errors (`App error rate`,
+  `Provider rate-limited`), and RAGAS only scores answers that went through RAG mode.
+- **`--in-process`** runs the same router, retrieval, prompt and Groq code without HTTP or the auth check, for
+  when no `EVAL_AUTH_TOKEN` is available. Results are labelled with the transport used.
 
 ## Saving sources with conversation history (optional)
 

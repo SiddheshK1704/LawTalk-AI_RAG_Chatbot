@@ -10,6 +10,7 @@ langchain-huggingface
 faiss-cpu
 pypdf
 sentence-transformers
+scipy            # BM25 lexical search (already a sentence-transformers dependency)
 
 # LLM (Groq)
 groq

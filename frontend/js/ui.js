@@ -1,4 +1,4 @@
-// Landing page: auth modal, session-aware CTAs, theme toggle.
+// Landing page: masthead, Justice Orb sign-in/sign-up, session-aware CTAs, motion.
 // Supabase calls and redirects are unchanged from the original (see auth.js).
 import { login, signup, onAuthChange, getSession, logout } from './auth.js';
 import { initThemeToggles } from './theme.js';
@@ -6,125 +6,160 @@ import { initThemeToggles } from './theme.js';
 initThemeToggles();
 
 const $ = (id) => document.getElementById(id);
-const modal = $('authModal');
-const card = modal.querySelector('.auth-card');
-const segmented = modal.querySelector('.segmented');
-const tabs = [...modal.querySelectorAll('.auth-tab')];
-const form = $('authForm');
-const emailEl = $('authEmail');
-const passwordEl = $('authPassword');
-const submitBtn = $('authSubmit');
-const submitLabel = $('authSubmitLabel');
-const spinner = submitBtn.querySelector('.spinner');
-const messageEl = $('authError');
-const loginBtn = $('openLogin');
-const signupBtn = $('openSignup');
-const startBtns = [...document.querySelectorAll('[data-start]')];
+const gsap = window.gsap;
+const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const animate = () => Boolean(gsap) && !reduceMotion();
 
-let mode = 'login';
+const modal = $('authModal');
+const orb = $('orb');
+const flipper = orb.querySelector('.orb-flipper');
+const bubble = modal.querySelector('.orb-bubble');
+const backdrop = modal.querySelector('.orb-backdrop');
+const faces = { login: $('loginFace'), signup: $('signupFace') };
+const loginBtn = $('openLogin');
+const startBtns = [...document.querySelectorAll('[data-start]')];
+const pageRegions = [document.querySelector('.masthead'), $('main'), document.querySelector('.footer')];
+
 let currentSession = null;
 let opener = null;
-let busy = false;
+let side = 'login';
+let openTl = null;
 
-const COPY = {
-  login: { title: 'Welcome back', sub: 'Sign in to your legal research workspace', submit: 'Sign in', busy: 'Signing in…' },
-  signup: { title: 'Create your account', sub: 'Start your legal research workspace', submit: 'Create account', busy: 'Creating account…' },
+/* ================= Forms: validation and submit ================= */
+const FORMS = {
+  login: { form: $('loginForm'), email: $('loginEmail'), password: $('loginPassword'), message: $('loginMessage'),
+           submit: $('loginSubmit'), label: 'Log in', busy: 'Signing in…' },
+  signup: { form: $('signupForm'), email: $('signupEmail'), password: $('signupPassword'), message: $('signupMessage'),
+            submit: $('signupSubmit'), label: 'Create account', busy: 'Creating account…' },
 };
 
-/* ---------- Messages & validation ---------- */
-function showMessage(text, ok = false) {
-  messageEl.textContent = text;
-  messageEl.classList.toggle('success', ok);
-  messageEl.hidden = false;
-}
-function hideMessage() { messageEl.hidden = true; }
-
-function setFieldError(input, errorEl, text) {
-  errorEl.textContent = text || '';
-  errorEl.hidden = !text;
+function setFieldError(input, text) {
+  const err = $(`${input.id}Error`);
+  err.textContent = text || '';
+  err.hidden = !text;
   if (text) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
 }
-function validateEmail() {
-  const v = emailEl.value.trim();
+function validateEmail(input) {
+  const v = input.value.trim();
   const msg = !v ? 'Enter your email address.' : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? 'Enter a valid email address.' : '';
-  setFieldError(emailEl, $('emailError'), msg);
+  setFieldError(input, msg);
   return !msg;
 }
-function validatePassword() {
-  const v = passwordEl.value;
+function validatePassword(input) {
+  const v = input.value;
   const msg = !v ? 'Enter your password.' : v.length < 6 ? 'Password must be at least 6 characters.' : '';
-  setFieldError(passwordEl, $('passwordError'), msg);
+  setFieldError(input, msg);
   return !msg;
 }
-emailEl.addEventListener('blur', () => { if (emailEl.value) validateEmail(); });
-passwordEl.addEventListener('blur', () => { if (passwordEl.value) validatePassword(); });
-emailEl.addEventListener('input', () => { if (emailEl.hasAttribute('aria-invalid')) validateEmail(); hideMessage(); });
-passwordEl.addEventListener('input', () => { if (passwordEl.hasAttribute('aria-invalid')) validatePassword(); hideMessage(); });
+function showMessage(f, text, ok = false) {
+  f.message.textContent = text;
+  f.message.classList.toggle('success', ok);
+  f.message.hidden = false;
+}
+function resetForm(f) {
+  f.form.reset();
+  f.message.hidden = true;
+  setFieldError(f.email, '');
+  setFieldError(f.password, '');
+  f.password.type = 'password';
+}
 
 // Supabase error text -> clearer wording (unknown errors are shown as-is).
 function friendlyError(err) {
   const m = (err?.message || '').toLowerCase();
   if (m.includes('invalid login credentials')) return 'Incorrect email or password.';
   if (m.includes('email not confirmed')) return 'Please confirm your email first. Check your inbox for the link.';
-  if (m.includes('already registered') || m.includes('already exists')) return 'An account with this email already exists. Sign in instead.';
+  if (m.includes('already registered') || m.includes('already exists')) return 'An account with this email already exists. Log in instead.';
   if (m.includes('rate limit') || m.includes('too many')) return 'Too many attempts. Please wait a moment and try again.';
   if (m.includes('failed to fetch') || m.includes('network')) return 'Could not reach the server. Check your connection.';
   return err?.message || 'Something went wrong. Please try again.';
 }
 
-/* ---------- Mode (segmented toggle) ---------- */
-function setMode(next, { animate = true } = {}) {
-  if (next === mode && animate) return;
-  mode = next;
-  const apply = () => {
-    const c = COPY[mode];
-    $('authTitle').textContent = c.title;
-    $('authSub').textContent = c.sub;
-    submitLabel.textContent = c.submit;
-    card.classList.remove('switching');
-  };
-  segmented.dataset.mode = mode;
-  tabs.forEach((t) => {
-    const on = t.dataset.tab === mode;
-    t.setAttribute('aria-selected', String(on));
-    t.tabIndex = on ? 0 : -1;
-  });
-  form.setAttribute('aria-labelledby', `tab-${mode}`);
-  passwordEl.autocomplete = mode === 'login' ? 'current-password' : 'new-password';
-  $('passwordHint').hidden = mode !== 'signup';
-  setFieldError(emailEl, $('emailError'), '');
-  setFieldError(passwordEl, $('passwordError'), '');
-  if (animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    card.classList.add('switching');
-    setTimeout(apply, 120);
-  } else apply();
+function setBusy(f, busy) {
+  f.submit.disabled = busy;
+  f.submit.querySelector('.spinner').hidden = !busy;
+  f.submit.querySelector('.submit-label').textContent = busy ? f.busy : f.label;
+  f.submit.setAttribute('aria-busy', String(busy));
 }
-tabs.forEach((t) => t.addEventListener('click', () => { hideMessage(); setMode(t.dataset.tab); }));
-segmented.addEventListener('keydown', (e) => {
-  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-  e.preventDefault();
-  const next = mode === 'login' ? 'signup' : 'login';
-  hideMessage();
-  setMode(next);
-  $(`tab-${next}`).focus();
-});
 
-/* ---------- Password visibility ---------- */
-$('togglePassword').addEventListener('click', (e) => {
-  const btn = e.currentTarget;
-  const show = passwordEl.type === 'password';
-  passwordEl.type = show ? 'text' : 'password';
+for (const [name, f] of Object.entries(FORMS)) {
+  f.email.addEventListener('blur', () => { if (f.email.value) validateEmail(f.email); });
+  f.password.addEventListener('blur', () => { if (f.password.value) validatePassword(f.password); });
+  f.email.addEventListener('input', () => { if (f.email.hasAttribute('aria-invalid')) validateEmail(f.email); f.message.hidden = true; });
+  f.password.addEventListener('input', () => { if (f.password.hasAttribute('aria-invalid')) validatePassword(f.password); f.message.hidden = true; });
+  f.form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (f.submit.disabled) return;
+    f.message.hidden = true;
+    const okEmail = validateEmail(f.email);
+    const okPassword = validatePassword(f.password);
+    if (!okEmail || !okPassword) { (okEmail ? f.password : f.email).focus(); return; }
+    const email = f.email.value.trim();
+    const password = f.password.value;
+    setBusy(f, true);
+    try {
+      if (name === 'login') {
+        await login(email, password);
+        window.location.href = 'chat.html';
+        return;
+      }
+      const data = await signup(email, password);
+      // With email confirmation on, Supabase returns a user with no identities (instead of
+      // an error) when the address is already registered.
+      if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        showMessage(f, 'An account with this email already exists. Log in instead.');
+        return;
+      }
+      resetForm(f);
+      FORMS.login.email.value = email;
+      await flipTo('login');
+      showMessage(FORMS.login, 'Account created. Check your email to confirm, then log in.', true);
+    } catch (err) {
+      showMessage(f, friendlyError(err));
+    } finally {
+      setBusy(f, false);
+    }
+  });
+}
+
+document.querySelectorAll('[data-toggle-password]').forEach((btn) => btn.addEventListener('click', () => {
+  const input = $(btn.dataset.togglePassword);
+  const show = input.type === 'password';
+  input.type = show ? 'text' : 'password';
   btn.setAttribute('aria-pressed', String(show));
   btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
   btn.querySelector('.eye-open').hidden = show;
   btn.querySelector('.eye-closed').hidden = !show;
-  passwordEl.focus();
-});
+  input.focus();
+}));
 
-/* ---------- Open / close with focus trap ---------- */
+/* ================= Justice Orb: open / flip / close ================= */
+function setSide(next) {
+  side = next;
+  faces.login.inert = next !== 'login';
+  faces.signup.inert = next !== 'signup';
+  orb.setAttribute('aria-labelledby', next === 'login' ? 'loginTitle' : 'signupTitle');
+}
+
+function flipTo(next) {
+  if (next === side) return Promise.resolve();
+  setSide(next);
+  const focusFirst = () => FORMS[next].email.focus();
+  if (!animate()) {
+    flipper.style.transform = next === 'signup' ? 'rotateY(180deg)' : '';
+    focusFirst();
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => {
+    gsap.to(flipper, { rotationY: next === 'signup' ? 180 : 0, duration: 0.6, ease: 'power2.inOut',
+      onComplete: () => { focusFirst(); resolve(); } });
+  });
+}
+$('toSignup').addEventListener('click', () => { FORMS.login.message.hidden = true; flipTo('signup'); });
+$('toLogin').addEventListener('click', () => { FORMS.signup.message.hidden = true; flipTo('login'); });
+
 function focusables() {
-  return [...card.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])')]
-    .filter((el) => !el.disabled && !el.hidden && el.offsetParent !== null);
+  return [...faces[side].querySelectorAll('button, [href], input')].filter((el) => !el.disabled && el.offsetParent !== null);
 }
 function onKeydown(e) {
   if (e.key === 'Escape') { e.preventDefault(); closeModal(); return; }
@@ -132,122 +167,123 @@ function onKeydown(e) {
   const items = focusables();
   if (!items.length) return;
   const first = items[0], last = items[items.length - 1];
-  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  if (!faces[side].contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+  else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
   else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-  else if (!card.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
 }
 
-function openModal(initial = 'login', from = document.activeElement) {
-  opener = from;
-  hideMessage();
-  setMode(initial, { animate: false });
+function buildOpenTimeline(from) {
+  // 1) a small bubble appears at the button, 2) travels to the centre, 3) the orb grows out of it.
+  const r = from?.getBoundingClientRect?.();
+  const startX = r ? r.left + r.width / 2 - window.innerWidth / 2 : 0;
+  const startY = r ? r.top + r.height / 2 - window.innerHeight / 2 : -window.innerHeight / 3;
+  const items = faces.login.querySelectorAll('.orb-item, .orb-close');
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  tl.set(orb, { clipPath: 'circle(0px at 50% 50%)' })
+    .set(items, { autoAlpha: 0, y: 8 })
+    .fromTo(backdrop, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power1.out' }, 0)
+    .fromTo(bubble, { x: startX, y: startY, scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.14 }, 0)
+    .to(bubble, { x: 0, y: 0, duration: 0.5, ease: 'power2.inOut' }, 0.08)
+    .to(orb, { clipPath: 'circle(72% at 50% 50%)', duration: 0.5, ease: 'power3.inOut' }, 0.5)
+    .to(bubble, { scale: 3, opacity: 0, duration: 0.3, ease: 'power1.out' }, 0.52)
+    .to(items, { autoAlpha: 1, y: 0, duration: 0.3, stagger: 0.03 }, 0.82);
+  return tl;
+}
+
+function openModal(fromEl = document.activeElement) {
+  if (!modal.hidden) return;
+  opener = fromEl;
+  closeMenu(false);
+  resetForm(FORMS.login);
+  resetForm(FORMS.signup);
+  setSide('login');
+  flipper.style.transform = '';
+  if (gsap) gsap.set(flipper, { rotationY: 0 });
   modal.hidden = false;
   document.body.classList.add('modal-open');
-  void modal.offsetWidth; // start the transition from the hidden state
-  modal.classList.add('open');
+  pageRegions.forEach((el) => { if (el) el.inert = true; });  // background cannot be reached
   document.addEventListener('keydown', onKeydown);
-  setTimeout(() => emailEl.focus(), 30);
+  if (animate()) {
+    openTl = buildOpenTimeline(fromEl);
+    openTl.eventCallback('onComplete', () => FORMS.login.email.focus());
+    openTl.play(0);
+  } else {
+    openTl = null;
+    FORMS.login.email.focus();
+  }
 }
 
 function closeModal() {
   if (modal.hidden) return;
-  modal.classList.remove('open');
   document.removeEventListener('keydown', onKeydown);
-  document.body.classList.remove('modal-open');
-  const done = () => {
+  const finish = () => {
     modal.hidden = true;
-    form.reset();
-    passwordEl.type = 'password';
-    setFieldError(emailEl, $('emailError'), '');
-    setFieldError(passwordEl, $('passwordError'), '');
-    hideMessage();
+    document.body.classList.remove('modal-open');
+    pageRegions.forEach((el) => { if (el) el.inert = false; });
+    if (gsap) gsap.set([orb, bubble, backdrop, flipper, ...faces.login.querySelectorAll('.orb-item, .orb-close')], { clearProps: 'all' });
+    flipper.style.transform = '';
+    opener?.focus?.();
   };
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  setTimeout(done, reduce ? 0 : 220);
-  opener?.focus?.();
+  if (openTl && animate()) {
+    // Reverse the entrance: flip back to the front first if needed, then retract into the bubble.
+    const reverse = () => { openTl.eventCallback('onReverseComplete', finish); openTl.timeScale(1.6).reverse(); };
+    if (side === 'signup') { setSide('login'); gsap.to(flipper, { rotationY: 0, duration: 0.35, ease: 'power2.inOut', onComplete: reverse }); }
+    else reverse();
+  } else {
+    finish();
+  }
 }
 modal.querySelectorAll('[data-close-modal]').forEach((el) => el.addEventListener('click', closeModal));
 
-/* ---------- CTAs (same behaviour as before) ---------- */
+/* ================= CTAs (same behaviour as before) ================= */
 loginBtn.addEventListener('click', (e) => {
   if (currentSession) { logout(); return; }
-  openModal('login', e.currentTarget);
-});
-signupBtn.addEventListener('click', (e) => {
-  if (currentSession) { window.location.href = 'chat.html'; return; }
-  openModal('signup', e.currentTarget);
+  openModal(e.currentTarget);
 });
 startBtns.forEach((b) => b.addEventListener('click', (e) => {
   closeMenu(false);
   if (currentSession) window.location.href = 'chat.html';
-  else openModal('login', e.currentTarget);
+  else openModal(e.currentTarget);
 }));
 
-/* ---------- Submit ---------- */
-function setBusy(v) {
-  busy = v;
-  submitBtn.disabled = v;
-  spinner.hidden = !v;
-  submitLabel.textContent = v ? COPY[mode].busy : COPY[mode].submit;
-  submitBtn.setAttribute('aria-busy', String(v));
-}
-
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  if (busy) return;
-  hideMessage();
-  const okEmail = validateEmail();
-  const okPassword = validatePassword();
-  if (!okEmail || !okPassword) { (okEmail ? passwordEl : emailEl).focus(); return; }
-  const email = emailEl.value.trim();
-  const password = passwordEl.value;
-  setBusy(true);
-  try {
-    if (mode === 'login') {
-      await login(email, password);
-      window.location.href = 'chat.html';
-      return;
-    }
-    const data = await signup(email, password);
-    // With email confirmation on, Supabase returns a user with no identities
-    // (instead of an error) when the address is already registered.
-    if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
-      showMessage('An account with this email already exists. Sign in instead.');
-      return;
-    }
-    setMode('login', { animate: false });
-    showMessage('Account created! Check your email to confirm, then sign in.', true);
-  } catch (err) {
-    showMessage(friendlyError(err));
-  } finally {
-    setBusy(false);
-  }
-});
-
-/* ---------- Session-aware nav ---------- */
+/* ================= Session-aware labels ================= */
 async function refreshNav() {
   currentSession = await getSession();
-  if (currentSession) {
-    loginBtn.textContent = 'Log out';
-    signupBtn.textContent = 'Open workspace';
-    startBtns.forEach((b) => { b.textContent = 'Continue researching'; });
-  } else {
-    loginBtn.textContent = 'Log in';
-    signupBtn.textContent = 'Sign up';
-    startBtns.forEach((b) => { b.textContent = 'Start researching'; });
-  }
+  loginBtn.textContent = currentSession ? 'Log out' : 'Log in';
+  document.querySelector('[data-menu-login]').textContent = currentSession ? 'Log out' : 'Log in';
+  document.querySelectorAll('.start-label').forEach((s) => { s.textContent = currentSession ? 'Continue researching' : 'Start researching'; });
 }
 onAuthChange((session) => { currentSession = session; refreshNav(); });
 refreshNav();
 
-/* ---------- Mobile menu ---------- */
+/* ================= Masthead: scroll state, active section, mobile menu ================= */
+const masthead = $('masthead');
+const onScroll = () => masthead.classList.toggle('scrolled', window.scrollY > 8);
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+const navLinks = [...document.querySelectorAll('.nav-links a[href^="#"]')];
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      navLinks.forEach((a) => {
+        const on = a.getAttribute('href') === `#${en.target.id}`;
+        a.classList.toggle('active', on);
+        if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+      });
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  ['product', 'how', 'features'].forEach((id) => { const el = $(id); if (el) io.observe(el); });
+}
+
 const menuBtn = $('menuBtn');
 const menu = $('mobileMenu');
 function openMenu() {
   menu.hidden = false;
   menuBtn.setAttribute('aria-expanded', 'true');
   menuBtn.setAttribute('aria-label', 'Close menu');
-  if (window.gsap && !reduceMotion()) window.gsap.from(menu, { opacity: 0, y: -6, duration: 0.18, ease: 'power2.out', clearProps: 'all' });
+  if (animate()) gsap.from(menu, { opacity: 0, y: -4, duration: 0.18, ease: 'power2.out', clearProps: 'all' });
   menu.querySelector('a, button')?.focus();
 }
 function closeMenu(restoreFocus = true) {
@@ -259,50 +295,54 @@ function closeMenu(restoreFocus = true) {
 }
 menuBtn.addEventListener('click', () => (menu.hidden ? openMenu() : closeMenu()));
 menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => closeMenu(false)));
-menu.querySelector('[data-menu-login]').addEventListener('click', () => { closeMenu(false); loginBtn.click(); });
-menu.querySelector('[data-menu-signup]').addEventListener('click', () => { closeMenu(false); signupBtn.click(); });
+menu.querySelector('[data-menu-login]').addEventListener('click', (e) => {
+  closeMenu(false);
+  if (currentSession) logout(); else openModal(menuBtn);
+});
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden && modal.hidden) closeMenu(); });
 document.addEventListener('click', (e) => {
   if (!menu.hidden && !menu.contains(e.target) && !menuBtn.contains(e.target)) closeMenu(false);
 });
 
-/* ---------- Motion (GSAP) ---------- */
-function reduceMotion() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+/* ================= Research-status label (reacts to the CTAs; no fake data) ================= */
+const status = document.querySelector('.status');
+const statusText = $('heroStatus');
+document.querySelectorAll('[data-status]').forEach((el) => {
+  const on = () => { statusText.textContent = el.dataset.status; status.classList.add('active'); };
+  const off = () => { statusText.textContent = statusText.dataset.default; status.classList.remove('active'); };
+  el.addEventListener('mouseenter', on); el.addEventListener('focus', on);
+  el.addEventListener('mouseleave', off); el.addEventListener('blur', off);
+});
 
+/* ================= Motion (GSAP) ================= */
 (function motion() {
   const root = document.documentElement;
-  if (!window.gsap || reduceMotion()) { root.classList.remove('motion'); return; }
-  const gsap = window.gsap;
+  if (!animate()) { root.classList.remove('motion'); return; }
   if (window.ScrollTrigger) gsap.registerPlugin(window.ScrollTrigger);
 
-  // Hero: text reveal, then Lady Justice fades in.
-  gsap.fromTo('[data-reveal="hero"]', { autoAlpha: 0, y: 18 },
+  gsap.fromTo('[data-reveal="hero"]', { autoAlpha: 0, y: 16 },
     { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out', stagger: 0.08, delay: 0.05 });
-  gsap.fromTo('[data-reveal="lady"]', { autoAlpha: 0, x: 14 },
-    { autoAlpha: 1, x: 0, duration: 1.1, ease: 'power2.out', delay: 0.2 });
+  gsap.fromTo('[data-reveal="lady"]', { autoAlpha: 0, y: 12 },
+    { autoAlpha: 1, y: 0, duration: 1.0, ease: 'power2.out', delay: 0.2 });
 
-  // Scroll reveals (each element once).
+  // Section reveals: restrained opacity/translate as each block enters, once.
   if (window.ScrollTrigger) {
     gsap.utils.toArray('[data-reveal=""]').forEach((el) => {
-      gsap.from(el, { opacity: 0, y: 16, duration: 0.6, ease: 'power2.out',
-        scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
+      gsap.from(el, { opacity: 0, y: 14, duration: 0.6, ease: 'power2.out', scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
     });
   }
 
-  // Lady Justice follows the cursor a little (max 8px, smoothed); the glow follows less.
+  // The artwork answers the pointer very slightly (max 6px), mouse/trackpad only.
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   const hero = document.querySelector('.hero');
   const lady = document.querySelector('.lady');
-  const glow = document.querySelector('.art-glow');
-  const lx = gsap.quickTo(lady, 'x', { duration: 0.8, ease: 'power3.out' });
-  const ly = gsap.quickTo(lady, 'y', { duration: 0.8, ease: 'power3.out' });
-  const gx = gsap.quickTo(glow, 'x', { duration: 1.2, ease: 'power3.out' });
-  const gy = gsap.quickTo(glow, 'y', { duration: 1.2, ease: 'power3.out' });
+  const lx = gsap.quickTo(lady, 'x', { duration: 0.9, ease: 'power3.out' });
+  const ly = gsap.quickTo(lady, 'y', { duration: 0.9, ease: 'power3.out' });
   hero.addEventListener('pointermove', (e) => {
     const r = hero.getBoundingClientRect();
-    const dx = Math.max(-1, Math.min(1, (e.clientX - r.left) / r.width * 2 - 1));
-    const dy = Math.max(-1, Math.min(1, (e.clientY - r.top) / r.height * 2 - 1));
-    lx(dx * 8); ly(dy * 8); gx(dx * 4); gy(dy * 4);
+    const dx = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width) * 2 - 1));
+    const dy = Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height) * 2 - 1));
+    lx(dx * 6); ly(dy * 6);
   });
-  hero.addEventListener('pointerleave', () => { lx(0); ly(0); gx(0); gy(0); });
+  hero.addEventListener('pointerleave', () => { lx(0); ly(0); });
 })();

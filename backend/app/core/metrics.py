@@ -24,7 +24,7 @@ if not logger.handlers:  # uvicorn only configures its own loggers
     logger.setLevel(logging.INFO)
     logger.propagate = False
 
-STAGES = ("embed", "retrieve", "llm_first_token", "llm_total")
+STAGES = ("embed", "retrieve", "llm_queue", "llm_first_token", "llm_total")
 
 
 class RequestTimer:
@@ -51,16 +51,23 @@ class MetricsTracker:
         self.window = deque(maxlen=window)
         self.every = every
         self.total = 0
-        self.errors = 0
+        self.errors = 0          # application errors (our bugs, timeouts, bad input)
+        self.provider_limited = 0  # requests refused by the LLM provider's rate limits
         self._lock = threading.Lock()
 
-    def record(self, timer: RequestTimer, status: int, path: str = "/ask") -> None:
+    def record(self, timer: RequestTimer, status: int, path: str = "/ask", mode: str | None = None,
+               provider_limited: bool = False) -> None:
         e2e = timer.since_start()
         parts = [f"{s}={timer.stages[s]:.3f}s" for s in STAGES if s in timer.stages]
-        logger.info("[REQ] %s", " ".join([path, *parts, f"e2e={e2e:.3f}s", f"status={status}"]))
+        head = [path] + ([f"mode={mode}"] if mode else [])
+        tail = [f"e2e={e2e:.3f}s", f"status={status}"] + (["provider_rate_limited"] if provider_limited else [])
+        logger.info("[REQ] %s", " ".join([*head, *parts, *tail]))
         with self._lock:
             self.total += 1
-            self.errors += status >= 400
+            if provider_limited:
+                self.provider_limited += 1
+            elif status >= 400 and status not in (401, 499):  # auth failures and client aborts are not app errors
+                self.errors += 1
             self.window.append({"e2e": e2e, "status": status, **timer.stages})
             due = self.every > 0 and self.total % self.every == 0
         if due:
@@ -69,7 +76,7 @@ class MetricsTracker:
     def print_summary(self, reason: str = "") -> None:
         with self._lock:
             rows = list(self.window)
-            total, errors = self.total, self.errors
+            total, errors, limited = self.total, self.errors, self.provider_limited
         if not rows:
             logger.info("[METRICS] no requests recorded%s", f" ({reason})" if reason else "")
             return
@@ -77,7 +84,8 @@ class MetricsTracker:
         avg = {s: sum(r[s] for r in rows if s in r) / max(1, sum(s in r for r in rows)) for s in STAGES}
         lines = [
             f"==================== LawTalk metrics{' (' + reason + ')' if reason else ''} ====================",
-            f"requests={total}  errors={errors}  error_rate={errors / total:.1%}  (window: last {len(rows)})",
+            f"requests={total}  app_errors={errors} ({errors / total:.1%})  provider_rate_limited={limited} ({limited / total:.1%})"
+            f"  (window: last {len(rows)})",
             (f"e2e   p50={_pct(ok, 50):.3f}s  p95={_pct(ok, 95):.3f}s  mean={sum(ok) / len(ok):.3f}s"
              if ok else "e2e   no successful requests in window"),
             "avg   " + "  ".join(f"{s}={avg[s]:.3f}s" for s in STAGES if any(s in r for r in rows)),

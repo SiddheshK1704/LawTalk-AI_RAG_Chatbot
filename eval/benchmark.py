@@ -61,9 +61,11 @@ async def _one(client: httpx.AsyncClient, base: str, q: str, stream: bool, timeo
         else:
             r = await client.post(base + "/ask", json={"query": q}, headers=headers, timeout=timeout)
             rec["status"] = r.status_code
-            rec["ok"] = r.status_code == 200 and bool(r.json().get("answer"))
+            body = r.json() if r.headers.get("content-type", "").startswith("application/json") else {}
+            rec["ok"] = r.status_code == 200 and bool(body.get("answer"))
             if not rec["ok"]:
-                rec["error"] = f"http_{r.status_code}"
+                detail = body.get("detail") if isinstance(body.get("detail"), dict) else {}
+                rec["error"] = detail.get("code") or f"http_{r.status_code}"
     except httpx.TimeoutException:
         rec["error"] = "timeout"
     except httpx.HTTPError as e:
@@ -97,13 +99,32 @@ async def run_benchmark(base_url: str, questions: list[str], sequential: int = 3
         records.extend(conc)
         print(f"  concurrent x{concurrent} (concurrency {concurrency}) done in {conc_wall:.1f}s", flush=True)
 
+    out = summarize_records(records, {"sequential": sequential, "concurrent": concurrent, "concurrency": concurrency,
+                                      "warmup": warmup, "delay_s": delay}, "/ask/stream" if stream else "/ask", conc_wall)
+    out["base_url"] = base
+    return out
+
+
+# Provider refusals. The original backend surfaced Groq 429s as plain HTTP 500s, which
+# this client cannot tell apart from crashes, so those are reported as http_500.
+PROVIDER_LIMIT_CODES = {"rate_limited"}
+
+
+def summarize_records(records: list[dict], config: dict, endpoint: str, conc_wall: float) -> dict:
     def stats(rs):
         ok = [r["e2e_s"] for r in rs if r["ok"]]
         ttft = [r["ttft_s"] for r in rs if r.get("ttft_s")]
+        limited = sum(1 for r in rs if not r["ok"] and r.get("error") in PROVIDER_LIMIT_CODES)
+        failed = sum(not r["ok"] for r in rs)
+        n = max(1, len(rs))
         return {
             "requests": len(rs),
-            "errors": sum(not r["ok"] for r in rs),
-            "error_rate": round(sum(not r["ok"] for r in rs) / max(1, len(rs)), 3),
+            "errors": failed,
+            "error_rate": round(failed / n, 3),                      # all failures (comparable with old runs)
+            "provider_rate_limited": limited,
+            "provider_rate_limited_rate": round(limited / n, 3),
+            "app_errors": failed - limited,
+            "app_error_rate": round((failed - limited) / n, 3),      # failures not caused by provider limits
             "p50_s": round(percentile(ok, 50), 3) if ok else None,
             "p95_s": round(percentile(ok, 95), 3) if ok else None,
             "mean_s": round(sum(ok) / len(ok), 3) if ok else None,
@@ -115,10 +136,8 @@ async def run_benchmark(base_url: str, questions: list[str], sequential: int = 3
         if not r["ok"]:
             errors[r.get("error", "unknown")] = errors.get(r.get("error", "unknown"), 0) + 1
     return {
-        "base_url": base,
-        "endpoint": "/ask/stream" if stream else "/ask",
-        "config": {"sequential": sequential, "concurrent": concurrent, "concurrency": concurrency,
-                   "warmup": warmup, "delay_s": delay},
+        "endpoint": endpoint,
+        "config": config,
         "overall": stats(records),
         "sequential": stats([r for r in records if r["phase"] == "sequential"]),
         "concurrent": {**stats([r for r in records if r["phase"] == "concurrent"]), "wall_s": round(conc_wall, 2)},

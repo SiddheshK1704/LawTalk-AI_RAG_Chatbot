@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LawTalk — Research workspace</title>
+<title>LAW/TALK — Research workspace</title>
 <meta name="color-scheme" content="dark light" />
 <script>
   /* Set the theme before first paint (same key as js/theme.js). */
@@ -16,7 +16,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   // Tailwind is used for layout utilities only; colors/type come from css/app.css tokens.
@@ -33,12 +33,7 @@
   <!-- ============ Sidebar ============ -->
   <aside id="sidebar" class="sidebar" aria-label="Conversations">
     <div class="flex items-center justify-between" style="height:52px;padding:0 12px 0 16px">
-      <a href="index.html" class="brand" aria-label="LawTalk home">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 21h14M7 7h10M4 7l-2 6a3 3 0 0 0 6 0L6 7M18 7l-2 6a3 3 0 0 0 6 0l-2-6"/></svg>
-        </span>
-        LawTalk
-      </a>
+      <a href="index.html" class="wordmark" aria-label="LAW/TALK home"><span class="wordmark-mark" aria-hidden="true"></span>LAW<span class="wordmark-slash">/</span>TALK</a>
       <button id="collapseSidebar" class="icon-btn hidden md:inline-flex" aria-label="Collapse sidebar" data-tip="Collapse" data-tip-pos="left">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
       </button>
@@ -59,14 +54,14 @@
       </div>
     </div>
 
-    <div class="t-label" style="padding:4px 20px 6px">History</div>
-    <nav class="sidebar-scroll flex-1 overflow-y-auto" style="padding:0 8px 8px">
+    <div class="t-label" style="padding:8px 16px 8px">History</div>
+    <nav class="sidebar-scroll flex-1 overflow-y-auto">
       <ul id="chatList" class="chat-list" aria-label="Conversation history"></ul>
       <p id="chatListEmpty" class="t-meta" style="padding:8px 12px" hidden>No conversations yet.</p>
     </nav>
 
     <div class="flex items-center gap-3" style="padding:12px 16px;border-top:1px solid var(--line)">
-      <div id="userAvatar" aria-hidden="true" class="grid place-items-center" style="width:28px;height:28px;border-radius:50%;background:var(--accent-tint);border:1px solid var(--focus-border);color:var(--link);font-size:12px;font-weight:600">·</div>
+      <div id="userAvatar" aria-hidden="true" class="grid place-items-center" style="width:28px;height:28px;background:var(--surface);border:1px solid var(--line-strong);color:var(--text);font-family:var(--font-mono);font-size:12px">·</div>
       <div class="flex-1 min-w-0">
         <div id="userEmail" class="truncate" style="font-size:var(--fs-sm);color:var(--text-2)">Loading…</div>
       </div>
@@ -87,7 +82,7 @@
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
       </button>
-      <button id="toggleEvidence" class="btn btn-ghost" aria-controls="evidence" aria-expanded="false">
+      <button id="toggleEvidence" class="btn btn-ghost" aria-controls="evidence" aria-expanded="false" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-1.5zM8 7h6M8 11h6"/></svg>
         <span>Evidence</span><span id="evidenceCount" class="badge" hidden></span>
       </button>
@@ -96,16 +91,14 @@
     <div id="scroll" class="scroll">
       <div class="column">
         <section id="emptyState" class="empty" aria-labelledby="emptyTitle">
-          <span class="brand-mark" style="width:36px;height:36px;border-radius:10px" aria-hidden="true">
-            <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 21h14M7 7h10M4 7l-2 6a3 3 0 0 0 6 0L6 7M18 7l-2 6a3 3 0 0 0 6 0l-2-6"/></svg>
-          </span>
-          <h1 id="emptyTitle">Research Indian law, with sources.</h1>
-          <p>Ask about the Constitution, IPC, CrPC, Evidence Act, IT Act and more. Every answer cites the passages it relies on, shown in the evidence panel.</p>
+          <span class="index">Research workspace / 00</span>
+          <h1 id="emptyTitle">Ask the law a question.</h1>
+          <p>Legal questions are answered from the indexed statutes (Constitution, IPC, CrPC, Evidence Act, IT Act and more) with numbered citations, and the retrieved passages open in the evidence panel. Other questions get a general answer, with no sources.</p>
           <div class="suggestions" role="list">
-            <button class="suggestion" role="listitem" data-q="When can the police arrest someone without a warrant?"><span><span class="t-meta">Criminal procedure</span>When can the police arrest someone without a warrant?</span><span class="nudge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
-            <button class="suggestion" role="listitem" data-q="Which section of the CrPC deals with anticipatory bail?"><span><span class="t-meta">Bail</span>Which section of the CrPC deals with anticipatory bail?</span><span class="nudge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
-            <button class="suggestion" role="listitem" data-q="What does Article 21 of the Constitution provide?"><span><span class="t-meta">Fundamental rights</span>What does Article 21 of the Constitution provide?</span><span class="nudge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
-            <button class="suggestion" role="listitem" data-q="What is the punishment for identity theft under the IT Act?"><span><span class="t-meta">Cyber law</span>What is the punishment for identity theft under the IT Act?</span><span class="nudge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+            <button class="suggestion" role="listitem" data-q="When can the police arrest someone without a warrant?"><span><span class="t-label">Criminal procedure</span>When can the police arrest someone without a warrant?</span><span class="nudge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+            <button class="suggestion" role="listitem" data-q="Which section of the CrPC deals with anticipatory bail?"><span><span class="t-label">Bail</span>Which section of the CrPC deals with anticipatory bail?</span><span class="nudge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+            <button class="suggestion" role="listitem" data-q="What does Article 21 of the Constitution provide?"><span><span class="t-label">Fundamental rights</span>What does Article 21 of the Constitution provide?</span><span class="nudge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+            <button class="suggestion" role="listitem" data-q="What is the punishment for identity theft under the IT Act?"><span><span class="t-label">Cyber law</span>What is the punishment for identity theft under the IT Act?</span><span class="nudge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
           </div>
         </section>
         <div id="messages" aria-live="off"></div>
@@ -115,7 +108,7 @@
     <div class="composer-wrap">
       <form id="chatForm" class="composer" novalidate>
         <label for="chatInput" class="sr-only">Ask a legal question</label>
-        <textarea id="chatInput" rows="1" maxlength="2000" placeholder="Ask a legal question…" autocomplete="off"></textarea>
+        <textarea id="chatInput" rows="1" maxlength="2000" placeholder="Ask a legal question, or anything else…" autocomplete="off"></textarea>
         <button type="submit" id="sendBtn" class="btn btn-primary send-btn" aria-label="Send" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
         </button>

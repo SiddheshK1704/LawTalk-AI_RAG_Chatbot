@@ -222,10 +222,19 @@ async function deleteChat(chat) {
 /* ================= Opening / new ================= */
 function resetThread() {
   if (busy) controller?.abort();
+  requestSeq++;            // any in-flight callbacks now belong to a stale request
   messagesEl.replaceChildren();
   thread.length = 0;
-  showEvidence(null);
+  clearEvidence();
 }
+
+// Evidence belongs to one legal (RAG) answer. Normal-mode answers have none, and the
+// panel is closed and emptied so nothing from an earlier request can be shown.
+function clearEvidence() {
+  showEvidence(null);
+  setEvidence(false);
+}
+let requestSeq = 0;
 
 function startNewChat() {
   resetThread();
@@ -257,11 +266,17 @@ async function openChat(chat) {
       const rec = addAssistant(lastQuestion, false);
       rec.rowId = m.id;
       rec.sources = Array.isArray(m.sources) ? m.sources : [];
+      rec.mode = rec.sources.length ? 'RAG' : null;  // mode is not stored; saved sources imply RAG
       finishAssistant(rec, m.content);
     }
   }
   const last = thread[thread.length - 1];
-  if (last?.sources.length) showEvidence(last);
+  if (last?.sources.length) {
+    showEvidence(last);
+    if (mqDesktop.matches) setEvidence(true);
+  } else {
+    clearEvidence();
+  }
   scrollToBottom(true);
 }
 
@@ -322,7 +337,7 @@ function reveal(row, animate) {
 
 function addUser(text, animate = true) {
   const row = el('div', 'msg msg-user');
-  row.append(el('div', 'bubble', text));
+  row.append(el('span', 't-label msg-role', 'You'), el('div', 'bubble', text));
   messagesEl.append(row);
   reveal(row, animate);
   return row;
@@ -334,12 +349,16 @@ function addAssistant(question, animate = true) {
   avatar.setAttribute('aria-hidden', 'true');
   avatar.innerHTML = ICONS.mark; // static icon
   const col = el('div');
+  const role = el('span', 't-label msg-role');
+  role.append(document.createTextNode('LAW/TALK'));
+  const modeTag = el('span', 'msg-mode');
+  role.append(modeTag);
   const body = el('div', 'prose');
-  col.append(body);
+  col.append(role, body);
   row.append(avatar, col);
   messagesEl.append(row);
   reveal(row, animate);
-  const rec = { row, col, body, question, answer: '', sources: [], rowId: null };
+  const rec = { row, col, body, modeTag, question, answer: '', sources: [], mode: null, rowId: null };
   thread.push(rec);
   return rec;
 }
@@ -355,8 +374,14 @@ function showThinking(rec) {
   rec.body.append(t);
 }
 
+function setMode(rec, mode) {
+  rec.mode = mode;
+  rec.modeTag.textContent = mode === 'RAG' ? '· Legal RAG' : mode === 'LLM' ? '· General' : '';
+}
+
 function finishAssistant(rec, answer, note) {
   rec.answer = answer;
+  if (rec.mode) setMode(rec, rec.mode);
   rec.body.classList.remove('streaming');
   renderMarkdown(rec.body, answer, { maxCite: rec.sources.length });
   rec.col.querySelector('.msg-actions')?.remove();
@@ -429,18 +454,24 @@ function peekSource(cite, on) {
 
 /* ================= Evidence panel ================= */
 let shownRec = null;
+function showEvidencePending() {
+  shownRec = null;
+  evidenceCount.hidden = true;
+  evidenceBody.replaceChildren(el('p', 'evidence-empty', 'Retrieving passages for this question…'));
+}
+
 function showEvidence(rec, highlight) {
   const same = rec && rec === shownRec && evidenceBody.childElementCount === (rec.sources || []).length;
   shownRec = rec;
   const sources = rec?.sources || [];
   evidenceCount.hidden = sources.length === 0;
   evidenceCount.textContent = String(sources.length);
+  // The toggle only exists while there is evidence to open.
+  toggleEvidenceBtn.hidden = sources.length === 0;
   evidenceBody.replaceChildren();
   if (!sources.length) {
     const p = el('p', 'evidence-empty');
-    p.textContent = rec
-      ? 'No source passages were saved for this answer.'
-      : 'Retrieved legal passages appear here. Click a numbered citation in an answer to jump to its source.';
+    p.textContent = 'Retrieved legal passages appear here for legal questions. Click a numbered citation in an answer to jump to its source.';
     evidenceBody.append(p);
     return;
   }
@@ -452,12 +483,20 @@ function showEvidence(rec, highlight) {
     head.append(el('span', 'source-num', String(s.id)));
     const info = el('div', 'min-w-0');
     info.append(el('div', 'source-title' + (s.title ? '' : ' untitled'), s.title || 'Untitled passage (no document metadata)'));
+    // Only metadata the index actually recorded; nothing is inferred here.
     const meta = el('div', 'source-meta');
-    if (s.page) meta.append(el('span', 'badge', `Page ${s.page}`));
+    if (s.section) meta.append(el('span', 'badge', `${s.section_kind || 'Section'} ${s.section}`));
+    if (s.page) meta.append(el('span', 'badge', s.page_end ? `pp. ${s.page}–${s.page_end}` : `p. ${s.page}`));
     if (s.cited) meta.append(el('span', 'badge', 'Cited'));
     if (meta.childElementCount) info.append(meta);
+    if (s.section_title) info.append(el('div', 't-meta', s.section_title));
+    if (s.note) info.append(el('div', 'badge badge-note', s.note));
     head.append(info);
-    const text = el('p', 'source-text', (s.text || '').replace(/[ \t]+/g, ' ').trim());
+    // Chunks from the rebuilt index start with a context line ("<Document> — Section N (...)")
+    // that the model sees; the panel already shows it as title + badges.
+    let body = (s.text || '').replace(/[ \t]+/g, ' ').trim();
+    if (s.title && body.startsWith(s.title)) body = body.slice(body.indexOf('\n') + 1 || body.length).trim();
+    const text = el('p', 'source-text', body);
     card.append(head, text);
     if ((s.text || '').length > 320) {
       const more = el('button', 'source-toggle', 'Show full passage');
@@ -531,6 +570,10 @@ async function send(text, { replace } = {}) {
   setBusy(true);
   controller = new AbortController();
   const chatAtStart = currentChatId;
+  const seq = ++requestSeq;
+  const current = () => seq === requestSeq && thread.includes(rec);
+  // Never leave the previous answer's passages on screen while this one is pending.
+  if (evidenceOpen()) showEvidencePending(); else showEvidence(null);
 
   try {
     if (!replace) {
@@ -553,21 +596,31 @@ async function send(text, { replace } = {}) {
   try {
     const final = await streamAsk(text, {
       signal: controller.signal,
-      onSources: (sources) => {
-        rec.sources = sources;
-        showEvidence(rec);
-        if (mqDesktop.matches && sources.length) setEvidence(true);
+      onSources: (sources, mode) => {
+        if (!current()) return;
+        setMode(rec, mode);
+        if (mode === 'RAG' && sources.length) {
+          rec.sources = sources;
+          showEvidence(rec);
+          if (mqDesktop.matches) setEvidence(true);
+        } else {
+          rec.sources = [];
+          clearEvidence();
+        }
       },
-      onToken: (t) => { raw += t; if (!frame) frame = requestAnimationFrame(paint); },
+      onToken: (t) => { if (!current()) return; raw += t; if (!frame) frame = requestAnimationFrame(paint); },
     });
     cancelAnimationFrame(frame);
-    rec.sources = final.sources || rec.sources;
+    if (!current()) return;
+    if (final.mode) setMode(rec, final.mode);
+    rec.sources = rec.mode === 'RAG' ? (final.sources || rec.sources) : [];
     finishAssistant(rec, final.answer);
-    showEvidence(rec);
+    if (rec.sources.length) showEvidence(rec); else clearEvidence();
     announce('Answer ready');
     if (currentChatId === chatAtStart || !chatAtStart) await saveAnswer(rec, final.answer, replace);
   } catch (err) {
     cancelAnimationFrame(frame);
+    if (!current()) return;
     if (err.name === 'AbortError') {
       if (raw.trim()) {
         finishAssistant(rec, raw, 'Generation stopped.');
@@ -578,6 +631,7 @@ async function send(text, { replace } = {}) {
       announce('Generation stopped');
     } else {
       showError(rec, err.message || 'Something went wrong.');
+      if (shownRec === null || shownRec === rec) clearEvidence();
       announce('The answer failed');
     }
   } finally {

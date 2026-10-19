@@ -58,7 +58,8 @@ def retrieval_recall(items: list[dict], k: int = 5) -> dict:
         if not it["answerable"]:
             continue
         top = [s["chunk_id"] for s in rag.retrieve(it["question"], k=k)]
-        rel = set(it["relevant_chunk_ids"])
+        legacy = os.path.basename(rag.DB_PATH) == "faiss_index"
+        rel = set(it["relevant_chunk_ids_legacy"] if legacy and "relevant_chunk_ids_legacy" in it else it["relevant_chunk_ids"])
         found = rel & set(top)
         rows.append({"id": it["id"], "recall": len(found) / len(rel), "hit": float(bool(found))})
     return {"recall_at_5": mean([r["recall"] for r in rows]), "hit_rate_at_5": mean([r["hit"] for r in rows]),
@@ -82,11 +83,13 @@ async def generate_answers(base_url: str, items: list[dict], delay: float) -> li
                             event = line[6:].strip()
                         elif line.startswith("data:"):
                             data = json.loads(line[5:])
-                            if event == "token" and "ttft_s" not in rec:
+                            if event == "sources":
+                                rec["mode"] = data.get("mode")
+                            elif event == "token" and "ttft_s" not in rec:
                                 rec["ttft_s"] = time.perf_counter() - t0
                             elif event == "done":
                                 rec.update(ok=True, answer=data["answer"], citations=data["citations"],
-                                           sources=data["sources"])
+                                           sources=data["sources"], mode=data.get("mode", rec.get("mode")))
                             elif event == "error":
                                 rec["error"] = data.get("code")
             except httpx.HTTPError as e:
@@ -96,6 +99,81 @@ async def generate_answers(base_url: str, items: list[dict], delay: float) -> li
             out.append(rec)
             await asyncio.sleep(delay)
     return out
+
+
+async def generate_answers_inprocess(items: list[dict], delay: float) -> list[dict]:
+    """Same pipeline as /ask/stream (router -> retrieval -> prompt -> streamed Groq call),
+    called directly instead of over HTTP. Used when no EVAL_AUTH_TOKEN is available."""
+    from app.api.chat import finalize, plan
+    from app.core.metrics import RequestTimer
+    from app.services.groq_client import LLMError, stream_llm_response
+
+    out = []
+    for it in items:
+        t0 = time.perf_counter()
+        rec = {"id": it["id"], "ok": False}
+        timer = RequestTimer()
+        try:
+            mode, sources, messages = plan(it["question"], timer)
+            rec["mode"] = mode
+            parts = []
+            async for delta in stream_llm_response(messages, timer):
+                if "ttft_s" not in rec:
+                    rec["ttft_s"] = time.perf_counter() - t0
+                parts.append(delta)
+            answer, cited = finalize("".join(parts), sources)
+            rec.update(ok=True, answer=answer, citations=cited, sources=sources)
+        except LLMError as e:
+            rec["error"] = e.code
+        rec["e2e_s"] = time.perf_counter() - t0
+        rec["stages"] = {k: round(v, 3) for k, v in timer.stages.items()}
+        print(f"  answer {it['id']}: {'ok' if rec['ok'] else rec.get('error')} mode={rec.get('mode')} ({rec['e2e_s']:.1f}s)", flush=True)
+        out.append(rec)
+        await asyncio.sleep(delay)
+    return out
+
+
+async def benchmark_inprocess(questions: list[str], sequential: int = 30, concurrent: int = 20,
+                              concurrency: int = 4, delay: float = 2.0, warmup: int = 2) -> dict:
+    """The eval/benchmark.py protocol (30 sequential + 20 concurrent, like /ask) run against
+    the pipeline in-process: it excludes HTTP and the (cached) auth check."""
+    from app.api.chat import finalize, plan
+    from app.core.metrics import RequestTimer
+    from app.services.groq_client import LLMError, get_llm_response
+    from benchmark import summarize_records
+
+    async def one(q: str) -> dict:
+        t0 = time.perf_counter()
+        rec = {"ok": False}
+        try:
+            _mode, sources, messages = await asyncio.to_thread(plan, q, RequestTimer())
+            finalize(await get_llm_response(messages, RequestTimer()), sources)
+            rec["ok"] = True
+        except LLMError as e:
+            rec["error"] = "rate_limited" if e.provider_limited else e.code
+        rec["e2e_s"] = time.perf_counter() - t0
+        return rec
+
+    for i in range(warmup):
+        await one(questions[i % len(questions)])
+    records = []
+    for i in range(sequential):
+        records.append({**await one(questions[i % len(questions)]), "phase": "sequential"})
+        r = records[-1]
+        print(f"  seq {i + 1}/{sequential}: {r['e2e_s']:.2f}s {'ok' if r['ok'] else r.get('error')}", flush=True)
+        await asyncio.sleep(delay)
+    sem = asyncio.Semaphore(concurrency)
+
+    async def worker(i):
+        async with sem:
+            return {**await one(questions[(sequential + i) % len(questions)]), "phase": "concurrent"}
+
+    t0 = time.perf_counter()
+    records += await asyncio.gather(*(worker(i) for i in range(concurrent)))
+    wall = time.perf_counter() - t0
+    print(f"  concurrent x{concurrent} (concurrency {concurrency}) done in {wall:.1f}s", flush=True)
+    return summarize_records(records, {"sequential": sequential, "concurrent": concurrent, "concurrency": concurrency,
+                                       "warmup": warmup, "delay_s": delay}, "in-process", wall)
 
 
 # ---------------------------------------------------------------------------
@@ -135,25 +213,39 @@ async def patient(make_call, attempts: int = 8):
             await asyncio.sleep(min(wait + 1, 90))
 
 
-async def run_ragas(items: list[dict], answers: dict, judge_model: str) -> dict:
+def contexts_for(answer: dict) -> list[str]:
+    """The retrieved contexts exactly as the answer model saw them (label, note, text)."""
+    from app.api.chat import source_block
+
+    return [source_block(s) for s in answer.get("sources") or []]
+
+
+async def run_ragas(items: list[dict], answers: dict, judge_model: str, judge_model_2: str | None = None) -> dict:
+    from ragas.cache import DiskCacheBackend
     from ragas.embeddings import HuggingFaceEmbeddings
     from ragas.llms import llm_factory
     from ragas.metrics.collections import AnswerRelevancy, ContextPrecision, ContextRecall, Faithfulness
 
-    llm = llm_factory(judge_model, client=judge_client(), max_tokens=4096, temperature=0.0)
+    # A full run needs ~240K judge tokens for 20 answers, above one free-tier model's
+    # 200K/day, which is why scores went missing. Each metric is always judged by the
+    # same model; two models share the load. Judge calls are cached on disk.
+    cache = DiskCacheBackend(cache_dir=str(EVAL_DIR / ".ragas_cache"))
+    llm1 = llm_factory(judge_model, client=judge_client(), max_tokens=4096, temperature=0.0, cache=cache)
+    llm2 = (llm_factory(judge_model_2, client=judge_client(), max_tokens=4096, temperature=0.0, cache=cache)
+            if judge_model_2 else llm1)
     emb = HuggingFaceEmbeddings(model="sentence-transformers/all-MiniLM-L6-v2")
     metrics = {
-        "faithfulness": (Faithfulness(llm=llm), lambda q, a, c, ref: dict(user_input=q, response=a, retrieved_contexts=c)),
-        "answer_relevancy": (AnswerRelevancy(llm=llm, embeddings=emb), lambda q, a, c, ref: dict(user_input=q, response=a)),
-        "context_precision": (ContextPrecision(llm=llm), lambda q, a, c, ref: dict(user_input=q, reference=ref, retrieved_contexts=c)),
-        "context_recall": (ContextRecall(llm=llm), lambda q, a, c, ref: dict(user_input=q, retrieved_contexts=c, reference=ref)),
+        "faithfulness": (Faithfulness(llm=llm1), lambda q, a, c, ref: dict(user_input=q, response=a, retrieved_contexts=c)),
+        "answer_relevancy": (AnswerRelevancy(llm=llm2, embeddings=emb), lambda q, a, c, ref: dict(user_input=q, response=a)),
+        "context_precision": (ContextPrecision(llm=llm2), lambda q, a, c, ref: dict(user_input=q, reference=ref, retrieved_contexts=c)),
+        "context_recall": (ContextRecall(llm=llm1), lambda q, a, c, ref: dict(user_input=q, retrieved_contexts=c, reference=ref)),
     }
     per_item, errors = [], []
     for it in items:
         a = answers.get(it["id"])
-        if not it["answerable"] or not a or not a["ok"]:
+        if not it["answerable"] or not a or not a["ok"] or a.get("mode") == "LLM":
             continue
-        ctx = [s["text"] for s in a["sources"]]
+        ctx = contexts_for(a)
         row = {"id": it["id"]}
         for name, (metric, args) in metrics.items():
             try:
@@ -196,7 +288,7 @@ async def citation_correctness(items: list[dict], answers: dict, judge_model: st
         for sentence in re.split(r"(?<=[.!?])\s+|\n+", a["answer"]):
             for n in sorted({int(x) for x in re.findall(r"\[(\d{1,2})\]", sentence)}):
                 if 1 <= n <= len(a["sources"]):
-                    pairs.append((it["id"], re.sub(r"\[\d{1,2}\]", "", sentence).strip(), a["sources"][n - 1]["text"]))
+                    pairs.append((it["id"], re.sub(r"\[\d{1,2}\]", "", sentence).strip(), contexts_for(a)[n - 1]))
     verdicts = []
     for item_id, claim, passage in pairs:
         try:
@@ -266,7 +358,8 @@ def write_reports(res: dict) -> None:
 
 
 README_KEYS = ["Faithfulness", "Answer relevancy", "Context precision", "Context recall", "Retrieval Recall@5",
-               "Citation correctness", "p95 latency (s)", "Request error rate"]
+               "Retrieval Hit@5", "Citation correctness", "TTFT p50 (s)", "p95 latency (s)", "Request error rate",
+               "App error rate", "Provider rate-limited"]
 
 
 def update_readme(res: dict) -> None:
@@ -308,14 +401,15 @@ def print_table(res: dict) -> None:
     print("=" * 64)
 
 
-async def benchmark_only(base: str, items: list[dict]) -> None:
+async def benchmark_only(base: str, items: list[dict], in_process: bool = False) -> None:
     """Re-measure latency and update only the latency fields of eval/results.json."""
     path = EVAL_DIR / "results.json"
     if not path.exists():
         raise SystemExit("eval/results.json not found: run a full evaluation first")
     res = json.loads(path.read_text(encoding="utf-8"))
     print("benchmark: 30 sequential + 20 concurrent requests to /ask")
-    bench = await run_benchmark(base, [i["question"] for i in items], headers=auth_headers())
+    bench = (await benchmark_inprocess([i["question"] for i in items]) if in_process
+             else await run_benchmark(base, [i["question"] for i in items], headers=auth_headers()))
     baseline_path = EVAL_DIR / "baseline.json"
     baseline = json.loads(baseline_path.read_text(encoding="utf-8")) if baseline_path.exists() else None
     res["summary"]["p95 latency (s)"] = bench["overall"]["p95_s"]
@@ -334,20 +428,25 @@ async def main_async(args) -> None:
     if args.limit:  # smoke test: a few answerable + one unanswerable item
         items = [i for i in items if i["answerable"]][: args.limit] + [i for i in items if not i["answerable"]][:1]
     base = args.base_url.rstrip("/")
-    async with httpx.AsyncClient() as c:
-        try:
-            (await c.get(base + "/health", timeout=5)).raise_for_status()
-        except httpx.HTTPError:
-            raise SystemExit(f"Backend not reachable at {base}. Start it with: cd backend && uvicorn app.main:app")
-        # Check the token up front (no LLM call), so an expired token can't waste a run.
-        r = await c.get(base + "/auth/check", headers=auth_headers(), timeout=15)
-        if r.status_code != 200:
-            detail = (r.json().get("detail") or {}) if r.headers.get("content-type", "").startswith("application/json") else {}
-            raise SystemExit(f"EVAL_AUTH_TOKEN was rejected ({r.status_code}: {detail.get('message', r.text[:120])}). "
-                             "Tokens expire after about an hour; get a fresh one with `python eval/get_token.py`.")
+    if not args.in_process:
+        async with httpx.AsyncClient() as c:
+            try:
+                (await c.get(base + "/health", timeout=5)).raise_for_status()
+            except httpx.HTTPError:
+                raise SystemExit(f"Backend not reachable at {base}. Start it with: cd backend && uvicorn app.main:app")
+            # Check the token up front (no LLM call), so an expired token can't waste a run.
+            r = await c.get(base + "/auth/check", headers=auth_headers(), timeout=15)
+            if r.status_code != 200:
+                detail = (r.json().get("detail") or {}) if r.headers.get("content-type", "").startswith("application/json") else {}
+                raise SystemExit(f"EVAL_AUTH_TOKEN was rejected ({r.status_code}: {detail.get('message', r.text[:120])}). "
+                                 "Tokens expire after about an hour; get a fresh one with `python eval/get_token.py`.")
+    else:
+        from app.services import rag
+
+        rag.load_db()
 
     if args.benchmark_only:
-        await benchmark_only(base, items)
+        await benchmark_only(base, items, args.in_process)
         return
 
     print("1/4 retrieval recall@5")
@@ -358,27 +457,34 @@ async def main_async(args) -> None:
     # (no judge traffic in parallel, provider rate-limit budget not already spent).
     bench = None
     if not args.skip_benchmark:
-        print("2/4 benchmark: 30 sequential + 20 concurrent requests to /ask")
-        bench = await run_benchmark(base, [i["question"] for i in items], headers=auth_headers())
+        print("2/4 benchmark: 30 sequential + 20 concurrent requests" + (" (in-process)" if args.in_process else " to /ask"))
+        bench = (await benchmark_inprocess([i["question"] for i in items]) if args.in_process
+                 else await run_benchmark(base, [i["question"] for i in items], headers=auth_headers()))
         await asyncio.sleep(60)  # let the tokens-per-minute window refill
 
-    print("3/4 generating answers via /ask/stream")
-    gen = await generate_answers(base, items, args.delay)
+    print("3/4 generating answers" + (" (in-process)" if args.in_process else " via /ask/stream"))
+    gen = (await generate_answers_inprocess(items, args.delay) if args.in_process
+           else await generate_answers(base, items, args.delay))
     answers = {g["id"]: g for g in gen}
 
     ragas = cites = None
     if not args.skip_ragas:
-        print("4/4 RAGAS + citation judge (judge: %s)" % args.judge_model)
-        ragas = await run_ragas(items, answers, args.judge_model)
+        print(f"4/4 RAGAS + citation judge (judges: {args.judge_model}, {args.judge_model_2})")
+        ragas = await run_ragas(items, answers, args.judge_model, args.judge_model_2)
         cites = await citation_correctness(items, answers, args.judge_model)
 
     baseline_path = EVAL_DIR / "baseline.json"
     baseline = json.loads(baseline_path.read_text(encoding="utf-8")) if baseline_path.exists() else None
     ttft = sorted(g["ttft_s"] for g in gen if g.get("ttft_s"))
+    modes = {m: sum(1 for g in gen if g.get("mode") == m) for m in ("RAG", "LLM")}
     res = {
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "config": {"judge_model": args.judge_model, "testset": "eval/testset.json", "n_questions": len(items),
-                   "answer_endpoint": "/ask/stream", "benchmark_endpoint": "/ask"},
+        "config": {"judge_models": {"faithfulness": args.judge_model, "context_recall": args.judge_model,
+                                    "answer_relevancy": args.judge_model_2 or args.judge_model,
+                                    "context_precision": args.judge_model_2 or args.judge_model,
+                                    "citation_correctness": args.judge_model},
+                   "testset": "eval/testset.json", "n_questions": len(items),
+                   "transport": "in-process (no HTTP/auth)" if args.in_process else "HTTP (/ask/stream, /ask)"},
         "summary": {
             "Faithfulness": ragas and ragas["faithfulness"],
             "Answer relevancy": ragas and ragas["answer_relevancy"],
@@ -391,6 +497,9 @@ async def main_async(args) -> None:
             "TTFT p50 (s)": round(ttft[len(ttft) // 2], 3) if ttft else None,
             "p95 latency (s)": bench and bench["overall"]["p95_s"],
             "Request error rate": bench and bench["overall"]["error_rate"],
+            "App error rate": bench and bench["overall"]["app_error_rate"],
+            "Provider rate-limited": bench and bench["overall"]["provider_rate_limited_rate"],
+            "Routed to RAG": f"{modes['RAG']}/{len(gen)}",
         },
         "notes": {
             "Faithfulness": "RAGAS",
@@ -402,9 +511,12 @@ async def main_async(args) -> None:
             "Citation correctness": (f"LLM judge, {cites['citations_checked']} citations in {cites['answers_checked']} answers"
                                      if cites else ""),
             "Unanswerable declined": f"keyword heuristic, n={sum(not i['answerable'] for i in items)}",
-            "TTFT p50 (s)": f"/ask/stream, n={len(ttft)}",
-            "p95 latency (s)": f"{bench['overall']['requests']} requests" if bench else "",
-            "Request error rate": f"errors: {bench['errors_by_type']}" if bench else "",
+            "TTFT p50 (s)": f"streamed answers, n={len(ttft)}",
+            "p95 latency (s)": f"{bench['overall']['requests']} requests, {bench['endpoint']}" if bench else "",
+            "Request error rate": f"all failures: {bench['errors_by_type']}" if bench else "",
+            "App error rate": "failures not caused by provider limits" if bench else "",
+            "Provider rate-limited": "Groq 429s that survived retries and pacing" if bench else "",
+            "Routed to RAG": "all 25 test questions are legal",
         },
         "comparison": comparison(baseline, bench),
         "details": {"retrieval": retrieval, "ragas": ragas, "citations": cites, "answers": gen,
@@ -414,9 +526,10 @@ async def main_async(args) -> None:
             "Reference answers and relevance labels were drafted by an AI assistant from the indexed text and have not been reviewed by a lawyer.",
             "25 questions: small-sample metrics, useful for regressions rather than absolute claims.",
             "LLM-judged metrics (RAGAS, citation correctness) depend on the judge model and can vary between runs.",
-            "Latency is dominated by the Groq free tier (8K tokens/minute): concurrent requests queue or fail on rate limits.",
-            "The latency benchmark runs first and alone, like the baseline; quality metrics run afterwards.",
-        ],
+            "Latency depends on the Groq free tier (8K tokens/minute); the client paces requests to stay under it.",
+            "The latency benchmark runs first and alone; quality metrics run afterwards.",
+        ] + (["In-process run: same router, retrieval, prompt and Groq code as the API, without HTTP or the auth check."]
+             if args.in_process else []),
     }
     annotate(res)
     write_reports(res)
@@ -455,7 +568,10 @@ def annotate(res: dict) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--base-url", default="http://127.0.0.1:8000")
-    ap.add_argument("--judge-model", default="qwen/qwen3.8-27b")
+    ap.add_argument("--judge-model", default="qwen/qwen3.8-27b", help="faithfulness, context recall, citations")
+    ap.add_argument("--judge-model-2", default="openai/gpt-oss-20b", help="answer relevancy, context precision")
+    ap.add_argument("--in-process", action="store_true",
+                    help="call the pipeline directly (no HTTP/auth) when no EVAL_AUTH_TOKEN is available")
     ap.add_argument("--delay", type=float, default=3.0, help="seconds between answer requests (rate limits)")
     ap.add_argument("--limit", type=int, help="smoke test with N answerable questions (results still written)")
     ap.add_argument("--skip-ragas", action="store_true")
