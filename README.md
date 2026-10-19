@@ -11,25 +11,25 @@ says so instead of guessing.
 
 ## Screenshots
 
-![Landing Page](assets/screenshots/landing.png)
+![Landing Page](frontend/assets/screenshots/landing.png)
 *Landing page: editorial hero with the Lady Justice artwork, product preview, how it works and features.*
 
-![Sign in / Sign up Modal](assets/screenshots/auth-modal.png)
+![Sign in / Sign up Modal](frontend/assets/screenshots/auth-modal.png)
 *The Justice Orb: sign-in travels from the navbar into a circle that flips to reveal sign-up.*
 
-![Chat Interface](assets/screenshots/chat.png)
+![Chat Interface](frontend/assets/screenshots/chat.png)
 *Research workspace: conversation history, streamed answer and composer.*
 
-![Evidence Panel with Citations](assets/screenshots/evidence-panel.png)
+![Evidence Panel with Citations](frontend/assets/screenshots/evidence-panel.png)
 *Clicking a citation opens the matching retrieved passage, with its Act, section and page.*
 
-![Light/Dark Theme](assets/screenshots/theme.png)
+![Light/Dark Theme](frontend/assets/screenshots/theme.png)
 *Light and dark themes, switched with a circular reveal transition.*
 
-![Terminal Metrics](assets/screenshots/terminal-metrics.png)
+![Terminal Metrics](frontend/assets/screenshots/terminal-metrics.png)
 *Per-request latency lines and the rolling summary block in the uvicorn terminal.*
 
-![Evaluation Results](assets/screenshots/eval-results.png)
+![Evaluation Results](frontend/assets/screenshots/eval-results.png)
 *Output of `eval/run_eval.py`: RAGAS, retrieval, citation and latency metrics.*
 
 ## Features
