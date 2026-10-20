@@ -35,6 +35,9 @@ ROOT = EVAL_DIR.parent
 sys.path.insert(0, str(ROOT / "backend"))
 sys.path.insert(0, str(EVAL_DIR))
 os.environ.setdefault("RAGAS_DO_NOT_TRACK", "true")
+# The live app fails fast after 20 s of waiting for tokens-per-minute budget; an evaluation
+# should wait instead, otherwise it measures that policy rather than the pipeline.
+os.environ.setdefault("GROQ_MAX_QUEUE_S", "120")
 
 from benchmark import auth_headers, run_benchmark  # noqa: E402
 
